@@ -2,7 +2,6 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { DatePickerProps } from './DatePicker.types';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
 import Stack from '@mui/material/Stack';
-import { Label } from '../Label';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useState } from 'react';
 import { icons } from 'components/icons';
@@ -19,7 +18,7 @@ export const DatePicker = ({
 	minDate,
 	fullWidth,
 	maxDate,
-	required = false,
+	// required = false,
 	disabled = false
 }: DatePickerProps) => {
 	const { isMobile } = useDevice();
@@ -39,7 +38,6 @@ export const DatePicker = ({
 						width: fullWidth ? '100%' : undefined
 					}}
 				>
-					{label ? <Label required={required} label={label} /> : null}
 					{isMobile ? (
 						<MobileDatePicker
 							value={field.value as Date}
@@ -51,6 +49,7 @@ export const DatePicker = ({
 							maxDate={maxDate}
 							minDate={minDate}
 							open={open}
+							label={label}
 							showDaysOutsideCurrentMonth
 							slotProps={{
 								previousIconButton: {

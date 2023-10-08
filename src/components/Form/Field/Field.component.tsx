@@ -8,7 +8,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import slugify from 'slugify';
-import { Label } from '../Label';
 import React from 'react';
 
 export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFieldProps>(
@@ -47,10 +46,11 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 					width: fullWidth ? '100%' : undefined
 				}}
 			>
-				{label ? <Label required={required} label={label} /> : null}
 				<TextField
+					required={required}
 					id={labelId}
 					type={type}
+					label={label}
 					placeholder={placeholder}
 					disabled={disabled}
 					error={Boolean(errorMessage)}

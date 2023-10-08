@@ -1,5 +1,5 @@
 import { Actor } from './actor.api';
-import type { _SERVICE } from 'declarations/users';
+import type { _SERVICE } from 'declarations/users.declarations';
 import { unwrapResult } from 'lib/utils/actor.utils';
 import { ENV } from 'lib/constants/env.constants';
 import { usersCanisterId } from './canisterIds';

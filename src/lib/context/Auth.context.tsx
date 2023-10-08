@@ -6,7 +6,7 @@ import { validateIdentity } from 'lib/utils/identity.utils';
 import { createContext } from 'react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSnackbar } from 'lib/hooks';
-import { User } from 'declarations/users';
+import { User } from 'declarations/users.declarations';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorage } from '@dfinity/auth-client';
 

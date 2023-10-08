@@ -4,9 +4,9 @@ import { IDL } from '@dfinity/candid';
 import { HOST } from 'lib/constants/env.constants';
 import { II_AUTH } from 'lib/constants/local-storage.constants';
 import { getDelegation } from 'lib/utils/actor.utils';
-import { idlFactory as circuitsIdl } from 'declarations/circuits';
-import { idlFactory as nodesIdl } from 'declarations/nodes';
-import { idlFactory as usersIdl } from 'declarations/users';
+import { idlFactory as circuitsIdl } from 'declarations/circuits.declarations';
+import { idlFactory as nodesIdl } from 'declarations/nodes.declarations';
+import { idlFactory as usersIdl } from 'declarations/users.declarations';
 
 export type Controller = 'circuits' | 'nodes' | 'users';
 

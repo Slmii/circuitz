@@ -17,7 +17,7 @@ export const Label = ({
 			required={required}
 			{...rest}
 			sx={{
-				fontSize: radioOrCheckbox ? 14 : 12,
+				fontSize: radioOrCheckbox ? 14 : 10,
 				color: disabled ? 'text.secondary' : radioOrCheckbox ? 'text.primary' : 'text.secondary',
 				fontWeight: radioOrCheckbox ? 'regular' : 'bold',
 				...rest.sx

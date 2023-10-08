@@ -24,7 +24,6 @@ export interface Option {
 	id: string;
 	label: string;
 	groupBy?: string;
-	secondaryLabel?: string;
 	image?: string;
 }
 

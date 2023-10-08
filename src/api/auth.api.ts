@@ -1,4 +1,4 @@
-import { User } from 'declarations/users';
+import { User } from 'declarations/users.declarations';
 
 export abstract class Auth {
 	private static user: User | undefined = undefined;

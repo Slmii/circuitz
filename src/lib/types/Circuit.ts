@@ -1,0 +1,11 @@
+import { Principal } from '@dfinity/principal';
+
+export interface Circuit {
+	id: number;
+	userId: Principal;
+	name: string;
+	description: string;
+	isFavorite: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+}

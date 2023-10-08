@@ -12,7 +12,6 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import FormHelperText from '@mui/material/FormHelperText';
 import Chip from '@mui/material/Chip';
-import { Label } from '../Label';
 import { Icon } from 'components/Icon';
 import Skeleton from '@mui/material/Skeleton';
 
@@ -65,13 +64,14 @@ export const StandaloneAutocomplete = ({
 						width: fullWidth ? '100%' : undefined
 					}}
 				>
-					{label ? <Label required={required} label={label} /> : null}
 					<TextField
 						{...params}
 						placeholder={placeholder}
 						variant="outlined"
 						error={Boolean(error)}
 						name={name}
+						label={label}
+						required={required}
 						inputProps={{
 							...params.inputProps,
 							autoComplete: 'new-password' // disable autocomplete and autofill
@@ -99,7 +99,6 @@ export const StandaloneAutocomplete = ({
 export const SelectAutocomplete = ({
 	name,
 	label,
-	secondaryLabel,
 	options = [],
 	onChange,
 	required,
@@ -175,13 +174,14 @@ export const SelectAutocomplete = ({
 								width: fullWidth ? '100%' : undefined
 							}}
 						>
-							{label ? <Label required={required} label={label} secondaryLabel={secondaryLabel} /> : null}
 							<TextField
 								{...params}
 								placeholder={placeholder}
 								variant="outlined"
 								error={Boolean(fieldState.error)}
 								name={name}
+								label={label}
+								required={required}
 								inputProps={{
 									...params.inputProps,
 									autoComplete: 'new-password' // disable autocomplete and autofill
@@ -218,7 +218,6 @@ export const SelectAutocomplete = ({
 export const SelectAutocompleteMultiple = ({
 	name,
 	label,
-	secondaryLabel,
 	options = [],
 	onChange,
 	helperText,
@@ -295,13 +294,14 @@ export const SelectAutocompleteMultiple = ({
 								width: fullWidth ? '100%' : undefined
 							}}
 						>
-							{label ? <Label required={required} label={label} secondaryLabel={secondaryLabel} /> : null}
 							<TextField
 								{...params}
 								variant="outlined"
 								error={Boolean(fieldState.error)}
 								name={name}
 								placeholder={placeholder}
+								label={label}
+								required={required}
 								InputProps={{
 									...params.InputProps
 								}}

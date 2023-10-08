@@ -6,7 +6,6 @@ import slugify from 'slugify';
 import { SelectProps, StandaloneSelectProps } from './Select.types';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import { Label } from '../Label';
 import React from 'react';
 
 export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSelectProps>(
@@ -38,9 +37,10 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 					width: fullWidth ? '100%' : undefined
 				}}
 			>
-				{label ? <Label required={required} label={label} /> : null}
 				<MuiSelect
+					required={required}
 					displayEmpty
+					label={label}
 					error={Boolean(error)}
 					MenuProps={{
 						anchorOrigin: {

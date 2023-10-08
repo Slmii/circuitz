@@ -2,8 +2,9 @@ import { Paper, Grid, Stack, Typography, Box } from '@mui/material';
 import { IconButton } from 'components/IconButton';
 import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
+import { Circuit as ICircuit } from 'lib/types';
 
-export const Circuit = ({ name }: { name: string }) => {
+export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	return (
 		<Grid item xs={12} sm={6} md={4}>
 			<Paper
@@ -17,7 +18,6 @@ export const Circuit = ({ name }: { name: string }) => {
 					backgroundColor: 'transparent',
 					border: theme => `3px solid ${theme.palette.primary.main}`,
 					position: 'relative',
-					transition: theme => theme.transitions.create(['box-shadow'], { duration: 250 }),
 					'&:hover': {
 						borderRadius: 0,
 						boxShadow: theme => `5px 5px 0px 0px ${theme.palette.secondary.main}}`
@@ -39,6 +39,12 @@ export const Circuit = ({ name }: { name: string }) => {
 					id="circuit-menu"
 					menu={[
 						{
+							id: 'edit',
+							label: 'Edit',
+							icon: 'edit',
+							action: onEdit
+						},
+						{
 							id: 'clone',
 							label: 'Clone',
 							icon: 'copy'
@@ -54,7 +60,7 @@ export const Circuit = ({ name }: { name: string }) => {
 				<Stack direction="column" spacing={1}>
 					<Link href={`/circuits/1`}>
 						<Typography fontWeight="bold" variant="h5">
-							{name}
+							{circuit.name}
 						</Typography>
 					</Link>
 					<Stack direction="column" alignItems="center">
