@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
@@ -14,7 +15,7 @@ export interface _SERVICE {
 	get_user: ActorMethod<[], Result>;
 }
 
-export const idlFactory = ({ IDL }) => {
+export const idlFactory = ({ IDL }: any) => {
 	const User = IDL.Record({
 		circuits: IDL.Vec(IDL.Nat32),
 		username: IDL.Opt(IDL.Text),

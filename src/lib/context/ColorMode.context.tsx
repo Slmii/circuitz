@@ -1,7 +1,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { createTheme, Theme } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes, Theme } from '@mui/material/styles';
 import React, { PropsWithChildren } from 'react';
-import { useLocalStorage } from 'lib/hooks/useLocalStorage';
+import { useLocalStorage } from 'lib/hooks';
+import { components, LIGHT_THEME, DARK_THEME } from 'lib/utils/theme.utils';
 
 interface ColorModeContextInterface {
 	theme: Theme;
@@ -29,31 +30,13 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 	);
 
 	const colorModeTheme = React.useMemo(() => {
-		const theme = createTheme({
+		let theme = createTheme({
 			palette: {
 				mode,
-				...(mode === 'light'
-					? {
-							// palette values for light mode
-							primary: {
-								main: '#4A9C7F'
-							},
-							secondary: {
-								main: '#d6ad10'
-							}
-					  }
-					: {
-							// palette values for dark mode
-							primary: {
-								main: '#92cfbc'
-							},
-							secondary: {
-								main: '#e9ea94'
-							}
-					  })
+				...(mode === 'light' ? LIGHT_THEME : DARK_THEME)
 			},
 			typography: {
-				fontFamily: '"Roboto", serif',
+				fontFamily: '"Orbitron", serif',
 				fontSize: 16,
 				htmlFontSize: 16,
 				fontWeightBold: 700,
@@ -62,8 +45,11 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 			shape: {
 				borderRadius: 8
 			},
-			spacing: 8
+			spacing: 8,
+			components
 		});
+
+		theme = responsiveFontSizes(theme);
 
 		// Set color mode on body
 		const body = document.querySelector('body');

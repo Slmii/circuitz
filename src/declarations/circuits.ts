@@ -30,7 +30,8 @@ export interface _SERVICE {
 	get_user_circuits: ActorMethod<[], Result>;
 }
 
-export const idlFactory = ({ IDL }) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const idlFactory = ({ IDL }: any) => {
 	const Circuit = IDL.Record({
 		id: IDL.Nat32,
 		updated_at: IDL.Nat64,

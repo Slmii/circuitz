@@ -3,11 +3,12 @@ import { api } from 'api/index';
 import { DELEGATION, IDENTITY, II_AUTH } from 'lib/constants/local-storage.constants';
 import { getDelegation, unwrapResult } from 'lib/utils/actor.utils';
 import { validateIdentity } from 'lib/utils/identity.utils';
-import { removeLocalStorageItem } from 'lib/utils/local-storage.utils';
 import { createContext } from 'react';
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { useSnackbar } from 'lib/hooks/useSnackbar';
+import { useSnackbar } from 'lib/hooks';
 import { User } from 'declarations/users';
+import { useNavigate } from 'react-router-dom';
+import { LocalStorage } from '@dfinity/auth-client';
 
 interface IAuthClient {
 	signInII: () => Promise<void>;
@@ -30,6 +31,8 @@ export const AuthContext = createContext<IAuthClient>({
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
+	const navigate = useNavigate();
+
 	// Loading states
 	const [loadingSession, setLoadingSession] = useState(true);
 	const [loadingSignOut, setLoadingSignOut] = useState(false);
@@ -83,7 +86,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
 		const authClient = await api.Actor.getAuthClient();
 		await authClient.login({
-			onSuccess: () => initUser(),
+			onSuccess: async () => {
+				await initUser();
+				navigate('/dashboard');
+			},
 			onError: error => {
 				setLoadingII(false);
 				error && errorSnackbar(error);
@@ -99,8 +105,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 		setLoadingSignOut(true);
 
 		try {
-			await removeLocalStorageItem(II_AUTH, IDENTITY);
-			await removeLocalStorageItem(II_AUTH, DELEGATION);
+			const storage = new LocalStorage(II_AUTH);
+
+			await storage.remove(IDENTITY);
+			await storage.remove(DELEGATION);
 
 			const authClient = await api.Actor.getAuthClient();
 			await authClient.logout();
@@ -124,11 +132,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 			setUserInState(unwrappedUser);
 		} catch (error) {
 			try {
-				await api.Users.addUser();
-
-				const response = await api.Users.getMe();
-				const user = await unwrapResult(response);
-
+				const user = await api.Users.addUser();
 				setUserInState(user);
 			} catch (error) {
 				console.error('Init user Error', { error });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
@@ -94,7 +95,7 @@ export interface _SERVICE {
 	get_circuit_nodes: ActorMethod<[number], Result>;
 }
 
-export const idlFactory = ({ IDL }) => {
+export const idlFactory = ({ IDL }: any) => {
 	const CustomPinLogic = IDL.Record({
 		function: IDL.Opt(IDL.Text),
 		script: IDL.Opt(IDL.Text)

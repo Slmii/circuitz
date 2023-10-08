@@ -1,15 +1,17 @@
 import { DelegationChain, DelegationIdentity, Ed25519KeyIdentity } from '@dfinity/identity';
 import { Identity } from '@dfinity/agent';
 import { DELEGATION, IDENTITY, II_AUTH } from 'lib/constants/local-storage.constants';
-import { getLocalStorageItem } from './local-storage.utils';
 import { Principal } from '@dfinity/principal';
+import { LocalStorage } from '@dfinity/auth-client';
 
 /**
  * Get the identity from local storage
  */
 export async function getLocalStorageIdentity(): Promise<Identity> {
-	const identityKey = await getLocalStorageItem(II_AUTH, IDENTITY);
-	const delegationChain = await getLocalStorageItem(II_AUTH, DELEGATION);
+	const storage = new LocalStorage(II_AUTH);
+
+	const identityKey = await storage.get(IDENTITY);
+	const delegationChain = await storage.get(DELEGATION);
 
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const chain = DelegationChain.fromJSON(delegationChain!);

@@ -5,18 +5,18 @@ type CanisterId = {
 };
 
 export const circuitsCanisterId: CanisterId = {
-	development: '7l53v-aqaaa-aaaap-abggq-cai',
-	production: '5rvte-7aaaa-aaaap-aa4ja-cai'
+	development: 'myqvg-hiaaa-aaaal-ac5da-cai',
+	production: 'myqvg-hiaaa-aaaal-ac5da-cai'
 };
 
 export const nodesCanisterId: CanisterId = {
-	development: 'njs4r-miaaa-aaaak-qau2a-cai',
-	production: 'k3hxs-oqaaa-aaaak-qb25a-cai'
+	development: 'm7rts-kqaaa-aaaal-ac5dq-cai',
+	production: 'm7rts-kqaaa-aaaal-ac5dq-cai'
 };
 
 export const usersCanisterId: CanisterId = {
-	development: 'njs4r-miaaa-aaaak-qau2a-cai',
-	production: 'k3hxs-oqaaa-aaaak-qb25a-cai'
+	development: 'mos4g-maaaa-aaaal-qcevq-cai',
+	production: 'mos4g-maaaa-aaaal-qcevq-cai'
 };
 
 export const initialCanisterWhitelist = (env: typeof ENV) => [circuitsCanisterId[env], nodesCanisterId[env]];

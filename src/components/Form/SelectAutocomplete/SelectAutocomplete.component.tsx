@@ -1,0 +1,357 @@
+import Autocomplete from '@mui/material/Autocomplete';
+import { useEffect, useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+import slugify from 'slugify';
+import {
+	Option,
+	SelectAutocompleteMultipleProps,
+	SelectAutocompleteSingleProps,
+	StandaloneAutocompleteProps
+} from './SelectAutocomplete.types';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import FormHelperText from '@mui/material/FormHelperText';
+import Chip from '@mui/material/Chip';
+import { Label } from '../Label';
+import { Icon } from 'components/Icon';
+import Skeleton from '@mui/material/Skeleton';
+
+export const StandaloneAutocomplete = ({
+	name,
+	onChange,
+	options,
+	value,
+	disabled,
+	error,
+	fullWidth,
+	helperText,
+	label,
+	placeholder,
+	required,
+	isOptionsLoading
+}: StandaloneAutocompleteProps) => {
+	const [inputValue, setInputValue] = useState('');
+
+	if (isOptionsLoading) {
+		return <Skeleton variant="rounded" height={32} />;
+	}
+
+	return (
+		<Autocomplete
+			value={value}
+			clearOnBlur
+			inputValue={inputValue}
+			id={`${slugify(name)}-field`}
+			options={options}
+			disabled={disabled}
+			groupBy={option => option.groupBy ?? ''}
+			getOptionLabel={option => option.label}
+			isOptionEqualToValue={(option, value) => option.id === value.id}
+			fullWidth={fullWidth}
+			popupIcon={<Icon icon="search" fontSize="small" />}
+			renderOption={(props, option) => {
+				return (
+					<li {...props} key={option.id}>
+						{option.label}
+					</li>
+				);
+			}}
+			renderInput={params => (
+				<Stack
+					direction="column"
+					spacing={0.25}
+					sx={{
+						position: 'relative',
+						width: fullWidth ? '100%' : undefined
+					}}
+				>
+					{label ? <Label required={required} label={label} /> : null}
+					<TextField
+						{...params}
+						placeholder={placeholder}
+						variant="outlined"
+						error={Boolean(error)}
+						name={name}
+						inputProps={{
+							...params.inputProps,
+							autoComplete: 'new-password' // disable autocomplete and autofill
+						}}
+					/>
+					{error ? <FormHelperText error>{error}</FormHelperText> : null}
+					{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
+				</Stack>
+			)}
+			onChange={(_e, value) => {
+				onChange(value);
+			}}
+			onInputChange={(_e, value) => {
+				setInputValue(value);
+
+				if (!value) {
+					// If no value if provided then pass a null value to the custom onChange
+					onChange(null);
+				}
+			}}
+		/>
+	);
+};
+
+export const SelectAutocomplete = ({
+	name,
+	label,
+	secondaryLabel,
+	options = [],
+	onChange,
+	required,
+	disabled,
+	placeholder = 'Type to search',
+	helperText,
+	fullWidth,
+	isOptionsLoading
+}: SelectAutocompleteSingleProps) => {
+	const { setValue: setFormValue, getValues } = useFormContext();
+
+	const [value, setValue] = useState<Option | null>(null);
+	const [inputValue, setInputValue] = useState('');
+
+	useEffect(() => {
+		if (options.length > 0) {
+			const defaultFormValue = getValues(name) as null | string;
+
+			// Find the option that match the given defaultvalue in the formContext
+			const option = options.find(option => option.id === defaultFormValue);
+
+			if (typeof option !== 'undefined') {
+				// Set the option as the selected option
+				setValue(option);
+
+				// Set the selected option's name value in the input field
+				setInputValue(option.label);
+			} else {
+				setValue(null);
+				setInputValue('');
+			}
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [options]);
+
+	if (isOptionsLoading) {
+		return <Skeleton variant="rounded" height={32} />;
+	}
+
+	return (
+		<Controller
+			name={name}
+			rules={{
+				required
+			}}
+			render={({ field, fieldState }) => (
+				<Autocomplete
+					value={value}
+					clearOnBlur
+					inputValue={inputValue}
+					id={`${slugify(name)}-field`}
+					options={options}
+					disabled={disabled}
+					groupBy={option => option.groupBy ?? ''}
+					getOptionLabel={option => option.label}
+					isOptionEqualToValue={(option, value) => option.id === value.id}
+					fullWidth={fullWidth}
+					popupIcon={<Icon icon="search" fontSize="small" />}
+					renderOption={(props, option) => {
+						return (
+							<li {...props} key={option.id}>
+								{option.label}
+							</li>
+						);
+					}}
+					renderInput={params => (
+						<Stack
+							direction="column"
+							spacing={0.25}
+							sx={{
+								position: 'relative',
+								width: fullWidth ? '100%' : undefined
+							}}
+						>
+							{label ? <Label required={required} label={label} secondaryLabel={secondaryLabel} /> : null}
+							<TextField
+								{...params}
+								placeholder={placeholder}
+								variant="outlined"
+								error={Boolean(fieldState.error)}
+								name={name}
+								inputProps={{
+									...params.inputProps,
+									autoComplete: 'new-password' // disable autocomplete and autofill
+								}}
+							/>
+							{fieldState.error && fieldState.error.message ? (
+								<FormHelperText error>{fieldState.error.message}</FormHelperText>
+							) : null}
+							{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
+						</Stack>
+					)}
+					onChange={(_e, value) => {
+						// Execute custom onChange passed as a prop
+						onChange?.(value);
+						// Set value in the Autocomplete component
+						setValue(value);
+						// Set value in the formContext
+						setFormValue(name, value ? value.id : value);
+					}}
+					onBlur={field.onBlur}
+					onInputChange={(_e, value) => {
+						setInputValue(value);
+						if (!value) {
+							// If no value if provided then pass a null value to the custom onChange
+							onChange?.(null);
+						}
+					}}
+				/>
+			)}
+		/>
+	);
+};
+
+export const SelectAutocompleteMultiple = ({
+	name,
+	label,
+	secondaryLabel,
+	options = [],
+	onChange,
+	helperText,
+	placeholder = 'Type to search',
+	required,
+	disabled,
+	fullWidth,
+	isOptionsLoading,
+	max
+}: SelectAutocompleteMultipleProps) => {
+	const { control, setValue: setFormValue, getValues } = useFormContext();
+	const [values, setValues] = useState<Option[]>([]);
+
+	useEffect(() => {
+		if (options.length > 0) {
+			const defaultFormValues = getValues(name) as Option[];
+
+			// Find the options that match the defaultValues in the formContext
+			// and prefill those in the input field as a `Chip` tag
+			const foundOptions = options.filter(option => defaultFormValues?.find(value => value.id === option.id));
+			setValues(foundOptions);
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [options]);
+
+	const handleOnDeleteOption = (option: Option) => {
+		const newValues = values.filter(value => value.id !== option.id);
+
+		// Set values in the Autocomplete component
+		setValues(newValues);
+
+		// Set values in the formContext
+		setFormValue(name, newValues);
+	};
+
+	if (isOptionsLoading) {
+		return <Skeleton variant="rounded" height={32} />;
+	}
+
+	return (
+		<Controller
+			name={name}
+			control={control}
+			defaultValue={getValues(name)}
+			render={({ field, fieldState }) => (
+				<Autocomplete
+					multiple
+					disableCloseOnSelect
+					id={`${slugify(name)}-field`}
+					value={values}
+					options={options}
+					isOptionEqualToValue={(option, value) => option.id === value.id}
+					getOptionLabel={option => option.label}
+					groupBy={option => option.groupBy ?? ''}
+					disabled={disabled}
+					renderTags={() => null}
+					fullWidth={fullWidth}
+					disableClearable
+					popupIcon={<Icon icon="search" fontSize="small" />}
+					renderOption={(props, option) => {
+						return (
+							<li {...props} key={option.id} aria-disabled={max ? values.length === max : undefined}>
+								{option.label}
+							</li>
+						);
+					}}
+					renderInput={params => (
+						<Stack
+							direction="column"
+							spacing={0.25}
+							sx={{
+								position: 'relative',
+								width: fullWidth ? '100%' : undefined
+							}}
+						>
+							{label ? <Label required={required} label={label} secondaryLabel={secondaryLabel} /> : null}
+							<TextField
+								{...params}
+								variant="outlined"
+								error={Boolean(fieldState.error)}
+								name={name}
+								placeholder={placeholder}
+								InputProps={{
+									...params.InputProps
+								}}
+								inputProps={{
+									...params.inputProps,
+									autoComplete: 'new-password' // disable autocomplete and autofill
+								}}
+							/>
+							{fieldState.error && fieldState.error.message ? (
+								<FormHelperText error>{fieldState.error.message}</FormHelperText>
+							) : null}
+							{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
+							{values.length ? (
+								<Stack
+									direction="row"
+									useFlexGap
+									flexWrap="wrap"
+									spacing={0.5}
+									sx={{ mt: theme => `${theme.spacing(0.5)} !important;`, color: 'white' }}
+								>
+									{values.map((option: Option) => (
+										<Chip
+											onDelete={() => handleOnDeleteOption(option)}
+											key={option.id}
+											size="small"
+											label={option.label}
+											deleteIcon={<Icon icon="close" />}
+										/>
+									))}
+								</Stack>
+							) : null}
+						</Stack>
+					)}
+					onChange={(_e, values) => {
+						// Execute custom onChange passed as a prop
+						onChange?.(values);
+						// Set value in the Autocomplete component
+						setValues(values);
+						// Set value in the formContext
+						setFormValue(name, values);
+					}}
+					onBlur={field.onBlur}
+					onInputChange={(_e, value) => {
+						if (!value) {
+							// If no value if provided then pass an empty array to the custom onChange
+							onChange?.([]);
+						}
+					}}
+				/>
+			)}
+		/>
+	);
+};
