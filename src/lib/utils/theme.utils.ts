@@ -30,7 +30,7 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 	},
 	background: {
 		default: '#1E1E20',
-		paper: 'rgba(7, 6, 7, 0.5)'
+		paper: 'rgba(7, 6, 7)'
 	},
 	divider: 'rgba(255, 255, 255, 0.08)'
 };
@@ -64,7 +64,7 @@ export const LIGHT_THEME: Readonly<PaletteOptions> = {
 	},
 	background: {
 		default: '#1E1E20',
-		paper: 'rgba(7, 6, 7, 0.5)'
+		paper: 'rgba(7, 6, 7)'
 	},
 	divider: 'rgba(255, 255, 255, 0.08)'
 };

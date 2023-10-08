@@ -5,7 +5,6 @@ import MuiMenu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useState } from 'react';
 import { MenuProps } from './Menu.types';
-import Divider from '@mui/material/Divider';
 import slugify from 'slugify';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -53,7 +52,7 @@ export const Menu = ({
 				onClick: menu
 					? // eslint-disable-next-line @typescript-eslint/no-explicit-any
 					  (e: any) => {
-							(typeof label === 'function' ? label(!!anchorEl) : label).props.onClick?.();
+							(typeof label === 'function' ? label(!!anchorEl) : label).props.onClick?.(e);
 							handleOnMenuOpen(e);
 					  }
 					: undefined
@@ -73,7 +72,7 @@ export const Menu = ({
 					}
 				}}
 			>
-				{menu.map(({ id, label, icon, image, color, action, disabled, loading, selected }, i) => {
+				{menu.map(({ id, label, icon, image, color, action, disabled, loading, selected }) => {
 					return [
 						<MenuItem
 							key={id}
@@ -91,7 +90,7 @@ export const Menu = ({
 									/>
 								) : icon ? (
 									<ListItemIcon>
-										<Icon icon={icon} fontSize="small" color="primary" />
+										<Icon icon={icon} sx={{ fontSize: 20 }} color={color} />
 									</ListItemIcon>
 								) : image ? (
 									<ListItemIcon>
@@ -106,8 +105,7 @@ export const Menu = ({
 							>
 								{label}
 							</ListItemText>
-						</MenuItem>,
-						<Divider key={label} sx={{ margin: '0 !important', display: i !== menu.length - 1 ? 'block' : 'none' }} />
+						</MenuItem>
 					];
 				})}
 			</MuiMenu>
