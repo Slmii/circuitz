@@ -8,7 +8,7 @@ export const Layout = () => {
 		<>
 			<Providers>
 				<Header />
-				<Container maxWidth="md">
+				<Container maxWidth="md" sx={{ pb: 2 }}>
 					<Outlet />
 				</Container>
 			</Providers>

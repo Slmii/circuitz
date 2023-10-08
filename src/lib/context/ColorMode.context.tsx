@@ -43,7 +43,7 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 				fontWeightRegular: 400
 			},
 			shape: {
-				borderRadius: 8
+				borderRadius: 0
 			},
 			spacing: 8,
 			components

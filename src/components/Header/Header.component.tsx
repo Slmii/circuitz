@@ -39,7 +39,7 @@ export const Header = () => {
 			<Stack direction="row" spacing={1}>
 				<IconButton
 					icon={colorMode === 'dark' ? 'moon' : 'sun'}
-					tooltip={colorMode === 'dark' ? 'Power on' : 'Power off'}
+					tooltip={colorMode === 'dark' ? 'Lights on' : 'Lights off'}
 					onClick={toggleColorMode}
 					color="primary"
 				/>

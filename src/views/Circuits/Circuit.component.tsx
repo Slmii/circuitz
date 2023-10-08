@@ -5,7 +5,7 @@ import { Menu } from 'components/Menu';
 
 export const Circuit = ({ name }: { name: string }) => {
 	return (
-		<Grid item xs={12} md={4}>
+		<Grid item xs={12} sm={6} md={4}>
 			<Paper
 				component={Stack}
 				alignItems="center"
@@ -17,7 +17,7 @@ export const Circuit = ({ name }: { name: string }) => {
 					backgroundColor: 'transparent',
 					border: theme => `3px solid ${theme.palette.primary.main}`,
 					position: 'relative',
-					transition: theme => theme.transitions.create(['border-radius'], { duration: 250 }),
+					transition: theme => theme.transitions.create(['box-shadow'], { duration: 250 }),
 					'&:hover': {
 						borderRadius: 0,
 						boxShadow: theme => `5px 5px 0px 0px ${theme.palette.secondary.main}}`
