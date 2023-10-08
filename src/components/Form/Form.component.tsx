@@ -32,7 +32,7 @@ export function Form<T extends FieldValues>({
 				<FormGroup
 					sx={{
 						'& > *:not(:last-child)': {
-							marginBottom: theme => theme.spacing(4)
+							marginBottom: theme => theme.spacing(2)
 						}
 					}}
 				>

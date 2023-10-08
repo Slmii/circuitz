@@ -1,7 +1,8 @@
-import { Paper, Grid, Stack, Typography, Box } from '@mui/material';
+import { Paper, Grid, Stack, Box } from '@mui/material';
 import { IconButton } from 'components/IconButton';
 import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
+import { Caption, SubTitle } from 'components/Typography';
 import { Circuit as ICircuit } from 'lib/types';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
@@ -59,20 +60,12 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 				/>
 				<Stack direction="column" spacing={1}>
 					<Link href={`/circuits/1`}>
-						<Typography fontWeight="bold" variant="h5">
-							{circuit.name}
-						</Typography>
+						<SubTitle>{circuit.name}</SubTitle>
 					</Link>
 					<Stack direction="column" alignItems="center">
-						<Typography variant="caption" color="text.secondary">
-							0.9T
-						</Typography>
-						<Typography variant="caption" color="text.secondary">
-							Active
-						</Typography>
-						<Typography variant="caption" color="text.secondary">
-							20MB
-						</Typography>
+						<Caption color="text.secondary">0.9T</Caption>
+						<Caption color="text.secondary">Active</Caption>
+						<Caption color="text.secondary">20MB</Caption>
 					</Stack>
 				</Stack>
 				<Stack
@@ -81,9 +74,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 					sx={{ position: 'absolute', bottom: theme => theme.spacing(2), left: theme => theme.spacing(2) }}
 				>
 					<Box sx={{ width: 24, height: 24, backgroundColor: 'error.dark', borderRadius: '50%' }} />
-					<Typography variant="caption" color="error.main">
-						25 errors
-					</Typography>
+					<Caption color="error.main">25 errors</Caption>
 				</Stack>
 			</Paper>
 		</Grid>

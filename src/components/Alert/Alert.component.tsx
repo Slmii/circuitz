@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper';
 import { Icons } from 'components/icons';
 import { Icon } from 'components/Icon';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import { Paragraph } from 'components/Typography';
 
 export const Alert = ({ children }: PropsWithChildren) => {
 	return (
@@ -21,7 +21,7 @@ export const Alert = ({ children }: PropsWithChildren) => {
 };
 
 const AlertTitle = ({ children }: PropsWithChildren) => {
-	return <Typography variant="body1">{children}</Typography>;
+	return <Paragraph>{children}</Paragraph>;
 };
 
 const AlertIcon = ({ icon }: { icon: Icons }) => {

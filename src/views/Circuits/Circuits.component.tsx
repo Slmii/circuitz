@@ -1,4 +1,4 @@
-import { Stack, Typography, Grid } from '@mui/material';
+import { Stack, Grid } from '@mui/material';
 import { Circuit } from './Circuit.component';
 import { IconButton } from 'components/IconButton';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { circuitSchema } from 'lib/schemas';
 import { Circuit as ICircuit } from 'lib/types';
 import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
 import { Principal } from '@dfinity/principal';
+import { Paragraph, Title } from 'components/Typography';
 
 const circuits: ICircuit[] = [
 	{
@@ -50,7 +51,7 @@ export const Circuits = () => {
 		<>
 			<Stack direction="column" spacing={0} gap={2}>
 				<Stack direction="row" alignItems="center" justifyContent="space-between">
-					<Typography variant="h3">Circuits</Typography>
+					<Title>Circuits</Title>
 					<IconButton
 						icon="add"
 						size="large"
@@ -91,9 +92,9 @@ export const Circuits = () => {
 					schema={circuitSchema}
 					myRef={formRef}
 				>
-					<Typography variant="body1" color="text.secondary">
+					<Paragraph color="text.secondary">
 						{circuit ? 'Edit the Circuit details below' : 'Enter the Circuit details below'}
-					</Typography>
+					</Paragraph>
 					<Field name="name" label="Name" placeholder="Enter a name for the circuit" />
 					<Field
 						name="description"

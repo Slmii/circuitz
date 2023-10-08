@@ -1,6 +1,6 @@
-import { Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { Button } from 'components/Button';
+import { Caption, Paragraph, SubTitle, Title } from 'components/Typography';
 import { useAuth } from 'lib/hooks';
 import { useCallback } from 'react';
 import Particles from 'react-particles';
@@ -20,9 +20,7 @@ export const HomePage = () => {
 	return (
 		<Stack direction="column" mt={10} spacing={10}>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
-				<Typography fontWeight="bold" variant="h3">
-					Circuitz, where Data Flows Freely and Securely
-				</Typography>
+				<Title>Circuitz, where Data Flows Freely and Securely</Title>
 				<div>
 					<Button color="primary" variant="contained" onClick={signInII} loading={loadingII}>
 						Start here with Internet Identity
@@ -30,11 +28,8 @@ export const HomePage = () => {
 				</div>
 			</Stack>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
-				<Typography fontWeight="bold" variant="h5">
-					Discover the Future of Integration
-				</Typography>
-				<Typography
-					variant="body1"
+				<SubTitle>Discover the Future of Integration</SubTitle>
+				<Paragraph
 					sx={{
 						p: 1,
 						backgroundColor: theme => theme.palette.secondary.main,
@@ -44,12 +39,10 @@ export const HomePage = () => {
 					The future of integration is here, built exclusively on the Internet Computer. Seamlessly connect, process,
 					and automate data flows between canisters, unlocking a new realm of possibilities for decentralized
 					applications.
-				</Typography>
+				</Paragraph>
 			</Stack>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
-				<Typography fontWeight="bold" variant="h5">
-					How it works
-				</Typography>
+				<SubTitle>How it works</SubTitle>
 				<Stack
 					direction="column"
 					sx={{
@@ -58,13 +51,11 @@ export const HomePage = () => {
 						color: theme => theme.palette.secondary.contrastText
 					}}
 				>
-					<Typography fontWeight="bold" variant="body1">
-						Initiate a Node
-					</Typography>
-					<Typography variant="caption">
+					<Paragraph fontWeight="bold">Initiate a Node</Paragraph>
+					<Caption>
 						Begin your integration journey by directing data into a Node. Acting as the primary gateway, this Node
 						securely receives data straight from the source canister, ensuring a smooth and efficient intake process.
-					</Typography>
+					</Caption>
 				</Stack>
 				<Stack
 					direction="column"
@@ -74,14 +65,12 @@ export const HomePage = () => {
 						color: theme => theme.palette.secondary.contrastText
 					}}
 				>
-					<Typography fontWeight="bold" variant="body1">
-						Harness the Power of Nodes
-					</Typography>
-					<Typography variant="caption">
+					<Paragraph fontWeight="bold">Harness the Power of Nodes</Paragraph>
+					<Caption>
 						Dive deeper into the customization realm with our advanced nodes. Tailor your data processing by employing
 						our versatile nodes, whether you're aiming to map, transform, or filter. Each node is designed to offer a
 						unique function, ensuring your data is processed exactly how you envision.
-					</Typography>
+					</Caption>
 				</Stack>
 				<Stack
 					direction="column"
@@ -91,13 +80,11 @@ export const HomePage = () => {
 						color: theme => theme.palette.secondary.contrastText
 					}}
 				>
-					<Typography fontWeight="bold" variant="body1">
-						Seamless Output
-					</Typography>
-					<Typography variant="caption">
+					<Paragraph fontWeight="bold">Seamless Output</Paragraph>
+					<Caption>
 						Conclude your data's journey by directing it to a designated canister. After undergoing the specified Node
 						processes, your refined data is channeled to its final destination, ensuring accurate and timely delivery.
-					</Typography>
+					</Caption>
 				</Stack>
 				<div>
 					<Button color="primary" variant="contained">
