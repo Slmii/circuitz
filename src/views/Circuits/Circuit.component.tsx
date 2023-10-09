@@ -66,11 +66,11 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 	);
 };
 
-export const AddCircuit = ({ onClick }: { onClick: () => void }) => {
+export const CreateCircuit = ({ onClick }: { onClick: () => void }) => {
 	return (
 		<Grid item xs={12} sm={6} md={4}>
 			<CircuitCard onClick={onClick}>
-				<SubTitle>Add Circuit</SubTitle>
+				<SubTitle>Create Circuit</SubTitle>
 			</CircuitCard>
 		</Grid>
 	);

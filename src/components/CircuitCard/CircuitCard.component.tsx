@@ -1,11 +1,10 @@
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
+import { ButtonBase, Paper, Stack } from '@mui/material';
 import { PropsWithChildren } from 'react';
 
 export const CircuitCard = ({ onClick, children }: PropsWithChildren<{ onClick?: () => void }>) => {
 	return (
 		<Paper
-			component={Stack}
+			component={onClick ? ButtonBase : Stack}
 			onClick={onClick}
 			alignItems="center"
 			justifyContent="center"

@@ -1,5 +1,5 @@
 import { Stack, Grid } from '@mui/material';
-import { AddCircuit, Circuit } from './Circuit.component';
+import { CreateCircuit, Circuit } from './Circuit.component';
 import { IconButton } from 'components/IconButton';
 import { useState } from 'react';
 import { Dialog } from 'components/Dialog';
@@ -51,7 +51,7 @@ export const Circuits = () => {
 					<Grid container spacing={2}>
 						<>
 							{!circuits.length ? (
-								<AddCircuit onClick={() => setIsFormOpen(true)} />
+								<CreateCircuit onClick={() => setIsFormOpen(true)} />
 							) : (
 								circuits.map(circuit => (
 									<Circuit
