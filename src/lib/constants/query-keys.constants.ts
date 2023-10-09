@@ -1,1 +1,3 @@
-export const QUERY_KEYS = {};
+export const QUERY_KEYS = {
+	GET_CIRCUITS: 'GET_CIRCUITS'
+};

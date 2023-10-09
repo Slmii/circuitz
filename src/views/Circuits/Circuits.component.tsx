@@ -1,5 +1,5 @@
 import { Stack, Grid } from '@mui/material';
-import { Circuit } from './Circuit.component';
+import { AddCircuit, Circuit } from './Circuit.component';
 import { IconButton } from 'components/IconButton';
 import { useState } from 'react';
 import { Dialog } from 'components/Dialog';
@@ -8,44 +8,23 @@ import { Field } from 'components/Form/Field';
 import { circuitSchema } from 'lib/schemas';
 import { Circuit as ICircuit } from 'lib/types';
 import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
-import { Principal } from '@dfinity/principal';
 import { Paragraph, Title } from 'components/Typography';
-
-const circuits: ICircuit[] = [
-	{
-		id: 1,
-		name: 'Circuit 1',
-		description: 'Circuit 1 description',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		isFavorite: true,
-		userId: Principal.anonymous()
-	},
-	{
-		id: 2,
-		name: 'Circuit 2',
-		description: 'Circuit 2 description',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		isFavorite: false,
-		userId: Principal.anonymous()
-	},
-	{
-		id: 3,
-		name: 'Circuit 3',
-		description: 'Circuit 3 description',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		isFavorite: true,
-		userId: Principal.anonymous()
-	}
-];
+import { useQuery } from '@tanstack/react-query';
+import { api } from 'api/index';
+import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
+import { SkeletonCircuitCard } from 'components/Skeleton';
 
 export const Circuits = () => {
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [circuit, setCircuit] = useState<ICircuit | null>(null);
 
 	const { formRef, handleSubmit } = useDialogFormSubmit();
+	const { data: circuits, isLoading: isCircuitsLoading } = useQuery({
+		queryKey: [QUERY_KEYS.GET_CIRCUITS],
+		queryFn: () => api.Circuits.getUserCircuits()
+	});
+
+	const isLoaded = !!circuits && !isCircuitsLoading;
 
 	return (
 		<>
@@ -62,18 +41,32 @@ export const Circuits = () => {
 						}}
 					/>
 				</Stack>
-				<Grid container spacing={2}>
-					{circuits.map(circuit => (
-						<Circuit
-							key={circuit.id}
-							circuit={circuit}
-							onEdit={() => {
-								setCircuit(circuit);
-								setIsFormOpen(true);
-							}}
-						/>
-					))}
-				</Grid>
+				{!isLoaded ? (
+					<Stack direction="row" alignItems="flex-start" flexWrap="wrap" gap={2}>
+						{Array.from({ length: 3 }).map((_, i) => (
+							<SkeletonCircuitCard key={i} />
+						))}
+					</Stack>
+				) : (
+					<Grid container spacing={2}>
+						<>
+							{!circuits.length ? (
+								<AddCircuit onClick={() => setIsFormOpen(true)} />
+							) : (
+								circuits.map(circuit => (
+									<Circuit
+										key={circuit.id}
+										circuit={circuit}
+										onEdit={() => {
+											setCircuit(circuit);
+											setIsFormOpen(true);
+										}}
+									/>
+								))
+							)}
+						</>
+					</Grid>
+				)}
 			</Stack>
 			<Dialog
 				open={isFormOpen}
@@ -82,6 +75,7 @@ export const Circuits = () => {
 				onCancelText="Cancel"
 				onConfirmText={circuit ? 'Save' : 'Create'}
 				onConfirm={handleSubmit}
+				width="md"
 			>
 				<Form
 					action={data => console.log(data)}

@@ -1,9 +1,11 @@
 import * as actor from './actor.api';
 import * as auth from './auth.api';
 import * as users from './users.api';
+import * as circuits from './circuits.api';
 
 export const api = {
 	...actor,
 	...auth,
-	...users
+	...users,
+	...circuits
 };

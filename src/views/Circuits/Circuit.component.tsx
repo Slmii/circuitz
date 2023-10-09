@@ -1,4 +1,5 @@
-import { Paper, Grid, Stack, Box } from '@mui/material';
+import { Grid, Stack, Box } from '@mui/material';
+import { CircuitCard } from 'components/CircuitCard';
 import { IconButton } from 'components/IconButton';
 import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
@@ -8,23 +9,7 @@ import { Circuit as ICircuit } from 'lib/types';
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	return (
 		<Grid item xs={12} sm={6} md={4}>
-			<Paper
-				component={Stack}
-				alignItems="center"
-				justifyContent="center"
-				sx={{
-					p: 2,
-					height: 300,
-					width: '100%',
-					backgroundColor: 'transparent',
-					border: theme => `3px solid ${theme.palette.primary.main}`,
-					position: 'relative',
-					'&:hover': {
-						borderRadius: 0,
-						boxShadow: theme => `5px 5px 0px 0px ${theme.palette.secondary.main}}`
-					}
-				}}
-			>
+			<CircuitCard>
 				<Menu
 					label={
 						<IconButton
@@ -76,7 +61,17 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 					<Box sx={{ width: 24, height: 24, backgroundColor: 'error.dark', borderRadius: '50%' }} />
 					<Caption color="error.main">25 errors</Caption>
 				</Stack>
-			</Paper>
+			</CircuitCard>
+		</Grid>
+	);
+};
+
+export const AddCircuit = ({ onClick }: { onClick: () => void }) => {
+	return (
+		<Grid item xs={12} sm={6} md={4}>
+			<CircuitCard onClick={onClick}>
+				<SubTitle>Add Circuit</SubTitle>
+			</CircuitCard>
 		</Grid>
 	);
 };

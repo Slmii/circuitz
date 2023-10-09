@@ -74,7 +74,7 @@ export const Dialog = ({
 					<>
 						{onConfirm && onConfirmText ? (
 							<Button
-								variant="outlined"
+								variant="contained"
 								color={onConfirmColor}
 								fullWidth={isMobile}
 								onClick={onConfirm}
