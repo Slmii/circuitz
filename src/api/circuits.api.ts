@@ -15,7 +15,10 @@ export abstract class Circuits {
 		const wrapped = await actor.get_user_circuits();
 
 		const unwrapped = await unwrapResult(wrapped);
-		return unwrapped.map(mapToCircuit);
+		return unwrapped.map(mapToCircuit).sort((a, b) => {
+			// Sort on createdAt DESC
+			return b.createdAt.getTime() - a.createdAt.getTime();
+		});
 	}
 
 	/**

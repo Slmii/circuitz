@@ -17,7 +17,8 @@ export const CircuitCard = ({ onClick, children }: PropsWithChildren<{ onClick?:
 				position: 'relative',
 				'&:hover': {
 					borderRadius: 0,
-					boxShadow: theme => `5px 5px 0px 0px ${theme.palette.secondary.main}}`
+					boxShadow: theme =>
+						`1px 1px ${theme.palette.secondary.main}, 2px 2px ${theme.palette.secondary.main}, 3px 3px ${theme.palette.secondary.main}, 4px 4px ${theme.palette.secondary.main}, 5px 5px ${theme.palette.secondary.main}`
 				}
 			}}
 		>

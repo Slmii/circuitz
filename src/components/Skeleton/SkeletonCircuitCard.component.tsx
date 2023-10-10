@@ -17,16 +17,29 @@ export const SkeletonCircuitCard = () => {
 						<Skeleton width="100%" sx={{ height: 23 }} variant="rectangular" />
 					</Stack>
 				</Stack>
-				<Stack
-					direction="row"
-					spacing={1}
-					width="100%"
-					sx={{ position: 'absolute', bottom: theme => theme.spacing(2), left: theme => theme.spacing(2) }}
-				>
-					<Skeleton sx={{ height: 24, width: 24 }} variant="circular" />
-					<Skeleton width="25%" sx={{ height: 24 }} variant="rectangular" />
-				</Stack>
+				<SkeletonCircuitMetaData />
 			</CircuitCard>
 		</Box>
+	);
+};
+
+export const SkeletonCircuitMetaData = () => {
+	return (
+		<Stack
+			direction="column"
+			width="100%"
+			spacing={1}
+			sx={{ position: 'absolute', bottom: theme => theme.spacing(2), left: theme => theme.spacing(2) }}
+		>
+			<Stack direction="row" spacing={1} alignItems="center">
+				<Skeleton sx={{ height: 20, width: 20 }} variant="circular" />
+				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+			</Stack>
+			<Stack direction="row" spacing={1} alignItems="center">
+				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+			</Stack>
+		</Stack>
 	);
 };

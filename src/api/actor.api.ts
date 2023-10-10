@@ -8,14 +8,16 @@ import { idlFactory as circuitsIdl } from 'declarations/circuits.declarations';
 import { idlFactory as nodesIdl } from 'declarations/nodes.declarations';
 import { idlFactory as usersIdl } from 'declarations/users.declarations';
 import { idlFactory as icIdl } from 'declarations/ic.declarations';
+import { idlFactory as tracesIdl } from 'declarations/traces.declarations';
 
-export type Controller = 'circuits' | 'nodes' | 'users' | 'ic';
+export type Controller = 'circuits' | 'nodes' | 'users' | 'ic' | 'traces';
 
 const idlFactoryMapping: Record<Controller, IDL.InterfaceFactory> = {
 	circuits: circuitsIdl,
 	nodes: nodesIdl,
 	users: usersIdl,
-	ic: icIdl
+	ic: icIdl,
+	traces: tracesIdl
 };
 
 export abstract class Actor {

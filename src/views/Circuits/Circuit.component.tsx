@@ -5,15 +5,19 @@ import { CircuitCard } from 'components/CircuitCard';
 import { IconButton } from 'components/IconButton';
 import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
+import { SkeletonCircuitMetaData } from 'components/Skeleton';
 import { Caption, SubTitle } from 'components/Typography';
 import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
-import { useGetCircuitNodes } from 'lib/hooks/useNodes';
+import { useGetCircuitNodes, useGetCircuitTraces } from 'lib/hooks';
 import { Circuit as ICircuit } from 'lib/types';
 import { formatTCycles } from 'lib/utils/ic.utils';
 import { formatBytes } from 'lib/utils/number.utils';
+import { useMemo } from 'react';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	const { data: circuitNodes, isLoading: isCircuitNodesLoading } = useGetCircuitNodes(circuit.id);
+	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(circuit.id);
+
 	const { data: canisterStatus, isLoading: isCanisterStatusLoading } = useQuery({
 		queryKey: [QUERY_KEYS.CANISTER_STATUS, circuit.id],
 		enabled: !!circuitNodes,
@@ -26,7 +30,21 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 		}
 	});
 
-	const isLoaded = !!circuitNodes && !isCircuitNodesLoading && !!canisterStatus && !isCanisterStatusLoading;
+	const errors = useMemo(() => {
+		if (!circuitTraces) {
+			return [];
+		}
+
+		return circuitTraces.filter(trace => trace.errors.length);
+	}, [circuitTraces]);
+
+	const isLoaded =
+		!!circuitNodes &&
+		!isCircuitNodesLoading &&
+		!!canisterStatus &&
+		!isCanisterStatusLoading &&
+		!!circuitTraces &&
+		!isCircuitTracesLoading;
 
 	return (
 		<Grid item xs={12} sm={6} md={4}>
@@ -64,28 +82,38 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 						}
 					]}
 				/>
-				<Stack direction="column" spacing={1}>
-					<Link href={`/circuits/${circuit.id}`}>
-						<SubTitle>{circuit.name}</SubTitle>
-					</Link>
-					{isLoaded && (
-						<Stack direction="column" alignItems="center">
+				<Link href={`/circuits/${circuit.id}`}>
+					<SubTitle>{circuit.name}</SubTitle>
+				</Link>
+				{isLoaded ? (
+					<Stack
+						direction="column"
+						sx={{ position: 'absolute', bottom: theme => theme.spacing(2), left: theme => theme.spacing(2) }}
+					>
+						<Stack direction="row" spacing={1} alignItems="center" height={24}>
+							<Box
+								sx={{
+									width: 20,
+									height: 20,
+									backgroundColor: errors.length ? 'error.dark' : 'success.dark',
+									borderRadius: '50%'
+								}}
+							/>
+							{errors.length ? <Caption color="error.main">{errors.length} errors</Caption> : null}
+						</Stack>
+						<Stack direction="row" spacing={0.5} alignItems="center">
 							<Caption color="text.secondary">{formatTCycles(canisterStatus.cycles)}T Cycles</Caption>
+							<span>·</span>
 							<Caption color="text.secondary" textTransform="capitalize">
 								{canisterStatus.status}
 							</Caption>
+							<span>·</span>
 							<Caption color="text.secondary">{formatBytes(Number(canisterStatus.memory_size))}</Caption>
 						</Stack>
-					)}
-				</Stack>
-				<Stack
-					direction="row"
-					spacing={1}
-					sx={{ position: 'absolute', bottom: theme => theme.spacing(2), left: theme => theme.spacing(2) }}
-				>
-					<Box sx={{ width: 24, height: 24, backgroundColor: 'error.dark', borderRadius: '50%' }} />
-					<Caption color="error.main">25 errors</Caption>
-				</Stack>
+					</Stack>
+				) : (
+					<SkeletonCircuitMetaData />
+				)}
 			</CircuitCard>
 		</Grid>
 	);

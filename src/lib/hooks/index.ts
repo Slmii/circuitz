@@ -9,3 +9,5 @@ export * from './useKeyPress';
 export * from './useModal';
 export * from './useSnackbar';
 export * from './useCircuits';
+export * from './useNodes';
+export * from './useTraces';
