@@ -6,10 +6,6 @@ import { PropsWithChildren } from 'react';
 export const SnackbarProvider = ({ children }: PropsWithChildren) => {
 	return (
 		<NotistackSnackbarProvider
-			anchorOrigin={{
-				vertical: 'top',
-				horizontal: 'right'
-			}}
 			maxSnack={4}
 			autoHideDuration={AUTO_HIDE_DURATION}
 			action={snackbarId => (

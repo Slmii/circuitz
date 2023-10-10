@@ -6,6 +6,8 @@ export interface Circuit {
 	name: string;
 	description: string;
 	isFavorite: boolean;
+	isEnabled: boolean;
+	runAt?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 }

@@ -2,15 +2,7 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export type ApiError =
-	| { NotFound: string }
-	| { Unauthorized: string }
-	| { AlreadyExists: string }
-	| { CanisterFailed: CanisterFailedError };
-export interface CanisterFailedError {
-	code: RejectionCode;
-	message: string;
-}
+export type ApiError = { NotFound: string } | { Unauthorized: string } | { AlreadyExists: string };
 export type Condition = { Is: null } | { Not: null };
 export interface ConditionGroup {
 	field: string;
@@ -77,15 +69,7 @@ export type PinType =
 	| { MapperPin: Mapper }
 	| { Filter: Array<ConditionGroup> }
 	| { PrePin: CustomPinLogic };
-export type RejectionCode =
-	| { NoError: null }
-	| { CanisterError: null }
-	| { SysTransient: null }
-	| { DestinationInvalid: null }
-	| { Unknown: null }
-	| { SysFatal: null }
-	| { CanisterReject: null };
-export type Result = { Ok: Array<Node> } | { Err: ApiError };
+export type Result = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export interface Transformer {
 	output: string;
 	input: string;
@@ -168,26 +152,15 @@ export const idlFactory = ({ IDL }: any) => {
 		is_active: IDL.Bool,
 		circuit_id: IDL.Nat32
 	});
-	const RejectionCode = IDL.Variant({
-		NoError: IDL.Null,
-		CanisterError: IDL.Null,
-		SysTransient: IDL.Null,
-		DestinationInvalid: IDL.Null,
-		Unknown: IDL.Null,
-		SysFatal: IDL.Null,
-		CanisterReject: IDL.Null
-	});
-	const CanisterFailedError = IDL.Record({
-		code: RejectionCode,
-		message: IDL.Text
-	});
 	const ApiError = IDL.Variant({
 		NotFound: IDL.Text,
 		Unauthorized: IDL.Text,
-		AlreadyExists: IDL.Text,
-		CanisterFailed: CanisterFailedError
+		AlreadyExists: IDL.Text
 	});
-	const Result = IDL.Variant({ Ok: IDL.Vec(Node), Err: ApiError });
+	const Result = IDL.Variant({
+		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
+		Err: ApiError
+	});
 	return IDL.Service({
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result], ['query'])
 	});

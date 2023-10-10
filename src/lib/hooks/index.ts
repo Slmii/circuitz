@@ -8,3 +8,4 @@ export * from './useFormat';
 export * from './useKeyPress';
 export * from './useModal';
 export * from './useSnackbar';
+export * from './useCircuits';

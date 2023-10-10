@@ -19,4 +19,6 @@ export const usersCanisterId: CanisterId = {
 	production: 'mos4g-maaaa-aaaal-qcevq-cai'
 };
 
+export const MANAGEMENT_CANISTER_ID = 'aaaaa-aa';
+
 export const initialCanisterWhitelist = (env: typeof ENV) => [circuitsCanisterId[env], nodesCanisterId[env]];

@@ -1,5 +1,5 @@
 import { Actor } from './actor.api';
-import type { _SERVICE } from 'declarations/circuits.declarations';
+import type { PostCircuit, _SERVICE } from 'declarations/circuits.declarations';
 import { ENV } from 'lib/constants/env.constants';
 import { circuitsCanisterId } from './canisterIds';
 import { unwrapResult } from 'lib/utils/actor.utils';
@@ -15,6 +15,17 @@ export abstract class Circuits {
 		const wrapped = await actor.get_user_circuits();
 
 		const unwrapped = await unwrapResult(wrapped);
-		return unwrapped.map(circuit => mapToCircuit(circuit));
+		return unwrapped.map(mapToCircuit);
+	}
+
+	/**
+	 * Add a new circuit
+	 */
+	static async addCircuit(data: PostCircuit): Promise<Circuit> {
+		const actor = await Actor.createActor<_SERVICE>(circuitsCanisterId[ENV], 'circuits');
+		const wrapped = await actor.add_circuit(data);
+
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToCircuit(unwrapped);
 	}
 }

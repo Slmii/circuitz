@@ -6,7 +6,9 @@ export type ApiError = { NotFound: string } | { Unauthorized: string } | { Alrea
 export interface Circuit {
 	id: number;
 	updated_at: bigint;
+	run_at: [] | [bigint];
 	name: string;
+	is_enabled: boolean;
 	description: [] | [string];
 	created_at: bigint;
 	user_id: Principal;
@@ -31,7 +33,9 @@ export const idlFactory = ({ IDL }: any) => {
 	const Circuit = IDL.Record({
 		id: IDL.Nat32,
 		updated_at: IDL.Nat64,
+		run_at: IDL.Opt(IDL.Nat64),
 		name: IDL.Text,
+		is_enabled: IDL.Bool,
 		description: IDL.Opt(IDL.Text),
 		created_at: IDL.Nat64,
 		user_id: IDL.Principal,

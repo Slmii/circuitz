@@ -9,20 +9,29 @@ import { circuitSchema } from 'lib/schemas';
 import { Circuit as ICircuit } from 'lib/types';
 import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
 import { Paragraph, Title } from 'components/Typography';
-import { useQuery } from '@tanstack/react-query';
-import { api } from 'api/index';
-import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
 import { SkeletonCircuitCard } from 'components/Skeleton';
+import { useAddCircuit, useGetCircuits } from 'lib/hooks';
+
+interface CircuitFormValues {
+	name: string;
+	description: string;
+}
 
 export const Circuits = () => {
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [circuit, setCircuit] = useState<ICircuit | null>(null);
 
 	const { formRef, handleSubmit } = useDialogFormSubmit();
-	const { data: circuits, isLoading: isCircuitsLoading } = useQuery({
-		queryKey: [QUERY_KEYS.GET_CIRCUITS],
-		queryFn: () => api.Circuits.getUserCircuits()
-	});
+	const { mutateAsync: add, isLoading: isAddLoading } = useAddCircuit();
+	const { data: circuits, isLoading: isCircuitsLoading } = useGetCircuits();
+
+	const handleOnSubmit = async (data: CircuitFormValues) => {
+		await add({
+			description: data.description.length ? [data.description] : [],
+			name: data.name
+		});
+		setIsFormOpen(false);
+	};
 
 	const isLoaded = !!circuits && !isCircuitsLoading;
 
@@ -75,13 +84,15 @@ export const Circuits = () => {
 				onCancelText="Cancel"
 				onConfirmText={circuit ? 'Save' : 'Create'}
 				onConfirm={handleSubmit}
+				onConfirmLoading={isAddLoading}
+				onCancelDisabled={isAddLoading}
 				width="md"
 			>
-				<Form
-					action={data => console.log(data)}
+				<Form<CircuitFormValues>
+					action={handleOnSubmit}
 					defaultValues={{
-						name: circuit?.name,
-						description: circuit?.description
+						name: circuit?.name ?? '',
+						description: circuit?.description ?? ''
 					}}
 					schema={circuitSchema}
 					myRef={formRef}
@@ -89,8 +100,9 @@ export const Circuits = () => {
 					<Paragraph color="text.secondary">
 						{circuit ? 'Edit the Circuit details below' : 'Enter the Circuit details below'}
 					</Paragraph>
-					<Field name="name" label="Name" placeholder="Enter a name for the circuit" />
+					<Field disabled={isAddLoading} name="name" label="Name" placeholder="Enter a name for the circuit" />
 					<Field
+						disabled={isAddLoading}
 						name="description"
 						label="Description"
 						multiline

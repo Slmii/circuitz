@@ -141,6 +141,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 		}
 
 		setLoadingII(false);
+		setLoadingSession(false);
 	};
 
 	const setUserInState = (user?: User) => {

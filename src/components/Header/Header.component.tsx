@@ -70,7 +70,7 @@ export const Header = () => {
 								icon: 'signout',
 								action: async () => {
 									await signOut();
-									navigate('/authenticate');
+									navigate('/');
 								}
 							}
 						]}

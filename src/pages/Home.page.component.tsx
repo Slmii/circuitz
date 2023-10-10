@@ -4,11 +4,13 @@ import { Caption, Paragraph, SubTitle, Title } from 'components/Typography';
 import { useAuth } from 'lib/hooks';
 import { useCallback } from 'react';
 import Particles from 'react-particles';
+import { useNavigate } from 'react-router-dom';
 import type { Engine } from 'tsparticles-engine';
 import { loadSlim } from 'tsparticles-slim';
 
 export const HomePage = () => {
-	const { signInII, loadingII } = useAuth();
+	const navigate = useNavigate();
+	const { signInII, loadingII, user } = useAuth();
 
 	const particlesInit = useCallback(async (engine: Engine) => {
 		// you can initialize the tsParticles instance (engine) here, adding custom shapes or presets
@@ -22,7 +24,18 @@ export const HomePage = () => {
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
 				<Title>Circuitz, where Data Flows Freely and Securely</Title>
 				<div>
-					<Button color="primary" variant="contained" onClick={signInII} loading={loadingII}>
+					<Button
+						color="primary"
+						variant="contained"
+						onClick={() => {
+							if (user) {
+								return navigate('/dashboard');
+							}
+
+							signInII();
+						}}
+						loading={loadingII}
+					>
 						Start here with Internet Identity
 					</Button>
 				</div>
