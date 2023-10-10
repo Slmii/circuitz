@@ -11,6 +11,7 @@ export const toReadableDate = (
 		year: 'numeric',
 		month: 'short',
 		day: 'numeric',
+		hourCycle: 'h23',
 		hour: options?.includeTime ? '2-digit' : undefined,
 		minute: options?.includeTime ? '2-digit' : undefined
 	});

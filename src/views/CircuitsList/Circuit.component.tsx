@@ -1,34 +1,18 @@
 import { Grid, Stack, Box } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import { api } from 'api/index';
 import { CircuitCard } from 'components/CircuitCard';
 import { IconButton } from 'components/IconButton';
 import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
 import { SkeletonCircuitMetaData } from 'components/Skeleton';
 import { Caption, SubTitle } from 'components/Typography';
-import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
 import { useGetCircuitNodes, useGetCircuitTraces } from 'lib/hooks';
 import { Circuit as ICircuit } from 'lib/types';
-import { formatTCycles } from 'lib/utils/ic.utils';
-import { formatBytes } from 'lib/utils/number.utils';
 import { useMemo } from 'react';
+import { CircuitData } from '../CircuitStatus';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	const { data: circuitNodes, isLoading: isCircuitNodesLoading } = useGetCircuitNodes(circuit.id);
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(circuit.id);
-
-	const { data: canisterStatus, isLoading: isCanisterStatusLoading } = useQuery({
-		queryKey: [QUERY_KEYS.CANISTER_STATUS, circuit.id],
-		enabled: !!circuitNodes,
-		queryFn: () => {
-			if (!circuitNodes) {
-				return;
-			}
-
-			return api.IC.getCanisterStatus(circuitNodes.principal);
-		}
-	});
 
 	const errors = useMemo(() => {
 		if (!circuitTraces) {
@@ -38,13 +22,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
-	const isLoaded =
-		!!circuitNodes &&
-		!isCircuitNodesLoading &&
-		!!canisterStatus &&
-		!isCanisterStatusLoading &&
-		!!circuitTraces &&
-		!isCircuitTracesLoading;
+	const isLoaded = !!circuitNodes && !isCircuitNodesLoading && !!circuitTraces && !isCircuitTracesLoading;
 
 	return (
 		<Grid item xs={12} sm={6} md={4}>
@@ -112,15 +90,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 							/>
 							{errors.length ? <Caption color="error.main">{errors.length} errors</Caption> : null}
 						</Stack>
-						<Stack direction="row" spacing={0.5} alignItems="center">
-							<Caption color="text.secondary">{formatTCycles(canisterStatus.cycles)} T Cycles</Caption>
-							<span>·</span>
-							<Caption color="text.secondary" textTransform="capitalize">
-								{canisterStatus.status}
-							</Caption>
-							<span>·</span>
-							<Caption color="text.secondary">{formatBytes(Number(canisterStatus.memory_size))}</Caption>
-						</Stack>
+						<CircuitData nodesPrincipal={circuitNodes.principal} />
 					</Stack>
 				) : (
 					<SkeletonCircuitMetaData />

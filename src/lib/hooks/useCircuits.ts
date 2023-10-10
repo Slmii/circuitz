@@ -56,3 +56,11 @@ export const useGetCircuits = () => {
 		queryFn: () => api.Circuits.getUserCircuits()
 	});
 };
+
+export const useGetCircuit = (circuitId: number) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.CIRCUIT, circuitId],
+		enabled: !!circuitId,
+		queryFn: () => api.Circuits.getCircuit(circuitId)
+	});
+};

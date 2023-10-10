@@ -1,2 +1,3 @@
-export * from './Circuits.page.component';
-export * from './Home.page.component';
+export * from './CircuitsPage.component';
+export * from './CircuitPage.component';
+export * from './HomePage.component';

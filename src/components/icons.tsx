@@ -1,6 +1,24 @@
 import { createSvgIcon } from '@mui/material/utils';
 
 const icons = {
+	'arrow-left': createSvgIcon(
+		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+			<path
+				fill="currentColor"
+				d="M13.978 5.319l-3.21 3.21-1.97 1.96a2.13 2.13 0 000 3.01l5.18 5.18c.68.68 1.84.19 1.84-.76V6.079c0-.96-1.16-1.44-1.84-.76z"
+			/>
+		</svg>,
+		'Arrow Left'
+	),
+	'arrow-right': createSvgIcon(
+		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+			<path
+				fill="currentColor"
+				d="M15.2 10.492l-1.97-1.97-3.21-3.21c-.68-.67-1.84-.19-1.84.77v11.84c0 .96 1.16 1.44 1.84.76l5.18-5.18c.83-.82.83-2.18 0-3.01z"
+			/>
+		</svg>,
+		'Arrow Right'
+	),
 	edit: createSvgIcon(
 		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
 			<path
@@ -58,6 +76,23 @@ const icons = {
 			/>
 		</svg>,
 		'Add'
+	),
+	'add-outline': createSvgIcon(
+		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+			<path
+				d="M16 12.75H8c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h8c.41 0 .75.34.75.75s-.34.75-.75.75Z"
+				fill="currentColor"
+			/>
+			<path
+				d="M12 16.75c-.41 0-.75-.34-.75-.75V8c0-.41.34-.75.75-.75s.75.34.75.75v8c0 .41-.34.75-.75.75Z"
+				fill="currentColor"
+			/>
+			<path
+				d="M15 22.75H9c-5.43 0-7.75-2.32-7.75-7.75V9c0-5.43 2.32-7.75 7.75-7.75h6c5.43 0 7.75 2.32 7.75 7.75v6c0 5.43-2.32 7.75-7.75 7.75Zm-6-20C4.39 2.75 2.75 4.39 2.75 9v6c0 4.61 1.64 6.25 6.25 6.25h6c4.61 0 6.25-1.64 6.25-6.25V9c0-4.61-1.64-6.25-6.25-6.25H9Z"
+				fill="currentColor"
+			/>
+		</svg>,
+		'Add Outline'
 	),
 	calendar: createSvgIcon(
 		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">

@@ -35,11 +35,17 @@ export const SkeletonCircuitMetaData = () => {
 				<Skeleton sx={{ height: 20, width: 20 }} variant="circular" />
 				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
 			</Stack>
-			<Stack direction="row" spacing={1} alignItems="center">
-				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
-				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
-				<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
-			</Stack>
+			<SkeletonCircuitStatus />
+		</Stack>
+	);
+};
+
+export const SkeletonCircuitStatus = () => {
+	return (
+		<Stack direction="row" spacing={1} alignItems="center">
+			<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+			<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+			<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
 		</Stack>
 	);
 };

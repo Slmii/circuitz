@@ -8,6 +8,17 @@ import { Circuit } from 'lib/types';
 
 export abstract class Circuits {
 	/**
+	 * Get circuit by id
+	 */
+	static async getCircuit(circuitId: number): Promise<Circuit> {
+		const actor = await Actor.createActor<_SERVICE>(circuitsCanisterId[ENV], 'circuits');
+		const wrapped = await actor.get_circuit(circuitId);
+
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToCircuit(unwrapped);
+	}
+
+	/**
 	 * Get the user circuits
 	 */
 	static async getUserCircuits(): Promise<Circuit[]> {

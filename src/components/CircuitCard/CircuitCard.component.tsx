@@ -8,7 +8,6 @@ export const CircuitCard = ({ onClick, children }: PropsWithChildren<{ onClick?:
 			onClick={onClick}
 			alignItems="center"
 			justifyContent="center"
-			className="hover-box-shadow"
 			sx={{
 				p: 2,
 				height: 300,

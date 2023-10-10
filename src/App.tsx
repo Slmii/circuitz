@@ -1,7 +1,7 @@
 import { Layout } from 'components/Layout';
 import { RequireAuthentication } from 'components/RequireAuthentication';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { HomePage, CircuitsPage } from './pages';
+import { HomePage, CircuitsPage, CircuitPage } from './pages';
 
 function App() {
 	return (
@@ -10,14 +10,10 @@ function App() {
 				<Route element={<Layout />}>
 					<Route path="/" element={<HomePage />} />
 					<Route path="/dashboard" element={<RequireAuthentication>Dashboard</RequireAuthentication>} />
-					<Route
-						path="/circuits"
-						element={
-							<RequireAuthentication>
-								<CircuitsPage />
-							</RequireAuthentication>
-						}
-					/>
+					<Route element={<RequireAuthentication />}>
+						<Route path="/circuits" element={<CircuitsPage />} />
+						<Route path="/circuits/:id" element={<CircuitPage />} />
+					</Route>
 				</Route>
 			</Routes>
 		</BrowserRouter>

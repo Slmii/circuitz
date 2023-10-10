@@ -7,5 +7,6 @@ export interface SwitchProps {
 
 export interface StandaloneSwitchProps extends Omit<SwitchProps, 'onChange'> {
 	value: boolean;
+	labelPlacement?: 'start' | 'end';
 	onChange: (checked: boolean) => void;
 }
