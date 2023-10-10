@@ -20,6 +20,8 @@ export type TraceStatus = 'Failed' | 'Success' | 'InProgress' | 'Cancelled';
 export interface TraceError {
 	code: string;
 	message: string;
+	source: string;
+	resolvedAt?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 }

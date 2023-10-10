@@ -3,16 +3,10 @@ import { DISABLE_MARGIN_MEDIA_QUERY } from 'lib/constants/theme.constants';
 
 export const DARK_THEME: Readonly<PaletteOptions> = {
 	primary: {
-		main: '#ffcc28',
-		dark: '#e6b500',
-		light: '#ffd54f',
-		contrastText: '#070607'
+		main: '#ffcc28'
 	},
 	secondary: {
-		main: '#9977ff',
-		dark: '#7a5fe6',
-		light: '#b89aff',
-		contrastText: '#FFFFFF'
+		main: '#7a8aff'
 	},
 	success: {
 		main: '#41FF76'

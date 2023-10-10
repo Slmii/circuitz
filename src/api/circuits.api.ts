@@ -31,4 +31,15 @@ export abstract class Circuits {
 		const unwrapped = await unwrapResult(wrapped);
 		return mapToCircuit(unwrapped);
 	}
+
+	/**
+	 * Edit a circuit
+	 */
+	static async editCircuit({ circuitId, data }: { circuitId: number; data: PostCircuit }): Promise<Circuit> {
+		const actor = await Actor.createActor<_SERVICE>(circuitsCanisterId[ENV], 'circuits');
+		const wrapped = await actor.edit_circuit(circuitId, data);
+
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToCircuit(unwrapped);
+	}
 }

@@ -27,6 +27,8 @@ export const mapToTraceErrors = (trace: OldTraceError): TraceError => {
 	return {
 		code: trace.code,
 		message: trace.message,
+		source: trace.source,
+		resolvedAt: trace.resolved_at[0] ? dateFromNano(trace.resolved_at[0]) : undefined,
 		createdAt: dateFromNano(trace.created_at),
 		updatedAt: dateFromNano(trace.updated_at)
 	};

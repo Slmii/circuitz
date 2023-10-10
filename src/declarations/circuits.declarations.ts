@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
@@ -22,9 +21,11 @@ export type Result = { Ok: Circuit } | { Err: ApiError };
 export type Result_1 = { Ok: Array<Circuit> } | { Err: ApiError };
 export interface _SERVICE {
 	add_circuit: ActorMethod<[PostCircuit], Result>;
+	edit_circuit: ActorMethod<[number, PostCircuit], Result>;
 	get_user_circuits: ActorMethod<[], Result_1>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
 	const PostCircuit = IDL.Record({
 		name: IDL.Text,
@@ -50,6 +51,7 @@ export const idlFactory = ({ IDL }: any) => {
 	const Result_1 = IDL.Variant({ Ok: IDL.Vec(Circuit), Err: ApiError });
 	return IDL.Service({
 		add_circuit: IDL.Func([PostCircuit], [Result], []),
+		edit_circuit: IDL.Func([IDL.Nat32, PostCircuit], [Result], []),
 		get_user_circuits: IDL.Func([], [Result_1], ['query'])
 	});
 };

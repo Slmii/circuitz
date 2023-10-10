@@ -19,9 +19,11 @@ export interface Trace {
 }
 export interface TraceError {
 	updated_at: bigint;
+	source: string;
 	code: string;
 	created_at: bigint;
 	message: string;
+	resolved_at: [] | [bigint];
 }
 export type TraceStatus = { Failed: null } | { Success: null } | { Cancelled: null } | { InProgress: null };
 export interface _SERVICE {
@@ -38,9 +40,11 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const TraceError = IDL.Record({
 		updated_at: IDL.Nat64,
+		source: IDL.Text,
 		code: IDL.Text,
 		created_at: IDL.Nat64,
-		message: IDL.Text
+		message: IDL.Text,
+		resolved_at: IDL.Opt(IDL.Nat64)
 	});
 	const Trace = IDL.Record({
 		id: IDL.Nat32,

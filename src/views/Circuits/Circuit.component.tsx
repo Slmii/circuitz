@@ -35,7 +35,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 			return [];
 		}
 
-		return circuitTraces.filter(trace => trace.errors.length);
+		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
 	const isLoaded =
@@ -83,8 +83,19 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 					]}
 				/>
 				<Link href={`/circuits/${circuit.id}`}>
-					<SubTitle>{circuit.name}</SubTitle>
+					<SubTitle lineClamp={1}>{circuit.name}</SubTitle>
 				</Link>
+				<Caption
+					textAlign="left"
+					lineClamp={2}
+					sx={{
+						mt: 1,
+						overflowWrap: 'anywhere'
+					}}
+					color="text.secondary"
+				>
+					{circuit.description}
+				</Caption>
 				{isLoaded ? (
 					<Stack
 						direction="column"
@@ -102,7 +113,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 							{errors.length ? <Caption color="error.main">{errors.length} errors</Caption> : null}
 						</Stack>
 						<Stack direction="row" spacing={0.5} alignItems="center">
-							<Caption color="text.secondary">{formatTCycles(canisterStatus.cycles)}T Cycles</Caption>
+							<Caption color="text.secondary">{formatTCycles(canisterStatus.cycles)} T Cycles</Caption>
 							<span>·</span>
 							<Caption color="text.secondary" textTransform="capitalize">
 								{canisterStatus.status}

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
@@ -66,8 +65,8 @@ export interface Pin {
 }
 export type PinType =
 	| { PostResponsePin: CustomPinLogic }
+	| { FilterPin: Array<ConditionGroup> }
 	| { MapperPin: Mapper }
-	| { Filter: Array<ConditionGroup> }
 	| { PrePin: CustomPinLogic };
 export type Result = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export interface Transformer {
@@ -79,15 +78,11 @@ export interface _SERVICE {
 	get_circuit_nodes: ActorMethod<[number], Result>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
 	const CustomPinLogic = IDL.Record({
 		function: IDL.Opt(IDL.Text),
 		script: IDL.Opt(IDL.Text)
-	});
-	const Mapper = IDL.Record({
-		output: IDL.Text,
-		interface: IDL.Text,
-		input: IDL.Text
 	});
 	const ConditionGroupType = IDL.Variant({ Or: IDL.Null, And: IDL.Null });
 	const Operator = IDL.Variant({
@@ -108,10 +103,15 @@ export const idlFactory = ({ IDL }: any) => {
 		operator: Operator,
 		condition: Condition
 	});
+	const Mapper = IDL.Record({
+		output: IDL.Text,
+		interface: IDL.Text,
+		input: IDL.Text
+	});
 	const PinType = IDL.Variant({
 		PostResponsePin: CustomPinLogic,
+		FilterPin: IDL.Vec(ConditionGroup),
 		MapperPin: Mapper,
-		Filter: IDL.Vec(ConditionGroup),
 		PrePin: CustomPinLogic
 	});
 	const Pin = IDL.Record({ pin_type: PinType, order: IDL.Nat32 });

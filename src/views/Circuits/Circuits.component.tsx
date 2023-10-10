@@ -10,7 +10,7 @@ import { Circuit as ICircuit } from 'lib/types';
 import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
 import { Paragraph, Title } from 'components/Typography';
 import { SkeletonCircuitCard } from 'components/Skeleton';
-import { useAddCircuit, useGetCircuits } from 'lib/hooks';
+import { useAddCircuit, useEditCircuit, useGetCircuits } from 'lib/hooks';
 
 interface CircuitFormValues {
 	name: string;
@@ -23,17 +23,30 @@ export const Circuits = () => {
 
 	const { formRef, handleSubmit } = useDialogFormSubmit();
 	const { mutateAsync: add, isLoading: isAddLoading } = useAddCircuit();
+	const { mutateAsync: edit, isLoading: isEditLoading } = useEditCircuit();
 	const { data: circuits, isLoading: isCircuitsLoading } = useGetCircuits();
 
 	const handleOnSubmit = async (data: CircuitFormValues) => {
-		await add({
-			description: data.description.length ? [data.description] : [],
-			name: data.name
-		});
+		if (!circuit) {
+			await add({
+				description: data.description.length ? [data.description] : [],
+				name: data.name
+			});
+		} else {
+			await edit({
+				circuitId: circuit.id,
+				data: {
+					description: data.description.length ? [data.description] : [],
+					name: data.name
+				}
+			});
+		}
+
 		setIsFormOpen(false);
 	};
 
 	const isLoaded = !!circuits && !isCircuitsLoading;
+	const isLoading = isAddLoading || isEditLoading;
 
 	return (
 		<>
@@ -84,8 +97,8 @@ export const Circuits = () => {
 				onCancelText="Cancel"
 				onConfirmText={circuit ? 'Save' : 'Create'}
 				onConfirm={handleSubmit}
-				onConfirmLoading={isAddLoading}
-				onCancelDisabled={isAddLoading}
+				onConfirmLoading={isLoading}
+				onCancelDisabled={isLoading}
 				width="md"
 			>
 				<Form<CircuitFormValues>
@@ -98,11 +111,11 @@ export const Circuits = () => {
 					myRef={formRef}
 				>
 					<Paragraph color="text.secondary">
-						{circuit ? 'Edit the Circuit details below' : 'Enter the Circuit details below'}
+						{circuit ? 'Edit Circuit details below' : 'Enter Circuit details below'}
 					</Paragraph>
-					<Field disabled={isAddLoading} name="name" label="Name" placeholder="Enter a name for the circuit" />
+					<Field disabled={isLoading} name="name" label="Name" placeholder="Enter a name for the circuit" />
 					<Field
-						disabled={isAddLoading}
+						disabled={isLoading}
 						name="description"
 						label="Description"
 						multiline
