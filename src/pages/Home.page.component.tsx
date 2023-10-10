@@ -100,7 +100,17 @@ export const HomePage = () => {
 					</Caption>
 				</Stack>
 				<div>
-					<Button color="primary" variant="contained">
+					<Button
+						color="primary"
+						variant="contained"
+						onClick={() => {
+							if (user) {
+								return navigate('/dashboard');
+							}
+
+							signInII();
+						}}
+					>
 						Create your Circuit
 					</Button>
 				</div>
