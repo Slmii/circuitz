@@ -8,7 +8,7 @@ import { Field } from 'components/Form/Field';
 import { circuitSchema } from 'lib/schemas';
 import { Circuit as ICircuit } from 'lib/types';
 import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
-import { Paragraph, Title } from 'components/Typography';
+import { B1, H1 } from 'components/Typography';
 import { SkeletonCircuitCard } from 'components/Skeleton';
 import { useAddCircuit, useEditCircuit, useGetCircuits } from 'lib/hooks';
 
@@ -52,7 +52,7 @@ export const Circuits = () => {
 		<>
 			<Stack direction="column" spacing={0} gap={2}>
 				<Stack direction="row" alignItems="center" justifyContent="space-between">
-					<Title>Circuits</Title>
+					<H1>Circuits</H1>
 					<IconButton
 						icon="add"
 						size="large"
@@ -110,9 +110,7 @@ export const Circuits = () => {
 					schema={circuitSchema}
 					myRef={formRef}
 				>
-					<Paragraph color="text.secondary">
-						{circuit ? 'Edit Circuit details below' : 'Enter Circuit details below'}
-					</Paragraph>
+					<B1 color="text.secondary">{circuit ? 'Edit Circuit details below' : 'Enter Circuit details below'}</B1>
 					<Field disabled={isLoading} name="name" label="Name" placeholder="Enter a name for the circuit" />
 					<Field
 						disabled={isLoading}

@@ -43,9 +43,9 @@ export const SkeletonCircuitMetaData = () => {
 export const SkeletonCircuitStatus = () => {
 	return (
 		<Stack direction="row" spacing={1} alignItems="center">
-			<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
-			<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
-			<Skeleton width="25%" sx={{ height: 23 }} variant="rectangular" />
+			<Skeleton width={50} sx={{ height: 23 }} variant="rectangular" />
+			<Skeleton width={50} sx={{ height: 23 }} variant="rectangular" />
+			<Skeleton width={50} sx={{ height: 23 }} variant="rectangular" />
 		</Stack>
 	);
 };

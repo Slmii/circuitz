@@ -1,6 +1,6 @@
 import { ButtonBase, Stack } from '@mui/material';
 import { Icon } from 'components/Icon';
-import { Paragraph } from 'components/Typography';
+import { B1 } from 'components/Typography';
 import { useNavigate } from 'react-router-dom';
 
 export const Back = ({ onBack }: { onBack?: () => void }) => {
@@ -21,7 +21,7 @@ export const Back = ({ onBack }: { onBack?: () => void }) => {
 			alignItems="center"
 		>
 			<Icon icon="arrow-left" />
-			<Paragraph>Go back</Paragraph>
+			<B1>Go back</B1>
 		</Stack>
 	);
 };

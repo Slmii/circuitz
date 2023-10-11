@@ -4,11 +4,11 @@ import { IconButton } from 'components/IconButton';
 import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
 import { SkeletonCircuitMetaData } from 'components/Skeleton';
-import { Caption, SubTitle } from 'components/Typography';
+import { B1, Caption, H2, H3 } from 'components/Typography';
 import { useGetCircuitNodes, useGetCircuitTraces } from 'lib/hooks';
 import { Circuit as ICircuit } from 'lib/types';
 import { useMemo } from 'react';
-import { CircuitData } from '../CircuitStatus';
+import { CircuitStatus } from '../CircuitStatus';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	const { data: circuitNodes, isLoading: isCircuitNodesLoading } = useGetCircuitNodes(circuit.id);
@@ -61,9 +61,9 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 					]}
 				/>
 				<Link href={`/circuits/${circuit.id}`}>
-					<SubTitle lineClamp={1}>{circuit.name}</SubTitle>
+					<H2 lineClamp={1}>{circuit.name}</H2>
 				</Link>
-				<Caption
+				<B1
 					textAlign="left"
 					lineClamp={2}
 					sx={{
@@ -73,10 +73,11 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 					color="text.secondary"
 				>
 					{circuit.description}
-				</Caption>
+				</B1>
 				{isLoaded ? (
 					<Stack
 						direction="column"
+						spacing={1}
 						sx={{ position: 'absolute', bottom: theme => theme.spacing(2), left: theme => theme.spacing(2) }}
 					>
 						<Stack direction="row" spacing={1} alignItems="center" height={24}>
@@ -90,7 +91,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 							/>
 							{errors.length ? <Caption color="error.main">{errors.length} errors</Caption> : null}
 						</Stack>
-						<CircuitData nodesPrincipal={circuitNodes.principal} />
+						<CircuitStatus nodesCanisterId={circuitNodes.principal} />
 					</Stack>
 				) : (
 					<SkeletonCircuitMetaData />
@@ -104,7 +105,7 @@ export const CreateCircuit = ({ onClick }: { onClick: () => void }) => {
 	return (
 		<Grid item xs={12} sm={6} md={4}>
 			<CircuitCard onClick={onClick}>
-				<SubTitle>Create Circuit</SubTitle>
+				<H3>Create Circuit</H3>
 			</CircuitCard>
 		</Grid>
 	);

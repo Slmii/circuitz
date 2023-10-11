@@ -11,8 +11,8 @@ export const Icon = ({ spacingLeft, spacingRight, icon, tooltip, ...props }: Ico
 				{...props}
 				sx={{
 					...props.sx,
-					ml: spacingLeft ? 0.5 : 0,
-					mr: spacingRight ? 0.5 : 0
+					ml: spacingLeft ? 1 : 0,
+					mr: spacingRight ? 1 : 0
 				}}
 			/>
 		</Tooltip>

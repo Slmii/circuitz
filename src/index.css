@@ -5,9 +5,9 @@ body {
 	padding: 0;
 }
 
-svg {
+/* svg {
 	fill: currentColor;
-	stroke: #7a7569; /* Darker shade for the border */
+	stroke: black; 
 	stroke-width: 1;
-	filter: drop-shadow(2px 2px 0 #7a7569);
-}
+	filter: drop-shadow(2px 2px 0 black);
+} */

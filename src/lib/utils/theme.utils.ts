@@ -26,7 +26,7 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 		default: '#1E1E20',
 		paper: 'rgba(7, 6, 7)'
 	},
-	divider: 'rgba(255, 255, 255, 0.08)'
+	divider: 'rgba(255, 255, 255, 0.3)'
 };
 
 export const LIGHT_THEME: Readonly<PaletteOptions> = {
@@ -53,17 +53,89 @@ export const LIGHT_THEME: Readonly<PaletteOptions> = {
 		main: '#FFAA2A'
 	},
 	text: {
-		primary: '#FFFFFF',
-		secondary: 'rgba(255, 255, 255, 0.7)'
+		primary: '#00000',
+		secondary: 'rgba(0, 0, 0, 0.7)'
 	},
 	background: {
-		default: '#1E1E20',
-		paper: 'rgba(7, 6, 7)'
+		default: '#FFFFFF',
+		paper: '#f3f4f6'
 	},
-	divider: 'rgba(255, 255, 255, 0.08)'
+	divider: 'rgba(0, 0, 0, 0.3)'
 };
 
 export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
+	MuiTypography: {
+		styleOverrides: {
+			root: {
+				lineHeight: 1.1
+			}
+		},
+		variants: [
+			{
+				props: { variant: 'h1' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 40
+				}
+			},
+			{
+				props: { variant: 'h2' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 32
+				}
+			},
+			{
+				props: { variant: 'h3' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 26
+				}
+			},
+			{
+				props: { variant: 'h4' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 22
+				}
+			},
+			{
+				props: { variant: 'h5' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 18
+				}
+			},
+			{
+				props: { variant: 'h6' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 16
+				}
+			},
+			{
+				props: { variant: 'body1' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 16
+				}
+			},
+			{
+				props: { variant: 'body2' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 14
+				}
+			},
+			{
+				props: { variant: 'caption' } /* component props */,
+				style: {
+					/* your style here: */
+					fontSize: 12
+				}
+			}
+		]
+	},
 	MuiContainer: {
 		styleOverrides: {
 			root: {
@@ -142,10 +214,41 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 			}
 		}
 	},
+	MuiTabs: {
+		styleOverrides: {
+			root: ({ theme }) => ({
+				'& .MuiTabs-flexContainer': {
+					gap: theme.spacing(2)
+				}
+			})
+		}
+	},
+	MuiTab: {
+		styleOverrides: {
+			root: {
+				textTransform: 'none',
+				minWidth: 0,
+				paddingLeft: 0,
+				paddingRight: 0
+			}
+		}
+	},
 	MuiButton: {
 		styleOverrides: {
 			root: {
 				textTransform: 'none'
+			},
+			sizeLarge: {
+				minHeight: 40,
+				padding: '10px 24px'
+			},
+			sizeMedium: {
+				minHeight: 32,
+				padding: '6px 20px'
+			},
+			sizeSmall: {
+				minHeight: 60,
+				padding: '2px 12px'
 			}
 		}
 	}

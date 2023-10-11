@@ -17,18 +17,6 @@ export const Header = () => {
 	const { toggleColorMode } = useContext(ColorModeContext);
 	const { loadingSignOut, user, signOut } = useAuth();
 
-	// const renderPrincipalId = useMemo(() => {
-	// 	if (user) {
-	// 		const principalId = user.user_id.toText();
-	// 		const first = principalId.split('-')[0];
-	// 		const last = principalId.split('-').pop();
-
-	// 		return `${first}...${last}`;
-	// 	}
-
-	// 	return 'Authenticate';
-	// }, [user]);
-
 	const colorMode = theme.palette.mode;
 
 	return (

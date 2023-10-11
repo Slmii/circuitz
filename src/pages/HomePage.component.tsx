@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack';
 import { Button } from 'components/Button';
-import { Caption, Paragraph, SubTitle, Title } from 'components/Typography';
+import { H3, H1, H5 } from 'components/Typography';
 import { useAuth } from 'lib/hooks';
 import { useCallback } from 'react';
 import Particles from 'react-particles';
@@ -22,7 +22,7 @@ export const HomePage = () => {
 	return (
 		<Stack direction="column" mt={10} spacing={10}>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
-				<Title>Circuitz, where Data Flows Freely and Securely</Title>
+				<H1 fontSize={56}>Circuitz, where Data Flows Freely and Securely</H1>
 				<div>
 					<Button
 						color="primary"
@@ -41,8 +41,8 @@ export const HomePage = () => {
 				</div>
 			</Stack>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
-				<SubTitle>Discover the Future of Integration</SubTitle>
-				<Paragraph
+				<H1>Discover the Future of Integration</H1>
+				<H5
 					sx={{
 						p: 1,
 						backgroundColor: theme => theme.palette.secondary.main,
@@ -52,52 +52,55 @@ export const HomePage = () => {
 					The future of integration is here, built exclusively on the Internet Computer. Seamlessly connect, process,
 					and automate data flows between canisters, unlocking a new realm of possibilities for decentralized
 					applications.
-				</Paragraph>
+				</H5>
 			</Stack>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
-				<SubTitle>How it works</SubTitle>
+				<H1>How it works</H1>
 				<Stack
 					direction="column"
+					spacing={1}
 					sx={{
 						p: 1,
 						backgroundColor: theme => theme.palette.secondary.main,
 						color: theme => theme.palette.secondary.contrastText
 					}}
 				>
-					<Paragraph fontWeight="bold">Initiate a Node</Paragraph>
-					<Caption>
+					<H3 fontWeight="bold">Initiate a Node</H3>
+					<H5>
 						Begin your integration journey by directing data into a Node. Acting as the primary gateway, this Node
 						securely receives data straight from the source canister, ensuring a smooth and efficient intake process.
-					</Caption>
+					</H5>
 				</Stack>
 				<Stack
 					direction="column"
+					spacing={1}
 					sx={{
 						p: 1,
 						backgroundColor: theme => theme.palette.secondary.main,
 						color: theme => theme.palette.secondary.contrastText
 					}}
 				>
-					<Paragraph fontWeight="bold">Harness the Power of Nodes</Paragraph>
-					<Caption>
+					<H3 fontWeight="bold">Harness the Power of Nodes</H3>
+					<H5>
 						Dive deeper into the customization realm with our advanced nodes. Tailor your data processing by employing
 						our versatile nodes, whether you're aiming to map, transform, or filter. Each node is designed to offer a
 						unique function, ensuring your data is processed exactly how you envision.
-					</Caption>
+					</H5>
 				</Stack>
 				<Stack
 					direction="column"
+					spacing={1}
 					sx={{
 						p: 1,
 						backgroundColor: theme => theme.palette.secondary.main,
 						color: theme => theme.palette.secondary.contrastText
 					}}
 				>
-					<Paragraph fontWeight="bold">Seamless Output</Paragraph>
-					<Caption>
+					<H3 fontWeight="bold">Seamless Output</H3>
+					<H5>
 						Conclude your data's journey by directing it to a designated canister. After undergoing the specified Node
 						processes, your refined data is channeled to its final destination, ensuring accurate and timely delivery.
-					</Caption>
+					</H5>
 				</Stack>
 				<div>
 					<Button

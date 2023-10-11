@@ -1,34 +1,40 @@
 import { Principal } from '@dfinity/principal';
 import { Stack } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import { api } from 'api/index';
 import { SkeletonCircuitStatus } from 'components/Skeleton';
 import { Spacer } from 'components/Spacer';
 import { Caption } from 'components/Typography';
-import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
+import { useGetCircuitStatus } from 'lib/hooks';
 import { formatTCycles } from 'lib/utils/ic.utils';
 import { formatBytes } from 'lib/utils/number.utils';
+import { ReactNode } from 'react';
 
-export const CircuitData = ({ nodesPrincipal }: { nodesPrincipal: Principal }) => {
-	const { data: canisterStatus, isLoading: isCanisterStatusLoading } = useQuery({
-		queryKey: [QUERY_KEYS.CANISTER_STATUS, nodesPrincipal.toString()],
-		queryFn: () => api.IC.getCanisterStatus(nodesPrincipal)
-	});
+export const CircuitStatus = ({
+	nodesCanisterId,
+	render
+}: {
+	nodesCanisterId: Principal;
+	render?: (data: ReturnType<typeof useGetCircuitStatus>) => ReactNode;
+}) => {
+	const data = useGetCircuitStatus(nodesCanisterId);
 
-	const isLoaded = !!canisterStatus && !isCanisterStatusLoading;
+	if (render) {
+		return <>{render(data)}</>;
+	}
+
+	const isLoaded = !!data.data && !data.isLoading;
 	if (!isLoaded) {
 		return <SkeletonCircuitStatus />;
 	}
 
 	return (
 		<Stack direction="row" spacing={1} alignItems="center">
-			<Caption color="text.secondary">{formatTCycles(canisterStatus.cycles)} T Cycles</Caption>
+			<Caption color="text.secondary">{formatTCycles(data.data.cycles)} T Cycles</Caption>
 			<Spacer />
 			<Caption color="text.secondary" textTransform="capitalize">
-				{canisterStatus.status}
+				{data.data.status}
 			</Caption>
 			<Spacer />
-			<Caption color="text.secondary">{formatBytes(Number(canisterStatus.memory_size))}</Caption>
+			<Caption color="text.secondary">{formatBytes(Number(data.data.memory_size))}</Caption>
 		</Stack>
 	);
 };

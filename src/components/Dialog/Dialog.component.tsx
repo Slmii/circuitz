@@ -67,7 +67,7 @@ export const Dialog = ({
 				icon="close"
 				onClick={onClose}
 			/>
-			{title ? <DialogTitle>{title}</DialogTitle> : null}
+			{title ? <DialogTitle sx={{ fontSize: theme => theme.typography.h5.fontSize }}>{title}</DialogTitle> : null}
 			<DialogContent>{children}</DialogContent>
 			<DialogActions>
 				{customAction ?? (

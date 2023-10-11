@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { createTheme, responsiveFontSizes, Theme } from '@mui/material/styles';
+import { createTheme, Theme } from '@mui/material/styles';
 import React, { PropsWithChildren } from 'react';
 import { useLocalStorage } from 'lib/hooks';
 import { components, LIGHT_THEME, DARK_THEME } from 'lib/utils/theme.utils';
@@ -30,26 +30,29 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 	);
 
 	const colorModeTheme = React.useMemo(() => {
-		let theme = createTheme({
+		const theme = createTheme({
 			palette: {
 				mode,
 				...(mode === 'light' ? LIGHT_THEME : DARK_THEME)
 			},
 			typography: {
 				fontFamily: '"Orbitron", serif',
-				fontSize: 16,
-				htmlFontSize: 16,
+				fontSize: 48,
+				htmlFontSize: 48,
 				fontWeightBold: 700,
-				fontWeightRegular: 400
+				fontWeightRegular: 400,
+				allVariants: {
+					lineHeight: 0.95
+				}
 			},
 			shape: {
-				borderRadius: 0
+				borderRadius: 1
 			},
 			spacing: 8,
 			components
 		});
 
-		theme = responsiveFontSizes(theme);
+		// theme = responsiveFontSizes(theme);
 
 		// Set color mode on body
 		const body = document.querySelector('body');

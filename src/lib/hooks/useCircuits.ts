@@ -3,6 +3,7 @@ import { api } from 'api/index';
 import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
 import { Circuit } from 'lib/types';
 import { useSnackbar } from './useSnackbar';
+import { Principal } from '@dfinity/principal';
 
 export const useAddCircuit = () => {
 	const queryClient = useQueryClient();
@@ -62,5 +63,12 @@ export const useGetCircuit = (circuitId: number) => {
 		queryKey: [QUERY_KEYS.CIRCUIT, circuitId],
 		enabled: !!circuitId,
 		queryFn: () => api.Circuits.getCircuit(circuitId)
+	});
+};
+
+export const useGetCircuitStatus = (canisterId: Principal) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.CANISTER_STATUS, canisterId.toString()],
+		queryFn: () => api.IC.getCanisterStatus(canisterId)
 	});
 };

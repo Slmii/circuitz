@@ -14,7 +14,39 @@ const lineClampVars = (lineClamp?: number): React.CSSProperties => {
 	};
 };
 
-export const Title = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+export const H1 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+	return (
+		<Typography
+			{...props}
+			sx={{
+				...lineClampVars(lineClamp),
+				...props.sx
+			}}
+			variant="h1"
+			fontWeight="bold"
+		>
+			{children}
+		</Typography>
+	);
+};
+
+export const H2 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+	return (
+		<Typography
+			{...props}
+			sx={{
+				...lineClampVars(lineClamp),
+				...props.sx
+			}}
+			variant="h2"
+			fontWeight="bold"
+		>
+			{children}
+		</Typography>
+	);
+};
+
+export const H3 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
 	return (
 		<Typography
 			{...props}
@@ -30,7 +62,22 @@ export const Title = ({ children, lineClamp, ...props }: PropsWithChildren<Custo
 	);
 };
 
-export const SubTitle = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+export const H4 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+	return (
+		<Typography
+			{...props}
+			sx={{
+				...lineClampVars(lineClamp),
+				...props.sx
+			}}
+			variant="h4"
+		>
+			{children}
+		</Typography>
+	);
+};
+
+export const H5 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
 	return (
 		<Typography
 			{...props}
@@ -39,14 +86,13 @@ export const SubTitle = ({ children, lineClamp, ...props }: PropsWithChildren<Cu
 				...props.sx
 			}}
 			variant="h5"
-			fontWeight="bold"
 		>
 			{children}
 		</Typography>
 	);
 };
 
-export const Paragraph = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+export const B1 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
 	return (
 		<Typography
 			{...props}
@@ -55,6 +101,21 @@ export const Paragraph = ({ children, lineClamp, ...props }: PropsWithChildren<C
 				...props.sx
 			}}
 			variant="body1"
+		>
+			{children}
+		</Typography>
+	);
+};
+
+export const B2 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTypographyProps>) => {
+	return (
+		<Typography
+			{...props}
+			sx={{
+				...lineClampVars(lineClamp),
+				...props.sx
+			}}
+			variant="body2"
 		>
 			{children}
 		</Typography>
