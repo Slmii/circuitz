@@ -18,6 +18,7 @@ export interface CustomPinLogic {
 export interface Input {
 	name: string;
 	description: [] | [string];
+	sample_data: [] | [string];
 	verification_type: VerificationType;
 }
 export interface Mapper {
@@ -77,7 +78,7 @@ export interface Transformer {
 	output: string;
 	input: string;
 }
-export type VerificationType = { SampleData: string } | { Token: Token } | { Whitelist: Array<Principal> };
+export type VerificationType = { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	get_circuit_nodes: ActorMethod<[number], Result>;
 }
@@ -122,13 +123,13 @@ export const idlFactory = ({ IDL }: any) => {
 	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
 	const Token = IDL.Record({ field: IDL.Text, token: IDL.Text });
 	const VerificationType = IDL.Variant({
-		SampleData: IDL.Text,
 		Token: Token,
 		Whitelist: IDL.Vec(IDL.Principal)
 	});
 	const Input = IDL.Record({
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
+		sample_data: IDL.Opt(IDL.Text),
 		verification_type: VerificationType
 	});
 	const Ouput = IDL.Record({
