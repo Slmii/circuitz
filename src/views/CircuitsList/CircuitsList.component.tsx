@@ -54,7 +54,7 @@ export const Circuits = () => {
 				<Stack direction="row" alignItems="center" justifyContent="space-between">
 					<H1>Circuits</H1>
 					<IconButton
-						icon="add"
+						icon="add-square"
 						size="large"
 						tooltip="Create Circuit"
 						onClick={() => {

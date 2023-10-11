@@ -8,6 +8,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
+import { FormLabel } from '@mui/material';
 
 export const RadioButton = ({ name, label, disabled, row, required, onChange, options }: RadioButtonProps) => {
 	return (
@@ -16,7 +17,11 @@ export const RadioButton = ({ name, label, disabled, row, required, onChange, op
 				name={name}
 				render={({ field, fieldState }) => (
 					<FormControl error={Boolean(fieldState.error)} variant="standard">
-						{label && <Label required={required} label={label} />}
+						{label && (
+							<FormLabel component="legend" required={required}>
+								{label}
+							</FormLabel>
+						)}
 						<RadioGroup
 							row={row}
 							aria-labelledby={`${slugify(name)}-radio`}

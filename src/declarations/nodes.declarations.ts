@@ -32,10 +32,10 @@ export interface Node {
 	node_type: NodeType;
 	is_finished: boolean;
 	order: number;
+	is_enabled: boolean;
 	created_at: bigint;
 	user_id: Principal;
 	is_error: boolean;
-	is_active: boolean;
 	circuit_id: number;
 }
 export type NodeType =
@@ -69,11 +69,15 @@ export type PinType =
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic };
 export type Result = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
+export interface Token {
+	field: string;
+	token: string;
+}
 export interface Transformer {
 	output: string;
 	input: string;
 }
-export type VerificationType = { SampleData: string } | { Token: string } | { Whitelist: Array<Principal> };
+export type VerificationType = { SampleData: string } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	get_circuit_nodes: ActorMethod<[number], Result>;
 }
@@ -116,9 +120,10 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const Pin = IDL.Record({ pin_type: PinType, order: IDL.Nat32 });
 	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
+	const Token = IDL.Record({ field: IDL.Text, token: IDL.Text });
 	const VerificationType = IDL.Variant({
 		SampleData: IDL.Text,
-		Token: IDL.Text,
+		Token: Token,
 		Whitelist: IDL.Vec(IDL.Principal)
 	});
 	const Input = IDL.Record({
@@ -146,10 +151,10 @@ export const idlFactory = ({ IDL }: any) => {
 		node_type: NodeType,
 		is_finished: IDL.Bool,
 		order: IDL.Nat32,
+		is_enabled: IDL.Bool,
 		created_at: IDL.Nat64,
 		user_id: IDL.Principal,
 		is_error: IDL.Bool,
-		is_active: IDL.Bool,
 		circuit_id: IDL.Nat32
 	});
 	const ApiError = IDL.Variant({

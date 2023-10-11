@@ -328,7 +328,7 @@ export const SelectAutocompleteMultiple = ({
 											key={option.id}
 											size="small"
 											label={option.label}
-											deleteIcon={<Icon icon="close" />}
+											deleteIcon={<Icon icon="close-linear" />}
 										/>
 									))}
 								</Stack>

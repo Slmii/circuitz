@@ -5,12 +5,13 @@ export interface Node {
 	id: number;
 	circuitId: number;
 	userId: Principal;
+	name: string;
 	pin: Array<Pin>;
 	nodeType: NodeType;
 	order: number;
 	isFinished: boolean;
 	isError: boolean;
-	isActive: boolean;
+	isEnabled: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 }

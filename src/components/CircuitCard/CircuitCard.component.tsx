@@ -4,6 +4,7 @@ import { PropsWithChildren } from 'react';
 export const CircuitCard = ({ onClick, children }: PropsWithChildren<{ onClick?: () => void }>) => {
 	return (
 		<Paper
+			elevation={0}
 			component={onClick ? ButtonBase : Stack}
 			onClick={onClick}
 			alignItems="center"
@@ -12,8 +13,7 @@ export const CircuitCard = ({ onClick, children }: PropsWithChildren<{ onClick?:
 				p: 2,
 				height: 300,
 				width: '100%',
-				backgroundColor: 'background.default',
-				border: theme => `1px solid ${theme.palette.primary.main}`,
+				border: theme => `2px solid ${theme.palette.primary.main}`,
 				position: 'relative'
 			}}
 		>

@@ -60,14 +60,14 @@ export const Dialog = ({
 				sx={{
 					position: 'absolute',
 					top: theme => theme.spacing(1),
-					right: theme => theme.spacing(1)
+					right: theme => theme.spacing(2)
 				}}
 				color="inherit"
 				tooltip="Close"
 				icon="close"
 				onClick={onClose}
 			/>
-			{title ? <DialogTitle sx={{ fontSize: theme => theme.typography.h5.fontSize }}>{title}</DialogTitle> : null}
+			{title ? <DialogTitle>{title}</DialogTitle> : null}
 			<DialogContent>{children}</DialogContent>
 			<DialogActions>
 				{customAction ?? (

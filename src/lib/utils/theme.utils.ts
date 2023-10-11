@@ -31,16 +31,10 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 
 export const LIGHT_THEME: Readonly<PaletteOptions> = {
 	primary: {
-		main: '#ffcc28',
-		dark: '#e6b500',
-		light: '#ffd54f',
-		contrastText: '#070607'
+		main: '#E5B724'
 	},
 	secondary: {
-		main: '#9977ff',
-		dark: '#7a5fe6',
-		light: '#b89aff',
-		contrastText: '#FFFFFF'
+		main: '#6d7ce5'
 	},
 	success: {
 		main: '#41FF76'
@@ -67,7 +61,7 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 	MuiTypography: {
 		styleOverrides: {
 			root: {
-				lineHeight: 1.1
+				lineHeight: 1.2
 			}
 		},
 		variants: [
@@ -146,11 +140,6 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 					}
 				}
 			}
-		}
-	},
-	MuiSvgIcon: {
-		styleOverrides: {
-			root: {}
 		}
 	},
 	MuiInputAdornment: {
@@ -250,6 +239,54 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 				minHeight: 60,
 				padding: '2px 12px'
 			}
+		}
+	},
+	MuiFormHelperText: {
+		styleOverrides: {
+			root: ({ theme }) => ({
+				marginTop: `${theme.spacing(1)} !important`
+			})
+		}
+	},
+	MuiInputBase: {
+		styleOverrides: {
+			root: ({ theme }) => ({
+				backgroundColor: theme.palette.background.default
+			})
+		}
+	},
+	MuiDialogTitle: {
+		styleOverrides: {
+			root: ({ theme }) => ({
+				fontSize: 20,
+				fontWeight: theme.typography.fontWeightBold
+			})
+		}
+	},
+	MuiDialogContent: {
+		styleOverrides: {
+			root: ({ theme }) => ({
+				padding: theme.spacing(3)
+			})
+		}
+	},
+	MuiDialogActions: {
+		styleOverrides: {
+			root: ({ theme }) => ({
+				padding: theme.spacing(3)
+			})
+		}
+	},
+	MuiLink: {
+		defaultProps: {
+			underline: 'hover'
+		},
+		styleOverrides: {
+			root: ({ theme }) => ({
+				'&:hover': {
+					color: theme.palette.primary.main
+				}
+			})
 		}
 	}
 };
