@@ -3,38 +3,38 @@ import { DISABLE_MARGIN_MEDIA_QUERY } from 'lib/constants/theme.constants';
 
 export const DARK_THEME: Readonly<PaletteOptions> = {
 	primary: {
-		main: '#ffcc28'
+		main: '#D4AF37' // Gold, reminiscent of golden circuit connectors
 	},
 	secondary: {
-		main: '#7a8aff'
+		main: '#8B4513' // Saddle Brown, like the color of old resistors or wooden radio casings
 	},
 	success: {
-		main: '#41FF76'
+		main: '#32CD32' // Lime Green, like the old LED indicators
 	},
 	error: {
-		main: '#FF4163',
+		main: '#FF6347', // Firebrick, a strong red indicating error
 		contrastText: '#FFFFFF'
 	},
 	warning: {
-		main: '#FFAA2A'
+		main: '#FFD700' // Goldenrod, a warning yellow that's not too bright
 	},
 	text: {
-		primary: '#FFFFFF',
-		secondary: 'rgba(255, 255, 255, 0.7)'
+		primary: '#E6E6E6', // A soft white for better readability
+		secondary: 'rgba(230, 230, 230, 0.8)'
 	},
 	background: {
-		default: '#1E1E20',
-		paper: 'rgba(7, 6, 7)'
+		default: '#2E2E2E', // A slightly lighter black for the background
+		paper: '#3C3C3C' // A semi-transparent version of the background color
 	},
-	divider: 'rgba(255, 255, 255, 0.3)'
+	divider: 'rgba(230, 230, 230, 0.3)' // A soft white divider with some transparency
 };
 
 export const LIGHT_THEME: Readonly<PaletteOptions> = {
 	primary: {
-		main: '#E5B724'
+		main: '#6d7ce5'
 	},
 	secondary: {
-		main: '#6d7ce5'
+		main: '#E5B724'
 	},
 	success: {
 		main: '#41FF76'

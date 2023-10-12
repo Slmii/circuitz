@@ -46,7 +46,7 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 				}
 			},
 			shape: {
-				borderRadius: 1
+				borderRadius: 8
 			},
 			spacing: 8,
 			components

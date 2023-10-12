@@ -104,8 +104,8 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 						) : endElement ? (
 							<InputAdornment position="end">
 								{React.cloneElement(endElement, {
-									size: 'medium',
-									fontSize: 'medium'
+									size: 'small',
+									fontSize: 'small'
 								})}
 							</InputAdornment>
 						) : null

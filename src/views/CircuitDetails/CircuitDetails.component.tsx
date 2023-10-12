@@ -1,4 +1,4 @@
-import { Paper, Stack, Tab, Tabs } from '@mui/material';
+import { Stack, Tab, Tabs } from '@mui/material';
 import { H1 } from 'components/Typography';
 import { useGetCircuit, useGetCircuitNodes } from 'lib/hooks';
 import { useParams } from 'react-router-dom';
@@ -53,44 +53,36 @@ export const Circuit = () => {
 	}
 
 	return (
-		<Paper
-			sx={{
-				width: '100%',
-				height: 'calc(100vh - 65px)',
-				backgroundColor: 'background.default',
-				p: 6
-			}}
-		>
-			<Stack direction="column" rowGap={2}>
-				<Breadcrumbs />
-				<H1>{circuit.name}</H1>
-				<Tabs value={tab} onChange={handleOnTabChange} aria-label="basic tabs example">
-					<Tab label="Nodes" {...a11yProps(0)} />
-					<Tab label="Settings" {...a11yProps(1)} />
-					<Tab label="History" {...a11yProps(2)} />
-				</Tabs>
-				<Stack direction="row" spacing={4}>
-					<Stack
-						sx={{
-							flex: '1 1 70%',
-							padding: 4,
-							backgroundColor: 'background.paper',
-							border: theme => `1px solid ${theme.palette.divider}`
-						}}
-					>
-						<CustomTabPanel value={tab} index={0}>
-							<CircuitNodes nodeCanisterId={circuitNodes.principal} />
-						</CustomTabPanel>
-						<CustomTabPanel value={tab} index={1}>
-							Item Two
-						</CustomTabPanel>
-						<CustomTabPanel value={tab} index={2}>
-							Item Three
-						</CustomTabPanel>
-					</Stack>
-					<CircuitSideBar circuit={circuit} nodeCanisterId={circuitNodes.principal} />
+		<Stack direction="column" rowGap={2} sx={{ p: 6 }}>
+			<Breadcrumbs />
+			<H1>{circuit.name}</H1>
+			<Tabs value={tab} onChange={handleOnTabChange} aria-label="basic tabs example">
+				<Tab label="Nodes" {...a11yProps(0)} />
+				<Tab label="Settings" {...a11yProps(1)} />
+				<Tab label="History" {...a11yProps(2)} />
+			</Tabs>
+			<Stack direction="row" spacing={4}>
+				<Stack
+					sx={{
+						flex: '1 1 70%',
+						padding: 4,
+						backgroundColor: 'background.paper',
+						border: theme => `1px solid ${theme.palette.divider}`,
+						borderRadius: 1
+					}}
+				>
+					<CustomTabPanel value={tab} index={0}>
+						<CircuitNodes nodeCanisterId={circuitNodes.principal} />
+					</CustomTabPanel>
+					<CustomTabPanel value={tab} index={1}>
+						Item Two
+					</CustomTabPanel>
+					<CustomTabPanel value={tab} index={2}>
+						Item Three
+					</CustomTabPanel>
 				</Stack>
+				<CircuitSideBar circuit={circuit} nodeCanisterId={circuitNodes.principal} />
 			</Stack>
-		</Paper>
+		</Stack>
 	);
 };

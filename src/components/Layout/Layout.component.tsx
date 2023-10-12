@@ -15,7 +15,12 @@ export const Layout = () => {
 		<>
 			<Providers>
 				<Header />
-				<Container maxWidth={isNodesPage ? false : 'md'} sx={{ padding: isNodesPage ? '0 !important' : undefined }}>
+				<Container
+					maxWidth={isNodesPage ? false : 'md'}
+					sx={{
+						padding: isNodesPage ? '0 !important' : undefined
+					}}
+				>
 					<Outlet />
 				</Container>
 			</Providers>

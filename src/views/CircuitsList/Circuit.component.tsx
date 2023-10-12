@@ -85,7 +85,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 								sx={{
 									width: 20,
 									height: 20,
-									backgroundColor: errors.length ? 'error.dark' : 'success.dark',
+									backgroundColor: errors.length ? 'error.main' : 'success.main',
 									borderRadius: '50%'
 								}}
 							/>

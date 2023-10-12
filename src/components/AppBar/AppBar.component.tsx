@@ -17,7 +17,8 @@ export const Appbar = ({ children }: PropsWithChildren) => {
 				sx={{
 					backgroundImage: 'none',
 					backgroundColor: 'transparent',
-					boxShadow: 'none'
+					boxShadow: 'none',
+					backdropFilter: 'blur(10px)'
 				}}
 			>
 				<Toolbar

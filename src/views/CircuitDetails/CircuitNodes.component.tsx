@@ -4,7 +4,7 @@ import { Field } from 'components/Form/Field';
 import { RadioButton } from 'components/Form/RadioButton';
 import { Icon } from 'components/Icon';
 import { IconButton } from 'components/IconButton';
-import { B1, H3, H5 } from 'components/Typography';
+import { B1, Caption, H3, H5 } from 'components/Typography';
 import { useMemo, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,7 +27,7 @@ interface DialogState {
 interface InputNodeFormValues {
 	name: string;
 	description: string;
-	verificationType: 'token' | 'whitelist';
+	verificationType: 'token' | 'whitelist' | 'none';
 	verificationTypeToken: string;
 	verificationTypeTokenField: string;
 	verificationTypeWhitelist: { principal: string }[];
@@ -45,9 +45,9 @@ export const CircuitNodes = ({ nodeCanisterId }: { nodeCanisterId: Principal }) 
 				justifyContent="flex-start"
 				component={ButtonBase}
 				onClick={() => setIsDialogOpen({ open: true, type: 'input' })}
-				sx={{ p: 2, width: 600, backgroundColor: 'background.default' }}
+				sx={{ p: 2, width: 600, backgroundColor: 'background.default', borderRadius: 1 }}
 			>
-				<Icon icon="add-square-outline" spacingRight fontSize="small" />
+				<Icon icon="add-square" spacingRight fontSize="small" />
 				<B1>Add Input Node</B1>
 			</Stack>
 			<InputNodeDialog
@@ -100,7 +100,7 @@ const InputNodeDialog = ({
 					defaultValues={{
 						name: '',
 						description: '',
-						verificationType: 'token',
+						verificationType: 'none',
 						verificationTypeToken: '',
 						verificationTypeTokenField: '',
 						verificationTypeWhitelist: [{ principal: '' }],
@@ -126,9 +126,12 @@ const InputNodeDialog = ({
 							<Stack direction="column" spacing={2}>
 								<H5 fontWeight="bold">Verification</H5>
 								<RadioButton
-									row
 									name="verificationType"
 									options={[
+										{
+											id: 'none',
+											label: 'None'
+										},
 										{
 											id: 'token',
 											label: 'Token'
@@ -139,9 +142,11 @@ const InputNodeDialog = ({
 										}
 									]}
 								/>
-								<Stack direction="column" spacing={4}>
-									<InputNodeVerficationType />
-								</Stack>
+								{watch('verificationType') !== 'none' && (
+									<Stack direction="column" spacing={4}>
+										<InputNodeVerficationType />
+									</Stack>
+								)}
 							</Stack>
 							<Divider />
 							<Stack direction="column" spacing={2}>
@@ -171,12 +176,13 @@ const InputNodeDialog = ({
 							<Divider />
 							<Stack direction="column" spacing={2}>
 								<H5 fontWeight="bold">How to send data to this Input Node?</H5>
+								<Caption>Rust</Caption>
 								<AceEditor
 									mode="rust"
 									theme={aceEditorTheme}
 									name="UNIQUE_ID_OF_DIV"
 									editorProps={{ $blockScrolling: true }}
-									height="250px"
+									height="224px"
 									width="100%"
 									value={`use ic_cdk::api::call;
 
@@ -195,8 +201,42 @@ let response: Result<(Result<String, Error>,), _> = call::call(
 	"input_node",
 	(serde_json::to_string($address)),
 )
-.await;
-									`}
+.await;`}
+									readOnly
+								/>
+								<Caption>Javascript</Caption>
+								<AceEditor
+									mode="javascript"
+									theme={aceEditorTheme}
+									name="UNIQUE_ID_OF_DIV"
+									editorProps={{ $blockScrolling: true }}
+									height="272px"
+									width="100%"
+									value={`const address = {
+	street: "10 Downing Street",
+	city: "London",
+	${
+		watch('verificationType') === 'token'
+			? `
+	// Be careful with using Token verification on the front-end 
+	// as it can be easily compromised, unless you don't mind others 
+	// using your Circuit.
+	${watch('verificationTypeTokenField')}: "${watch('verificationTypeToken')}"`
+			: ''
+	}
+};
+
+const agent = new HttpAgent({
+	host: "https://icp0.io",
+	identity: identity
+});
+
+const actor = Actor.createActor(idlFactory, {
+	agent,
+	canisterId: "${nodeCanisterId}"
+});
+
+const response = await actor.input_node(JSON.stingify(address));`}
 									readOnly
 								/>
 							</Stack>
@@ -245,7 +285,7 @@ const InputNodeVerficationType = () => {
 						endElement={
 							<IconButton
 								tooltip="Generate token"
-								icon="add"
+								icon="refresh-outline"
 								onClick={() => setValue('verificationTypeToken', uuidv4())}
 							/>
 						}

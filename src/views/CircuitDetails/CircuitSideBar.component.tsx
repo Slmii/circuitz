@@ -20,14 +20,15 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 				flex: '1 1 30%',
 				padding: 4,
 				backgroundColor: 'background.paper',
-				border: theme => `1px solid ${theme.palette.divider}`
+				border: theme => `1px solid ${theme.palette.divider}`,
+				borderRadius: 1
 			}}
 		>
 			<Stack
 				direction="row"
 				alignItems="center"
 				justifyContent="space-between"
-				sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText' }}
+				sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', borderRadius: 1 }}
 			>
 				<H4>{isActive ? 'Active' : 'Inactive'}</H4>
 				<StandaloneSwitch value={isActive} name="active" onChange={setIsActive} />

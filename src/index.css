@@ -11,3 +11,12 @@ body {
 	stroke-width: 1;
 	filter: drop-shadow(2px 2px 0 black);
 } */
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
