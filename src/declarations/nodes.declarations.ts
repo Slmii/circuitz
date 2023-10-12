@@ -43,6 +43,7 @@ export type NodeType =
 	| { Pin: Pin }
 	| { Transformer: Transformer }
 	| { Input: Input }
+	| { Lookup: Ouput }
 	| { Ouput: Ouput }
 	| { Mapper: Mapper };
 export type Operator =
@@ -143,6 +144,7 @@ export const idlFactory = ({ IDL }: any) => {
 		Pin: Pin,
 		Transformer: Transformer,
 		Input: Input,
+		Lookup: Ouput,
 		Ouput: Ouput,
 		Mapper: Mapper
 	});
