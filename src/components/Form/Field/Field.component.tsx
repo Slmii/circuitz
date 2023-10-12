@@ -118,8 +118,8 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 						sx={{
 							position: 'absolute',
 							color: 'text.secondary',
-							bottom: theme => theme.spacing(errorMessage ? 1.85 : 0.35),
-							right: theme => theme.spacing(1)
+							bottom: theme => theme.spacing(errorMessage ? 1.85 : multiline && multilineRows ? 1 : 2.5),
+							right: theme => theme.spacing(2)
 						}}
 					>
 						{field.value.length} / {maxLength}

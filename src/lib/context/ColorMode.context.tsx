@@ -36,13 +36,13 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 				...(mode === 'light' ? LIGHT_THEME : DARK_THEME)
 			},
 			typography: {
-				fontFamily: '"Orbitron", serif',
-				fontSize: 48,
-				htmlFontSize: 48,
+				fontFamily: '"Chakra Petch", serif',
+				fontSize: 16,
+				htmlFontSize: 16,
 				fontWeightBold: 700,
 				fontWeightRegular: 400,
 				allVariants: {
-					lineHeight: 0.95
+					lineHeight: 1.2
 				}
 			},
 			shape: {

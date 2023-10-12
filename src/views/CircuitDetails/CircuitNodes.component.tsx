@@ -1,10 +1,10 @@
-import { Stack, ButtonBase, Drawer, Box, Divider, useTheme } from '@mui/material';
+import { Stack, ButtonBase, Drawer, Box, Divider, useTheme, FormHelperText } from '@mui/material';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { RadioButton } from 'components/Form/RadioButton';
 import { Icon } from 'components/Icon';
 import { IconButton } from 'components/IconButton';
-import { B1, Caption, H3, H5 } from 'components/Typography';
+import { B1, B2, H3, H5 } from 'components/Typography';
 import { useMemo, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -45,7 +45,13 @@ export const CircuitNodes = ({ nodeCanisterId }: { nodeCanisterId: Principal }) 
 				justifyContent="flex-start"
 				component={ButtonBase}
 				onClick={() => setIsDialogOpen({ open: true, type: 'input' })}
-				sx={{ p: 2, width: 600, backgroundColor: 'background.default', borderRadius: 1 }}
+				sx={{
+					p: 2,
+					width: 600,
+					backgroundColor: 'background.default',
+					borderRadius: 1,
+					border: theme => `1px solid ${theme.palette.divider}`
+				}}
 			>
 				<Icon icon="add-square" spacingRight fontSize="small" />
 				<B1>Add Input Node</B1>
@@ -82,7 +88,7 @@ const InputNodeDialog = ({
 				justifyContent="space-between"
 				sx={{
 					p: 4,
-					backgroundColor: 'background.default',
+					backgroundColor: 'background.paper',
 					width: '100%',
 					borderBottom: theme => `1px solid ${theme.palette.divider}`
 				}}
@@ -112,19 +118,24 @@ const InputNodeDialog = ({
 							<Stack direction="column" spacing={2}>
 								<H5 fontWeight="bold">General</H5>
 								<Stack direction="column" spacing={4}>
-									<Field name="name" label="Name" placeholder="Enter a name" />
+									<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
 									<Field
 										name="description"
 										label="Description"
 										multiline
 										multilineRows={5}
 										placeholder="Enter a description"
+										maxLength={500}
 									/>
 								</Stack>
 							</Stack>
 							<Divider />
 							<Stack direction="column" spacing={2}>
 								<H5 fontWeight="bold">Verification</H5>
+								<B2>
+									Verification <b>"Whitelist"</b> is recommended for Input Nodes. This will ensure that only the
+									specified principals (callers) can send data to this Input Node.
+								</B2>
 								<RadioButton
 									name="verificationType"
 									options={[
@@ -138,7 +149,7 @@ const InputNodeDialog = ({
 										},
 										{
 											id: 'whitelist',
-											label: 'Whitelist'
+											label: 'Whitelist (recommended)'
 										}
 									]}
 								/>
@@ -176,7 +187,7 @@ const InputNodeDialog = ({
 							<Divider />
 							<Stack direction="column" spacing={2}>
 								<H5 fontWeight="bold">How to send data to this Input Node?</H5>
-								<Caption>Rust</Caption>
+								<B2>Rust</B2>
 								<AceEditor
 									mode="rust"
 									theme={aceEditorTheme}
@@ -204,24 +215,26 @@ let response: Result<(Result<String, Error>,), _> = call::call(
 .await;`}
 									readOnly
 								/>
-								<Caption>Javascript</Caption>
+								<B2>Javascript</B2>
+								{watch('verificationType') === 'token' && (
+									<FormHelperText error>
+										Be careful with using Token verification on the front-end as it can be easily compromised, unless
+										you don't mind others using your Circuit.
+									</FormHelperText>
+								)}
 								<AceEditor
 									mode="javascript"
 									theme={aceEditorTheme}
 									name="UNIQUE_ID_OF_DIV"
 									editorProps={{ $blockScrolling: true }}
-									height="272px"
+									height="336px"
 									width="100%"
 									value={`const address = {
 	street: "10 Downing Street",
 	city: "London",
 	${
 		watch('verificationType') === 'token'
-			? `
-	// Be careful with using Token verification on the front-end 
-	// as it can be easily compromised, unless you don't mind others 
-	// using your Circuit.
-	${watch('verificationTypeTokenField')}: "${watch('verificationTypeToken')}"`
+			? `${watch('verificationTypeTokenField')}: "${watch('verificationTypeToken')}"`
 			: ''
 	}
 };
@@ -279,6 +292,7 @@ const InputNodeVerficationType = () => {
 					<Field
 						name="verificationTypeTokenField"
 						label="Field"
+						placeholder="token"
 						helperText="This is the field that will be used to verify the Input Node."
 					/>
 					<Field
@@ -291,6 +305,7 @@ const InputNodeVerficationType = () => {
 						}
 						name="verificationTypeToken"
 						label="Token"
+						placeholder="aaaaa-aaaaa-aaaaa-aaaaa"
 						helperText="This is the token that will be used to verify the Input Node."
 					/>
 				</>
@@ -302,6 +317,7 @@ const InputNodeVerficationType = () => {
 							key={config.id}
 							name={`verificationTypeWhitelist.${index}.principal`}
 							label="Principal"
+							placeholder="aaaaa-aa"
 							endElement={
 								<>
 									{fields.length - 1 === index && (

@@ -6,7 +6,7 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 		main: '#D4AF37' // Gold, reminiscent of golden circuit connectors
 	},
 	secondary: {
-		main: '#8B4513' // Saddle Brown, like the color of old resistors or wooden radio casings
+		main: '#6d7ce5' // Saddle Brown, like the color of old resistors or wooden radio casings
 	},
 	success: {
 		main: '#32CD32' // Lime Green, like the old LED indicators
@@ -31,10 +31,10 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 
 export const LIGHT_THEME: Readonly<PaletteOptions> = {
 	primary: {
-		main: '#6d7ce5'
+		main: '#D4AF37'
 	},
 	secondary: {
-		main: '#E5B724'
+		main: '#6d7ce5'
 	},
 	success: {
 		main: '#41FF76'
@@ -251,7 +251,11 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 	MuiInputBase: {
 		styleOverrides: {
 			root: ({ theme }) => ({
-				backgroundColor: theme.palette.background.default
+				backgroundColor: theme.palette.background.default,
+				fieldset: {
+					borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+					borderWidth: 1
+				}
 			})
 		}
 	},
