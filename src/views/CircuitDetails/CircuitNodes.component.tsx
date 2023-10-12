@@ -11,11 +11,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/mode-rust';
 import 'ace-builds/src-noconflict/theme-cloud9_night';
 import 'ace-builds/src-noconflict/theme-cloud9_day';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import { Button } from 'components/Button';
 import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
+import { Principal } from '@dfinity/principal';
 
 interface DialogState {
 	open: boolean;
@@ -32,7 +34,7 @@ interface InputNodeFormValues {
 	sampleData: string;
 }
 
-export const CircuitNodes = () => {
+export const CircuitNodes = ({ nodeCanisterId }: { nodeCanisterId: Principal }) => {
 	const [isDialogOpen, setIsDialogOpen] = useState<DialogState>({ open: false, type: 'input' });
 
 	return (
@@ -48,12 +50,24 @@ export const CircuitNodes = () => {
 				<Icon icon="add-square-outline" spacingRight fontSize="small" />
 				<B1>Add Input Node</B1>
 			</Stack>
-			<InputNodeDialog open={isDialogOpen.open} onClose={() => setIsDialogOpen({ open: false, type: 'input' })} />
+			<InputNodeDialog
+				open={isDialogOpen.open}
+				nodeCanisterId={nodeCanisterId}
+				onClose={() => setIsDialogOpen({ open: false, type: 'input' })}
+			/>
 		</>
 	);
 };
 
-const InputNodeDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+const InputNodeDialog = ({
+	open,
+	nodeCanisterId,
+	onClose
+}: {
+	open: boolean;
+	nodeCanisterId: Principal;
+	onClose: () => void;
+}) => {
 	const theme = useTheme();
 	const { formRef, handleSubmit } = useDialogFormSubmit();
 
@@ -69,7 +83,8 @@ const InputNodeDialog = ({ open, onClose }: { open: boolean; onClose: () => void
 				sx={{
 					p: 4,
 					backgroundColor: 'background.default',
-					width: '100%'
+					width: '100%',
+					borderBottom: theme => `1px solid ${theme.palette.divider}`
 				}}
 			>
 				<Stack direction="row" alignItems="center" spacing={2}>
@@ -92,7 +107,7 @@ const InputNodeDialog = ({ open, onClose }: { open: boolean; onClose: () => void
 						sampleData: ''
 					}}
 					myRef={formRef}
-					render={({ setValue }) => (
+					render={({ watch, setValue }) => (
 						<>
 							<Stack direction="column" spacing={2}>
 								<H5 fontWeight="bold">General</H5>
@@ -146,6 +161,43 @@ const InputNodeDialog = ({ open, onClose }: { open: boolean; onClose: () => void
 									editorProps={{ $blockScrolling: true }}
 									height="300px"
 									width="100%"
+									setOptions={{
+										enableBasicAutocompletion: true,
+										enableLiveAutocompletion: true,
+										enableSnippets: true
+									}}
+								/>
+							</Stack>
+							<Divider />
+							<Stack direction="column" spacing={2}>
+								<H5 fontWeight="bold">How to send data to this Input Node?</H5>
+								<AceEditor
+									mode="rust"
+									theme={aceEditorTheme}
+									name="UNIQUE_ID_OF_DIV"
+									editorProps={{ $blockScrolling: true }}
+									height="250px"
+									width="100%"
+									value={`use ic_cdk::api::call;
+
+let address = Address {
+	street: "10 Downing Street".to_owned(),
+	city: "London".to_owned(),
+	${
+		watch('verificationType') === 'token'
+			? `${watch('verificationTypeTokenField')}: "${watch('verificationTypeToken')}".to_string()`
+			: ''
+	}
+};
+
+let response: Result<(Result<String, Error>,), _> = call::call(
+	"${nodeCanisterId}".to_string(),
+	"input_node",
+	(serde_json::to_string($address)),
+)
+.await;
+									`}
+									readOnly
 								/>
 							</Stack>
 						</>
@@ -159,13 +211,16 @@ const InputNodeDialog = ({ open, onClose }: { open: boolean; onClose: () => void
 				sx={{
 					p: 4,
 					backgroundColor: 'background.default',
-					width: '100%'
+					width: '100%',
+					borderTop: theme => `1px solid ${theme.palette.divider}`
 				}}
 			>
 				<Button onClick={handleSubmit} variant="contained">
 					Save
 				</Button>
-				<Button variant="outlined">Cancel</Button>
+				<Button variant="outlined" onClick={onClose}>
+					Cancel
+				</Button>
 			</Stack>
 		</Drawer>
 	);

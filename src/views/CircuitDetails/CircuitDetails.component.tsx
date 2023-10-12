@@ -79,7 +79,7 @@ export const Circuit = () => {
 						}}
 					>
 						<CustomTabPanel value={tab} index={0}>
-							<CircuitNodes />
+							<CircuitNodes nodeCanisterId={circuitNodes.principal} />
 						</CustomTabPanel>
 						<CustomTabPanel value={tab} index={1}>
 							Item Two
