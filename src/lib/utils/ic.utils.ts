@@ -1,6 +1,7 @@
 import { Principal } from '@dfinity/principal';
 import { CanisterStatus } from 'lib/types';
 import { toReadableNumber } from './number.utils';
+import { toPrincipal } from './identity.utils';
 
 export const toStatus = (status: { stopped: null } | { stopping: null } | { running: null }): CanisterStatus =>
 	'stopped' in status && status.stopped === null
@@ -12,7 +13,7 @@ export const toStatus = (status: { stopped: null } | { stopping: null } | { runn
 export const transform = (_methodName: string, args: unknown[]): { effectiveCanisterId: Principal } => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const first = args[0] as any;
-	let effectiveCanisterId = Principal.fromText('aaaaa-aa');
+	let effectiveCanisterId = toPrincipal('aaaaa-aa');
 	if (first && typeof first === 'object' && first.canister_id) {
 		effectiveCanisterId = Principal.from(first.canister_id as unknown);
 	}

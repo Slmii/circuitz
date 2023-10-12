@@ -12,7 +12,7 @@ function App() {
 					<Route path="/dashboard" element={<RequireAuthentication>Dashboard</RequireAuthentication>} />
 					<Route element={<RequireAuthentication />}>
 						<Route path="/circuits" element={<CircuitsPage />} />
-						<Route path="/circuits/:id" element={<CircuitPage />} />
+						<Route path="/circuits/:circuitId" element={<CircuitPage />} />
 					</Route>
 				</Route>
 			</Routes>

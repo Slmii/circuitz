@@ -7,7 +7,7 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { circuitSchema } from 'lib/schemas';
 import { Circuit as ICircuit } from 'lib/types';
-import { useDialogFormSubmit } from 'lib/hooks/useDialogFormSubmit';
+import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { B1, H1 } from 'components/Typography';
 import { SkeletonCircuitCard } from 'components/Skeleton';
 import { useAddCircuit, useEditCircuit, useGetCircuits } from 'lib/hooks';
@@ -21,7 +21,7 @@ export const Circuits = () => {
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [circuit, setCircuit] = useState<ICircuit | null>(null);
 
-	const { formRef, handleSubmit } = useDialogFormSubmit();
+	const { formRef, submitter } = useFormSubmit();
 	const { mutateAsync: add, isLoading: isAddLoading } = useAddCircuit();
 	const { mutateAsync: edit, isLoading: isEditLoading } = useEditCircuit();
 	const { data: circuits, isLoading: isCircuitsLoading } = useGetCircuits();
@@ -96,7 +96,7 @@ export const Circuits = () => {
 				title={circuit ? 'Edit' : 'Create'}
 				onCancelText="Cancel"
 				onConfirmText={circuit ? 'Save' : 'Create'}
-				onConfirm={handleSubmit}
+				onConfirm={submitter}
 				onConfirmLoading={isLoading}
 				onCancelDisabled={isLoading}
 				width="md"

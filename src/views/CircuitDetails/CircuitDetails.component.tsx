@@ -1,7 +1,6 @@
 import { Stack, Tab, Tabs } from '@mui/material';
 import { H1 } from 'components/Typography';
-import { useGetCircuit, useGetCircuitNodes } from 'lib/hooks';
-import { useParams } from 'react-router-dom';
+import { useGetCircuit, useGetCircuitNodes, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { useState } from 'react';
 import { Breadcrumbs } from 'components/Breadcrumbs';
 import { CircuitSideBar } from './CircuitSideBar.component';
@@ -37,17 +36,19 @@ function CustomTabPanel(props: TabPanelProps) {
 }
 
 export const Circuit = () => {
-	const { id } = useParams();
 	const [tab, setTab] = useState(0);
+	const circuitId = useGetParam('circuitId');
 
-	const { data: circuitNodes, isLoading: isCircuitNodesLoading } = useGetCircuitNodes(id ? Number(id) : 0);
-	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(id ? Number(id) : 0);
+	const { data: nodeCanisterId, isLoading: isNodeCanisterIdLoading } = useGetNodeCanisterId();
+	const { data: nodes, isLoading: isNodesLoading } = useGetCircuitNodes(Number(circuitId));
+	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
 
 	const handleOnTabChange = (_event: React.SyntheticEvent, newValue: number) => {
 		setTab(newValue);
 	};
 
-	const isLoaded = !!circuit && !isCircuitLoading && !!circuitNodes && !isCircuitNodesLoading;
+	const isLoaded =
+		!!circuit && !isCircuitLoading && !!nodeCanisterId && !isNodeCanisterIdLoading && !!nodes && !isNodesLoading;
 	if (!isLoaded) {
 		return <>Loading...</>;
 	}
@@ -72,7 +73,7 @@ export const Circuit = () => {
 					}}
 				>
 					<CustomTabPanel value={tab} index={0}>
-						<CircuitNodes nodeCanisterId={circuitNodes.principal} />
+						<CircuitNodes nodes={nodes} />
 					</CustomTabPanel>
 					<CustomTabPanel value={tab} index={1}>
 						Item Two
@@ -81,7 +82,7 @@ export const Circuit = () => {
 						Item Three
 					</CustomTabPanel>
 				</Stack>
-				<CircuitSideBar circuit={circuit} nodeCanisterId={circuitNodes.principal} />
+				<CircuitSideBar circuit={circuit} nodeCanisterId={nodeCanisterId} />
 			</Stack>
 		</Stack>
 	);

@@ -1,7 +1,6 @@
 import MuiCheckbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
-import { Label } from 'components/Form/Label';
 import { Controller } from 'react-hook-form';
 import slugify from 'slugify';
 
@@ -38,7 +37,7 @@ export const Checkbox = ({
 						)}
 					/>
 				}
-				label={label ? <Label label={label} radioOrCheckbox disabled={disabled} /> : undefined}
+				label={label}
 				labelPlacement="end"
 			/>
 		</FormGroup>
@@ -74,7 +73,7 @@ export const StandaloneCheckbox = ({
 						}}
 					/>
 				}
-				label={label ? <Label label={label} radioOrCheckbox disabled={disabled} /> : undefined}
+				label={label}
 				labelPlacement="end"
 			/>
 		</FormGroup>

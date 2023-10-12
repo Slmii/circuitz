@@ -3,6 +3,7 @@ import { Principal } from '@dfinity/principal';
 import { _SERVICE } from 'declarations/ic.declarations';
 import { toStatus, transform } from 'lib/utils/ic.utils';
 import { MANAGEMENT_CANISTER_ID } from './canisterIds';
+import { toPrincipal } from 'lib/utils/identity.utils';
 
 export abstract class IC {
 	/**
@@ -29,7 +30,7 @@ export abstract class IC {
 	 */
 	static async canisterStop(canisterId: string) {
 		const actor = await Actor.createActor<_SERVICE>(MANAGEMENT_CANISTER_ID, 'ic');
-		return actor.stop_canister({ canister_id: Principal.fromText(canisterId) });
+		return actor.stop_canister({ canister_id: toPrincipal(canisterId) });
 	}
 
 	/**
@@ -37,6 +38,6 @@ export abstract class IC {
 	 */
 	static async canisterStart(canisterId: string) {
 		const actor = await Actor.createActor<_SERVICE>(MANAGEMENT_CANISTER_ID, 'ic');
-		return actor.start_canister({ canister_id: Principal.fromText(canisterId) });
+		return actor.start_canister({ canister_id: toPrincipal(canisterId) });
 	}
 }

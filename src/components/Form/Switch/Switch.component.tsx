@@ -2,7 +2,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import MuiSwitch from '@mui/material/Switch';
 import { StandaloneSwitchProps, SwitchProps } from './Switch.types';
-import { Label } from '../Label';
 import { Controller } from 'react-hook-form';
 import slugify from 'slugify';
 import { styled } from '@mui/material';
@@ -32,19 +31,7 @@ export const StandaloneSwitch = ({
 						onChange={(_e, checked) => onChange(checked)}
 					/>
 				}
-				label={
-					label && (
-						<Label
-							label={label}
-							radioOrCheckbox
-							disabled={disabled}
-							sx={{
-								marginLeft: 1,
-								marginRight: 1
-							}}
-						/>
-					)
-				}
+				label={label}
 				labelPlacement={labelPlacement}
 			/>
 		</FormGroup>
@@ -73,7 +60,7 @@ export const Switch = ({ label, name, disabled, onChange }: SwitchProps) => {
 						)}
 					/>
 				}
-				label={label && <Label label={label} radioOrCheckbox disabled={disabled} sx={{ marginLeft: 1 }} />}
+				label={label}
 				labelPlacement="end"
 			/>
 		</FormGroup>

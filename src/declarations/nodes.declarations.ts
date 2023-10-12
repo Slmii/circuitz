@@ -31,12 +31,12 @@ export interface Node {
 	pin: Array<Pin>;
 	updated_at: bigint;
 	node_type: NodeType;
-	is_finished: boolean;
 	order: number;
 	is_enabled: boolean;
 	created_at: bigint;
 	user_id: Principal;
 	is_error: boolean;
+	is_running: boolean;
 	circuit_id: number;
 }
 export type NodeType =
@@ -70,7 +70,9 @@ export type PinType =
 	| { FilterPin: Array<ConditionGroup> }
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic };
-export type Result = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
+export type Result = { Ok: Node } | { Err: ApiError };
+export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
+export type Result_2 = { Ok: Principal } | { Err: ApiError };
 export interface Token {
 	field: string;
 	token: string;
@@ -81,7 +83,9 @@ export interface Transformer {
 }
 export type VerificationType = { None: null } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
-	get_circuit_nodes: ActorMethod<[number], Result>;
+	add_node: ActorMethod<[number, NodeType], Result>;
+	get_circuit_nodes: ActorMethod<[number], Result_1>;
+	get_node_canister_id: ActorMethod<[], Result_2>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -153,12 +157,12 @@ export const idlFactory = ({ IDL }: any) => {
 		pin: IDL.Vec(Pin),
 		updated_at: IDL.Nat64,
 		node_type: NodeType,
-		is_finished: IDL.Bool,
 		order: IDL.Nat32,
 		is_enabled: IDL.Bool,
 		created_at: IDL.Nat64,
 		user_id: IDL.Principal,
 		is_error: IDL.Bool,
+		is_running: IDL.Bool,
 		circuit_id: IDL.Nat32
 	});
 	const ApiError = IDL.Variant({
@@ -166,11 +170,15 @@ export const idlFactory = ({ IDL }: any) => {
 		Unauthorized: IDL.Text,
 		AlreadyExists: IDL.Text
 	});
-	const Result = IDL.Variant({
+	const Result = IDL.Variant({ Ok: Node, Err: ApiError });
+	const Result_1 = IDL.Variant({
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
+	const Result_2 = IDL.Variant({ Ok: IDL.Principal, Err: ApiError });
 	return IDL.Service({
-		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result], ['query'])
+		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
+		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
+		get_node_canister_id: IDL.Func([], [Result_2], ['query'])
 	});
 };

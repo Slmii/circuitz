@@ -5,13 +5,13 @@ import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
 import { SkeletonCircuitMetaData } from 'components/Skeleton';
 import { B1, Caption, H2, H3 } from 'components/Typography';
-import { useGetCircuitNodes, useGetCircuitTraces } from 'lib/hooks';
+import { useGetCircuitTraces, useGetNodeCanisterId } from 'lib/hooks';
 import { Circuit as ICircuit } from 'lib/types';
 import { useMemo } from 'react';
 import { CircuitStatus } from '../CircuitStatus';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
-	const { data: circuitNodes, isLoading: isCircuitNodesLoading } = useGetCircuitNodes(circuit.id);
+	const { data: nodeCanisterId, isLoading: isNodeCanisterIdLoading } = useGetNodeCanisterId();
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(circuit.id);
 
 	const errors = useMemo(() => {
@@ -22,7 +22,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
-	const isLoaded = !!circuitNodes && !isCircuitNodesLoading && !!circuitTraces && !isCircuitTracesLoading;
+	const isLoaded = !!nodeCanisterId && !isNodeCanisterIdLoading && !!circuitTraces && !isCircuitTracesLoading;
 
 	return (
 		<Grid item xs={12} sm={6} md={4}>
@@ -91,7 +91,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 							/>
 							{errors.length ? <Caption color="error.main">{errors.length} errors</Caption> : null}
 						</Stack>
-						<CircuitStatus nodesCanisterId={circuitNodes.principal} />
+						<CircuitStatus nodesCanisterId={nodeCanisterId} />
 					</Stack>
 				) : (
 					<SkeletonCircuitMetaData />

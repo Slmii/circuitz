@@ -1,5 +1,4 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Label } from 'components/Form/Label';
 import { Controller } from 'react-hook-form';
 import slugify from 'slugify';
 import { RadioButtonProps } from './RadioButton.types';
@@ -23,6 +22,7 @@ export const RadioButton = ({ name, label, disabled, row, required, onChange, op
 							</FormLabel>
 						)}
 						<RadioGroup
+							color="secondary"
 							row={row}
 							aria-labelledby={`${slugify(name)}-radio`}
 							{...field}
@@ -37,7 +37,7 @@ export const RadioButton = ({ name, label, disabled, row, required, onChange, op
 									value={option.id}
 									disabled={disabled}
 									control={<Radio size="small" color="primary" />}
-									label={<Label label={option.label} radioOrCheckbox disabled={disabled} />}
+									label={option.label}
 									labelPlacement="end"
 								/>
 							))}
