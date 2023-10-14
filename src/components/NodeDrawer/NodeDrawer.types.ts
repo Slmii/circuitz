@@ -9,7 +9,7 @@ export interface NodeDrawerProps {
 	onSubmit: () => void;
 }
 
-export interface InputNodeDrawerProps {
+export interface InputNodeProps {
 	node?: Node;
 	open: boolean;
 	onClose: () => void;

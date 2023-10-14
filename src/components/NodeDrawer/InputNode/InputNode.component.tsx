@@ -1,6 +1,6 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { NodeDrawer } from '../NodeDrawer.component';
-import { InputNodeDrawerProps } from '../NodeDrawer.types';
+import { InputNodeProps } from '../NodeDrawer.types';
 import { useAddNode, useGetParam } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { InputCanisterForm } from './InputCanisterForm.component';
@@ -22,7 +22,7 @@ const NODE_SOURCES: NodeSource[] = [
 	}
 ];
 
-export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) => {
+export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
 	const [nodeSource, setNodeSource] = useState<NodeSourceType | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
