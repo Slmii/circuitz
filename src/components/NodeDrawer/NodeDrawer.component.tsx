@@ -1,4 +1,4 @@
-import { Box, Divider, Drawer, Stack } from '@mui/material';
+import { Box, Drawer, Stack } from '@mui/material';
 import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { H3 } from 'components/Typography';
@@ -19,7 +19,8 @@ export const NodeDrawer = ({
 				direction="row"
 				justifyContent="space-between"
 				sx={{
-					p: 4,
+					py: 2,
+					px: 4,
 					backgroundColor: 'background.paper',
 					width: '100%',
 					borderBottom: theme => `1px solid ${theme.palette.divider}`
@@ -27,7 +28,6 @@ export const NodeDrawer = ({
 			>
 				<Stack direction="row" alignItems="center" spacing={2}>
 					<H3>{title}</H3>
-					<Divider flexItem orientation="vertical" />
 					<img src="/public/logos/icp.png" style={{ width: 24, height: 24 }} />
 				</Stack>
 				<IconButton tooltip="Close" icon="close" onClick={onClose} />
@@ -38,7 +38,8 @@ export const NodeDrawer = ({
 				justifyContent="flex-end"
 				spacing={2}
 				sx={{
-					p: 4,
+					py: 2,
+					px: 4,
 					backgroundColor: 'background.default',
 					width: '100%',
 					borderTop: theme => `1px solid ${theme.palette.divider}`
