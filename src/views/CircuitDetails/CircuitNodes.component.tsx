@@ -2,11 +2,11 @@ import { Stack, Collapse, Fade } from '@mui/material';
 import { Icon } from 'components/Icon';
 import { B1, H5 } from 'components/Typography';
 import { useState } from 'react';
-import { InputNodeDrawer } from 'components/NodeDrawer';
 import { Node as INode } from 'lib/types/Node';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
 import { CircuitNode, Nodes } from 'components/Node';
+import { InputNodeDrawer } from 'components/NodeDrawer';
 
 interface DialogState {
 	node?: INode;
@@ -64,12 +64,3 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 		</>
 	);
 };
-
-// Input(Input),
-// 	/// Define a transformation rule to rename fields, remove fields, and/or structurally optimize the response data returned by the Node before the response data is merged back into the source record.
-// 	Transformer(Transformer),
-// 	/// Define one or more mappings to transform the data returned by the Node to different specified fields.
-// 	Mapper(Mapper),
-// 	Ouput(Ouput),
-// 	/// Define a lookup to retrieve data from a different Canister.
-// 	Lookup(Lookup),

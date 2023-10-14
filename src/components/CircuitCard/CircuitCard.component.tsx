@@ -7,9 +7,10 @@ export const CircuitCard = ({ onClick, children }: PropsWithChildren<{ onClick?:
 			elevation={0}
 			component={onClick ? ButtonBase : Stack}
 			onClick={onClick}
-			alignItems="center"
-			justifyContent="center"
 			sx={{
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
 				p: 2,
 				height: 300,
 				width: '100%',

@@ -16,3 +16,11 @@ export interface Node {
 }
 
 export type VerificationType = 'token' | 'whitelist' | 'none';
+
+export interface NodeSource {
+	id: NodeSourceType;
+	label: string;
+	icon: string;
+}
+
+export type NodeSourceType = 'canister' | 'request';

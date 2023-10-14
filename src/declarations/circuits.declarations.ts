@@ -12,6 +12,7 @@ export interface Circuit {
 	created_at: bigint;
 	user_id: Principal;
 	is_favorite: boolean;
+	is_running: boolean;
 }
 export interface PostCircuit {
 	name: string;
@@ -21,7 +22,9 @@ export type Result = { Ok: Circuit } | { Err: ApiError };
 export type Result_1 = { Ok: Array<Circuit> } | { Err: ApiError };
 export interface _SERVICE {
 	add_circuit: ActorMethod<[PostCircuit], Result>;
+	disable_circuit: ActorMethod<[number], Result>;
 	edit_circuit: ActorMethod<[number, PostCircuit], Result>;
+	enable_circuit: ActorMethod<[number], Result>;
 	get_circuit: ActorMethod<[number], Result>;
 	get_user_circuits: ActorMethod<[], Result_1>;
 }
@@ -41,7 +44,8 @@ export const idlFactory = ({ IDL }: any) => {
 		description: IDL.Opt(IDL.Text),
 		created_at: IDL.Nat64,
 		user_id: IDL.Principal,
-		is_favorite: IDL.Bool
+		is_favorite: IDL.Bool,
+		is_running: IDL.Bool
 	});
 	const ApiError = IDL.Variant({
 		NotFound: IDL.Text,
@@ -52,7 +56,9 @@ export const idlFactory = ({ IDL }: any) => {
 	const Result_1 = IDL.Variant({ Ok: IDL.Vec(Circuit), Err: ApiError });
 	return IDL.Service({
 		add_circuit: IDL.Func([PostCircuit], [Result], []),
+		disable_circuit: IDL.Func([IDL.Nat32], [Result], []),
 		edit_circuit: IDL.Func([IDL.Nat32, PostCircuit], [Result], []),
+		enable_circuit: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit: IDL.Func([IDL.Nat32], [Result], ['query']),
 		get_user_circuits: IDL.Func([], [Result_1], ['query'])
 	});

@@ -8,6 +8,7 @@ import { NodeDrawerProps } from './NodeDrawer.types';
 export const NodeDrawer = ({
 	title,
 	isOpen,
+	isDisabled,
 	isLoading,
 	onClose,
 	onSubmit,
@@ -17,6 +18,7 @@ export const NodeDrawer = ({
 		<Drawer anchor="right" open={isOpen} onClose={onClose}>
 			<Stack
 				direction="row"
+				alignItems="center"
 				justifyContent="space-between"
 				sx={{
 					py: 2,
@@ -26,10 +28,7 @@ export const NodeDrawer = ({
 					borderBottom: theme => `1px solid ${theme.palette.divider}`
 				}}
 			>
-				<Stack direction="row" alignItems="center" spacing={2}>
-					<H3>{title}</H3>
-					<img src="/public/logos/icp.png" style={{ width: 24, height: 24 }} />
-				</Stack>
+				<H3>{title}</H3>
 				<IconButton tooltip="Close" icon="close" onClick={onClose} />
 			</Stack>
 			<Box sx={{ p: 4, width: 700, height: '100%', overflowY: 'auto' }}>{children}</Box>
@@ -45,10 +44,10 @@ export const NodeDrawer = ({
 					borderTop: theme => `1px solid ${theme.palette.divider}`
 				}}
 			>
-				<Button onClick={onSubmit} loading={isLoading} variant="contained">
+				<Button onClick={onSubmit} loading={isLoading} disabled={isDisabled} variant="contained">
 					Save
 				</Button>
-				<Button variant="outlined" disabled={isLoading} onClick={onClose}>
+				<Button variant="outlined" disabled={isDisabled || isLoading} onClick={onClose}>
 					Cancel
 				</Button>
 			</Stack>

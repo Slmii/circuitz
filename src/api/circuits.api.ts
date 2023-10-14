@@ -53,4 +53,23 @@ export abstract class Circuits {
 		const unwrapped = await unwrapResult(wrapped);
 		return mapToCircuit(unwrapped);
 	}
+
+	/**
+	 * Toggle enabled/disabled state of a circuit
+	 */
+	static async toggleStatus({ circuitId, enabled }: { circuitId: number; enabled: boolean }): Promise<Circuit> {
+		const actor = await Actor.createActor<_SERVICE>(circuitsCanisterId[ENV], 'circuits');
+
+		if (enabled) {
+			const wrapped = await actor.disable_circuit(circuitId);
+
+			const unwrapped = await unwrapResult(wrapped);
+			return mapToCircuit(unwrapped);
+		}
+
+		const wrapped = await actor.enable_circuit(circuitId);
+
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToCircuit(unwrapped);
+	}
 }

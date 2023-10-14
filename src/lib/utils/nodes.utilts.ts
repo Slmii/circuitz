@@ -19,8 +19,8 @@ export const mapToNode = (node: OldNode): Node => {
 	};
 };
 
-export const getInputNodeFormValues = (node?: Node): InputNodeFormValues => {
-	if (!node || !('Input' in node.nodeType)) {
+export const getInputCanisterFormValues = (node?: Node): InputNodeFormValues => {
+	if (!node || !('Canister' in node.nodeType)) {
 		return {
 			description: '',
 			name: '',
@@ -32,16 +32,16 @@ export const getInputNodeFormValues = (node?: Node): InputNodeFormValues => {
 		};
 	}
 
-	const token = getVerificationToken(node.nodeType.Input.verification_type);
+	const token = getVerificationToken(node.nodeType.Canister.verification_type);
 
 	return {
-		description: node.nodeType.Input.description[0] ?? '',
-		name: node.nodeType.Input.name,
-		sampleData: node.nodeType.Input.sample_data[0] ?? '',
-		verificationType: getVerificationType(node.nodeType.Input.verification_type),
+		description: node.nodeType.Canister.description[0] ?? '',
+		name: node.nodeType.Canister.name,
+		sampleData: node.nodeType.Canister.sample_data[0] ?? '',
+		verificationType: getVerificationType(node.nodeType.Canister.verification_type),
 		verificationTypeToken: token?.token ?? '',
 		verificationTypeTokenField: token?.field ?? '',
-		verificationTypeWhitelist: getVerificationWhitelist(node.nodeType.Input.verification_type)
+		verificationTypeWhitelist: getVerificationWhitelist(node.nodeType.Canister.verification_type)
 	};
 };
 

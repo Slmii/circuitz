@@ -5,12 +5,38 @@ import { toReadableDate } from 'lib/utils/date.utils';
 import { formatTCycles } from 'lib/utils/ic.utils';
 import { formatBytes } from 'lib/utils/number.utils';
 import { CircuitStatus } from '../CircuitStatus';
-import { useState } from 'react';
 import { Circuit } from 'lib/types';
 import { Principal } from '@dfinity/principal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from 'api/index';
+import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
+import { useSnackbar } from 'lib/hooks';
 
 export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; nodeCanisterId: Principal }) => {
-	const [isActive, setIsActive] = useState(false);
+	const { errorSnackbar } = useSnackbar();
+	const queryClient = useQueryClient();
+
+	const { mutate } = useMutation(api.Circuits.toggleStatus, {
+		onMutate: () => {
+			// Snapshot
+			const previousCircuit = queryClient.getQueryData([QUERY_KEYS.CIRCUIT, circuit.id]);
+
+			// Optimistic update
+			queryClient.setQueryData([QUERY_KEYS.CIRCUIT, circuit.id], { ...circuit, isEnabled: !circuit.isEnabled });
+
+			return {
+				previousCircuit
+			};
+		},
+		onError: (_error, _variables, context) => {
+			errorSnackbar('Something went wrong');
+
+			// Rollback
+			if (context?.previousCircuit) {
+				queryClient.setQueryData([QUERY_KEYS.CIRCUIT, circuit.id], context.previousCircuit);
+			}
+		}
+	});
 
 	return (
 		<Stack
@@ -30,8 +56,12 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 				justifyContent="space-between"
 				sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', borderRadius: 1 }}
 			>
-				<H4>{isActive ? 'Active' : 'Inactive'}</H4>
-				<StandaloneSwitch value={isActive} name="active" onChange={setIsActive} />
+				<H4>{circuit.isEnabled ? 'Active' : 'Inactive'}</H4>
+				<StandaloneSwitch
+					value={circuit.isEnabled}
+					name="active"
+					onChange={() => mutate({ circuitId: circuit.id, enabled: circuit.isEnabled })}
+				/>
 			</Stack>
 			<Stack direction="column" spacing={2}>
 				<Stack direction="column" spacing={1}>

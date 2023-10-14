@@ -5,6 +5,7 @@ import { StandaloneSwitchProps, SwitchProps } from './Switch.types';
 import { Controller } from 'react-hook-form';
 import slugify from 'slugify';
 import { styled } from '@mui/material';
+import { CircularProgress } from 'components/Progress';
 
 const StyledFormControlLabel = styled(FormControlLabel)({
 	margin: 0
@@ -16,24 +17,29 @@ export const StandaloneSwitch = ({
 	name,
 	disabled,
 	labelPlacement = 'end',
+	isLoading,
 	onChange
 }: StandaloneSwitchProps) => {
 	return (
 		<FormGroup row>
-			<StyledFormControlLabel
-				control={
-					<MuiSwitch
-						color="secondary"
-						inputProps={{ 'aria-labelledby': `${slugify(name)}-switch` }}
-						disabled={disabled}
-						checked={value}
-						size="small"
-						onChange={(_e, checked) => onChange(checked)}
-					/>
-				}
-				label={label}
-				labelPlacement={labelPlacement}
-			/>
+			{isLoading ? (
+				<CircularProgress color="secondary" />
+			) : (
+				<StyledFormControlLabel
+					control={
+						<MuiSwitch
+							color="secondary"
+							inputProps={{ 'aria-labelledby': `${slugify(name)}-switch` }}
+							disabled={disabled}
+							checked={value}
+							size="small"
+							onChange={(_e, checked) => onChange(checked)}
+						/>
+					}
+					label={label}
+					labelPlacement={labelPlacement}
+				/>
+			)}
 		</FormGroup>
 	);
 };
