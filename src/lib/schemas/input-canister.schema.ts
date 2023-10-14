@@ -1,5 +1,5 @@
 import { Principal } from '@dfinity/principal';
-import { FORM_ERRORS } from 'lib/constants/form-errors.constants';
+import { FORM_ERRORS } from 'lib/constants';
 import { VerificationType } from 'lib/types';
 import * as yup from 'yup';
 

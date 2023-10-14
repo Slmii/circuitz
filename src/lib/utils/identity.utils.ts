@@ -1,6 +1,6 @@
 import { DelegationChain, DelegationIdentity, Ed25519KeyIdentity } from '@dfinity/identity';
 import { Identity } from '@dfinity/agent';
-import { DELEGATION, IDENTITY, II_AUTH } from 'lib/constants/local-storage.constants';
+import { DELEGATION, IDENTITY, II_AUTH } from 'lib/constants';
 import { Principal } from '@dfinity/principal';
 import { LocalStorage } from '@dfinity/auth-client';
 

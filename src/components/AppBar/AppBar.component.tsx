@@ -2,7 +2,7 @@ import { useMediaQuery } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import { DISABLE_MARGIN_MEDIA_QUERY } from 'lib/constants/theme.constants';
+import { DISABLE_MARGIN_MEDIA_QUERY } from 'lib/constants';
 import { PropsWithChildren } from 'react';
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);

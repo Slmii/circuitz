@@ -1,7 +1,7 @@
 import { Actor } from './actor.api';
 import type { _SERVICE } from 'declarations/users.declarations';
 import { unwrapResult } from 'lib/utils/actor.utils';
-import { ENV } from 'lib/constants/env.constants';
+import { ENV } from 'lib/constants';
 import { usersCanisterId } from './canisterIds';
 
 export abstract class Users {

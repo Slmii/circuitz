@@ -20,3 +20,9 @@ body {
 		transform: rotate(360deg);
 	}
 }
+
+.form-loading {
+	& > * {
+		pointer-events: none;
+	}
+}

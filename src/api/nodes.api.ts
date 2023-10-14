@@ -1,6 +1,6 @@
 import { Actor } from './actor.api';
 import type { NodeType, _SERVICE } from 'declarations/nodes.declarations';
-import { ENV } from 'lib/constants/env.constants';
+import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import { unwrapResult } from 'lib/utils/actor.utils';
 import { mapToNode } from 'lib/utils/nodes.utilts';
@@ -27,6 +27,17 @@ export abstract class Nodes {
 		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
 
 		const wrapped = await actor.add_node(circuitId, data);
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToNode(unwrapped);
+	}
+
+	/**
+	 * Edit a node
+	 */
+	static async editNode({ nodeId, data }: { nodeId: number; data: NodeType }): Promise<Node> {
+		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+
+		const wrapped = await actor.edit_node(nodeId, data);
 		const unwrapped = await unwrapResult(wrapped);
 		return mapToNode(unwrapped);
 	}

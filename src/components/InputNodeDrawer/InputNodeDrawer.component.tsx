@@ -1,5 +1,5 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useGetParam } from 'lib/hooks';
+import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { InputCanisterForm } from './Forms/InputCanisterForm.component';
 import { H5 } from 'components/Typography';
@@ -31,6 +31,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 	const { formRef, submitter } = useFormSubmit();
 
 	const { mutateAsync: addNode, isLoading: isAddNodeLoading } = useAddNode();
+	const { mutateAsync: editNode, isLoading: isEditNodeLoading } = useEditNode();
 
 	useEffect(() => {
 		// Set node source if we are in 'Edit' mode
@@ -40,10 +41,17 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 	}, [node]);
 
 	const handleOnSubmit = async (data: NodeType) => {
-		await addNode({
-			circuitId: Number(circuitId),
-			data
-		});
+		if (!node) {
+			await addNode({
+				circuitId: Number(circuitId),
+				data
+			});
+		} else {
+			await editNode({
+				nodeId: node.id,
+				data
+			});
+		}
 
 		onClose();
 	};
@@ -61,12 +69,16 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 			}}
 			onSubmit={submitter}
 			isOpen={open}
-			isLoading={isAddNodeLoading}
+			isLoading={isAddNodeLoading || isEditNodeLoading}
 			isDisabled={!nodeSource}
 			title={`Input Node${nodeSource ? ` - ${nodeSource.toUpperCase()}` : ''}`}
 		>
 			{nodeSource ? (
-				<Stack alignItems="flex-start" spacing={2}>
+				<Stack
+					alignItems="flex-start"
+					spacing={2}
+					className={isAddNodeLoading || isEditNodeLoading ? 'form-loading' : undefined}
+				>
 					{!node && <Back label="Select Node Source" onBack={() => setNodeSource(null)} />}
 					<InputCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
 				</Stack>

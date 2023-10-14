@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api/index';
-import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
+import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
 import { Circuit } from 'lib/types';
 import { useSnackbar } from './useSnackbar';
 import { Principal } from '@dfinity/principal';
@@ -21,7 +21,7 @@ export const useAddCircuit = () => {
 			});
 		},
 		onError: () => {
-			errorSnackbar('Failed to add circuit');
+			errorSnackbar(MUTATE_ERROR);
 		}
 	});
 };
@@ -46,7 +46,40 @@ export const useEditCircuit = () => {
 			});
 		},
 		onError: () => {
-			errorSnackbar('Failed to add circuit');
+			errorSnackbar(MUTATE_ERROR);
+		}
+	});
+};
+
+export const useToggleCircuitStatus = () => {
+	const queryClient = useQueryClient();
+	const { errorSnackbar } = useSnackbar();
+
+	return useMutation(api.Circuits.toggleStatus, {
+		onMutate: ({ circuitId, enabled }) => {
+			// Snapshot
+			const previousCircuit = queryClient.getQueryData([QUERY_KEYS.CIRCUIT, circuitId]);
+
+			// Optimistic update
+			queryClient.setQueryData<Circuit>([QUERY_KEYS.CIRCUIT, circuitId], old => {
+				if (!old) {
+					return;
+				}
+
+				return { ...old, isEnabled: !enabled };
+			});
+
+			return {
+				previousCircuit
+			};
+		},
+		onError: (_error, variables, context) => {
+			errorSnackbar(MUTATE_ERROR);
+
+			// Rollback
+			if (context?.previousCircuit) {
+				queryClient.setQueryData([QUERY_KEYS.CIRCUIT, variables.circuitId], context.previousCircuit);
+			}
 		}
 	});
 };

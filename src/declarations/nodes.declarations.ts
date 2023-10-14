@@ -99,6 +99,7 @@ export interface Transformer {
 export type VerificationType = { None: null } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
+	edit_node: ActorMethod<[number, NodeType], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 }
 
@@ -213,6 +214,7 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
+		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query'])
 	});
 };

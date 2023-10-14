@@ -1,5 +1,5 @@
 import { CSSObject, Components, PaletteOptions, Theme } from '@mui/material/styles';
-import { DISABLE_MARGIN_MEDIA_QUERY } from 'lib/constants/theme.constants';
+import { DISABLE_MARGIN_MEDIA_QUERY } from 'lib/constants';
 
 export const DARK_THEME: Readonly<PaletteOptions> = {
 	primary: {

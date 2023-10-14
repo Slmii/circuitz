@@ -1,6 +1,6 @@
 import { Actor } from './actor.api';
 import type { PostCircuit, _SERVICE } from 'declarations/circuits.declarations';
-import { ENV } from 'lib/constants/env.constants';
+import { ENV } from 'lib/constants';
 import { circuitsCanisterId } from './canisterIds';
 import { unwrapResult } from 'lib/utils/actor.utils';
 import { mapToCircuit } from 'lib/utils/circuits.utilts';

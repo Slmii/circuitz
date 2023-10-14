@@ -1,8 +1,7 @@
 import { HttpAgent, Actor as DfinityActor, ActorConfig } from '@dfinity/agent';
 import { AuthClient, LocalStorage } from '@dfinity/auth-client';
 import { IDL } from '@dfinity/candid';
-import { HOST } from 'lib/constants/env.constants';
-import { II_AUTH } from 'lib/constants/local-storage.constants';
+import { HOST, II_AUTH } from 'lib/constants';
 import { getDelegation } from 'lib/utils/actor.utils';
 import { idlFactory as circuitsIdl } from 'declarations/circuits.declarations';
 import { idlFactory as nodesIdl } from 'declarations/nodes.declarations';

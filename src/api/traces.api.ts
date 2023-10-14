@@ -1,6 +1,6 @@
 import { Actor } from './actor.api';
 import type { _SERVICE } from 'declarations/traces.declarations';
-import { ENV } from 'lib/constants/env.constants';
+import { ENV } from 'lib/constants';
 import { tracesCanisterId } from './canisterIds';
 import { unwrapResult } from 'lib/utils/actor.utils';
 import { Trace } from 'lib/types';

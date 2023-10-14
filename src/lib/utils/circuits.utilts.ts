@@ -2,7 +2,7 @@ import type { Circuit as OldCircuit } from 'declarations/circuits.declarations';
 import type { Circuit } from 'lib/types';
 import { dateFromNano } from './date.utils';
 import { nodesCanisterId } from 'api/canisterIds';
-import { ENV } from 'lib/constants/env.constants';
+import { ENV } from 'lib/constants';
 import { Principal } from '@dfinity/principal';
 
 export const mapToCircuit = (circuit: OldCircuit): Circuit => {

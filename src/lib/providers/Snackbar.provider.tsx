@@ -1,5 +1,5 @@
 import { Button } from 'components/Button';
-import { AUTO_HIDE_DURATION } from 'lib/constants/snackbar.constants';
+import { AUTO_HIDE_DURATION } from 'lib/constants';
 import { SnackbarProvider as NotistackSnackbarProvider, closeSnackbar } from 'notistack';
 import { PropsWithChildren } from 'react';
 

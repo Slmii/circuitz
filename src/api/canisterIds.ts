@@ -1,4 +1,4 @@
-import { ENV } from 'lib/constants/env.constants';
+import { ENV } from 'lib/constants';
 
 type CanisterId = {
 	[key in typeof ENV]: string;

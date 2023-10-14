@@ -1,4 +1,4 @@
-import { FORM_ERRORS } from 'lib/constants/form-errors.constants';
+import { FORM_ERRORS } from 'lib/constants';
 import * as yup from 'yup';
 
 export const circuitSchema = yup.object().shape({

@@ -7,36 +7,10 @@ import { formatBytes } from 'lib/utils/number.utils';
 import { CircuitStatus } from '../CircuitStatus';
 import { Circuit } from 'lib/types';
 import { Principal } from '@dfinity/principal';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from 'api/index';
-import { QUERY_KEYS } from 'lib/constants/query-keys.constants';
-import { useSnackbar } from 'lib/hooks';
+import { useToggleCircuitStatus } from 'lib/hooks';
 
 export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; nodeCanisterId: Principal }) => {
-	const { errorSnackbar } = useSnackbar();
-	const queryClient = useQueryClient();
-
-	const { mutate } = useMutation(api.Circuits.toggleStatus, {
-		onMutate: () => {
-			// Snapshot
-			const previousCircuit = queryClient.getQueryData([QUERY_KEYS.CIRCUIT, circuit.id]);
-
-			// Optimistic update
-			queryClient.setQueryData([QUERY_KEYS.CIRCUIT, circuit.id], { ...circuit, isEnabled: !circuit.isEnabled });
-
-			return {
-				previousCircuit
-			};
-		},
-		onError: (_error, _variables, context) => {
-			errorSnackbar('Something went wrong');
-
-			// Rollback
-			if (context?.previousCircuit) {
-				queryClient.setQueryData([QUERY_KEYS.CIRCUIT, circuit.id], context.previousCircuit);
-			}
-		}
-	});
+	const { mutate } = useToggleCircuitStatus();
 
 	return (
 		<Stack
