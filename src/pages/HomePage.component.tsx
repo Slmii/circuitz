@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack';
 import { Button } from 'components/Button';
-import { H3, H1, H5 } from 'components/Typography';
+import { H3, H1, B1 } from 'components/Typography';
 import { useAuth } from 'lib/hooks';
 import { useCallback } from 'react';
 import Particles from 'react-particles';
@@ -42,7 +42,7 @@ export const HomePage = () => {
 			</Stack>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
 				<H1>Discover the Future of Integration</H1>
-				<H5
+				<B1
 					sx={{
 						p: 1,
 						backgroundColor: theme => theme.palette.secondary.main,
@@ -52,7 +52,7 @@ export const HomePage = () => {
 					The future of integration is here, built exclusively on the Internet Computer. Seamlessly connect, process,
 					and automate data flows between canisters, unlocking a new realm of possibilities for decentralized
 					applications.
-				</H5>
+				</B1>
 			</Stack>
 			<Stack component="section" spacing={2} sx={{ zIndex: 1 }}>
 				<H1>How it works</H1>
@@ -66,10 +66,10 @@ export const HomePage = () => {
 					}}
 				>
 					<H3 fontWeight="bold">Initiate a Node</H3>
-					<H5>
+					<B1>
 						Begin your integration journey by directing data into a Node. Acting as the primary gateway, this Node
 						securely receives data straight from the source canister, ensuring a smooth and efficient intake process.
-					</H5>
+					</B1>
 				</Stack>
 				<Stack
 					direction="column"
@@ -81,11 +81,11 @@ export const HomePage = () => {
 					}}
 				>
 					<H3 fontWeight="bold">Harness the Power of Nodes</H3>
-					<H5>
+					<B1>
 						Dive deeper into the customization realm with our advanced nodes. Tailor your data processing by employing
 						our versatile nodes, whether you're aiming to map, transform, or filter. Each node is designed to offer a
 						unique function, ensuring your data is processed exactly how you envision.
-					</H5>
+					</B1>
 				</Stack>
 				<Stack
 					direction="column"
@@ -97,10 +97,10 @@ export const HomePage = () => {
 					}}
 				>
 					<H3 fontWeight="bold">Seamless Output</H3>
-					<H5>
+					<B1>
 						Conclude your data's journey by directing it to a designated canister. After undergoing the specified Node
 						processes, your refined data is channeled to its final destination, ensuring accurate and timely delivery.
-					</H5>
+					</B1>
 				</Stack>
 				<div>
 					<Button

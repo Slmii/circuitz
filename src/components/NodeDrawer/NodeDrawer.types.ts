@@ -1,5 +1,4 @@
-import { Input } from 'declarations/nodes.declarations';
-import { VerificationType } from 'lib/types';
+import { VerificationType, Node } from 'lib/types';
 
 export interface NodeDrawerProps {
 	title: string;
@@ -10,7 +9,7 @@ export interface NodeDrawerProps {
 }
 
 export interface InputNodeDrawerProps {
-	inputNode?: Input;
+	node?: Node;
 	open: boolean;
 	onClose: () => void;
 }

@@ -37,6 +37,7 @@
 		"react-hook-form": "^7.47.0",
 		"react-particles": "^2.12.2",
 		"react-router-dom": "^6.16.0",
+		"react-xarrows": "^2.0.2",
 		"recoil": "^0.7.7",
 		"slugify": "^1.6.6",
 		"tsparticles-slim": "^2.12.0",

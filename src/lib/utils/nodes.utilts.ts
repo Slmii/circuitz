@@ -1,6 +1,7 @@
 import type { Node as OldNode, VerificationType as OldVerificationType, Token } from 'declarations/nodes.declarations';
 import type { Node, VerificationType } from 'lib/types';
 import { dateFromNano } from './date.utils';
+import { InputNodeFormValues } from 'components/NodeDrawer';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -18,7 +19,33 @@ export const mapToNode = (node: OldNode): Node => {
 	};
 };
 
-export const getVerificationType = (verificationType: OldVerificationType): VerificationType => {
+export const getInputNodeFormValues = (node?: Node): InputNodeFormValues => {
+	if (!node || !('Input' in node.nodeType)) {
+		return {
+			description: '',
+			name: '',
+			sampleData: '',
+			verificationType: 'none',
+			verificationTypeToken: '',
+			verificationTypeTokenField: '',
+			verificationTypeWhitelist: []
+		};
+	}
+
+	const token = getVerificationToken(node.nodeType.Input.verification_type);
+
+	return {
+		description: node.nodeType.Input.description[0] ?? '',
+		name: node.nodeType.Input.name,
+		sampleData: node.nodeType.Input.sample_data[0] ?? '',
+		verificationType: getVerificationType(node.nodeType.Input.verification_type),
+		verificationTypeToken: token?.token ?? '',
+		verificationTypeTokenField: token?.field ?? '',
+		verificationTypeWhitelist: getVerificationWhitelist(node.nodeType.Input.verification_type)
+	};
+};
+
+const getVerificationType = (verificationType: OldVerificationType): VerificationType => {
 	if ('None' in verificationType) {
 		return 'none';
 	}
@@ -30,13 +57,13 @@ export const getVerificationType = (verificationType: OldVerificationType): Veri
 	return 'whitelist';
 };
 
-export const getVerificationToken = (verificationType: OldVerificationType): Token | undefined => {
+const getVerificationToken = (verificationType: OldVerificationType): Token | undefined => {
 	if ('None' in verificationType) {
 		return;
 	}
 
 	if ('Whitelist' in verificationType) {
-		return undefined;
+		return;
 	}
 
 	return {
@@ -45,7 +72,7 @@ export const getVerificationToken = (verificationType: OldVerificationType): Tok
 	};
 };
 
-export const getVerificationWhitelist = (verificationType: OldVerificationType): { principal: string }[] => {
+const getVerificationWhitelist = (verificationType: OldVerificationType): { principal: string }[] => {
 	if ('None' in verificationType) {
 		return [];
 	}

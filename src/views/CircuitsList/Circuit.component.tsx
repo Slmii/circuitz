@@ -9,12 +9,13 @@ import { useGetCircuitTraces, useGetNodeCanisterId } from 'lib/hooks';
 import { Circuit as ICircuit } from 'lib/types';
 import { useMemo } from 'react';
 import { CircuitStatus } from '../CircuitStatus';
+import pluralize from 'pluralize';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	const { data: nodeCanisterId, isLoading: isNodeCanisterIdLoading } = useGetNodeCanisterId();
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(circuit.id);
 
-	const errors = useMemo(() => {
+	const traces = useMemo(() => {
 		if (!circuitTraces) {
 			return [];
 		}
@@ -85,11 +86,15 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 								sx={{
 									width: 20,
 									height: 20,
-									backgroundColor: errors.length ? 'error.main' : 'success.main',
+									backgroundColor: traces.length ? 'error.main' : 'success.main',
 									borderRadius: '50%'
 								}}
 							/>
-							{errors.length ? <Caption color="error.main">{errors.length} errors</Caption> : null}
+							{traces.length ? (
+								<Caption color="error.main">
+									{traces.length} {pluralize('error', traces.length)}
+								</Caption>
+							) : null}
 						</Stack>
 						<CircuitStatus nodesCanisterId={nodeCanisterId} />
 					</Stack>

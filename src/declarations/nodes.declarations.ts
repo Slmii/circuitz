@@ -21,6 +21,12 @@ export interface Input {
 	sample_data: [] | [string];
 	verification_type: VerificationType;
 }
+export interface Lookup {
+	name: string;
+	description: [] | [string];
+	lookup_type: LookupType;
+}
+export type LookupType = { LookupCanister: null } | { LookupHttp: null };
 export interface Mapper {
 	output: string;
 	interface: string;
@@ -40,10 +46,9 @@ export interface Node {
 	circuit_id: number;
 }
 export type NodeType =
-	| { Pin: Pin }
 	| { Transformer: Transformer }
 	| { Input: Input }
-	| { Lookup: Ouput }
+	| { Lookup: Lookup }
 	| { Ouput: Ouput }
 	| { Mapper: Mapper };
 export type Operator =
@@ -90,6 +95,46 @@ export interface _SERVICE {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
+	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
+	const Token = IDL.Record({ field: IDL.Text, token: IDL.Text });
+	const VerificationType = IDL.Variant({
+		None: IDL.Null,
+		Token: Token,
+		Whitelist: IDL.Vec(IDL.Principal)
+	});
+	const Input = IDL.Record({
+		name: IDL.Text,
+		description: IDL.Opt(IDL.Text),
+		sample_data: IDL.Opt(IDL.Text),
+		verification_type: VerificationType
+	});
+	const LookupType = IDL.Variant({
+		LookupCanister: IDL.Null,
+		LookupHttp: IDL.Null
+	});
+	const Lookup = IDL.Record({
+		name: IDL.Text,
+		description: IDL.Opt(IDL.Text),
+		lookup_type: LookupType
+	});
+	const Ouput = IDL.Record({
+		method: IDL.Text,
+		name: IDL.Text,
+		description: IDL.Opt(IDL.Text),
+		canister: IDL.Principal
+	});
+	const Mapper = IDL.Record({
+		output: IDL.Text,
+		interface: IDL.Text,
+		input: IDL.Text
+	});
+	const NodeType = IDL.Variant({
+		Transformer: Transformer,
+		Input: Input,
+		Lookup: Lookup,
+		Ouput: Ouput,
+		Mapper: Mapper
+	});
 	const CustomPinLogic = IDL.Record({
 		function: IDL.Opt(IDL.Text),
 		script: IDL.Opt(IDL.Text)
@@ -113,11 +158,6 @@ export const idlFactory = ({ IDL }: any) => {
 		operator: Operator,
 		condition: Condition
 	});
-	const Mapper = IDL.Record({
-		output: IDL.Text,
-		interface: IDL.Text,
-		input: IDL.Text
-	});
 	const PinType = IDL.Variant({
 		PostResponsePin: CustomPinLogic,
 		FilterPin: IDL.Vec(ConditionGroup),
@@ -125,33 +165,6 @@ export const idlFactory = ({ IDL }: any) => {
 		PrePin: CustomPinLogic
 	});
 	const Pin = IDL.Record({ pin_type: PinType, order: IDL.Nat32 });
-	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
-	const Token = IDL.Record({ field: IDL.Text, token: IDL.Text });
-	const VerificationType = IDL.Variant({
-		None: IDL.Null,
-		Token: Token,
-		Whitelist: IDL.Vec(IDL.Principal)
-	});
-	const Input = IDL.Record({
-		name: IDL.Text,
-		description: IDL.Opt(IDL.Text),
-		sample_data: IDL.Opt(IDL.Text),
-		verification_type: VerificationType
-	});
-	const Ouput = IDL.Record({
-		method: IDL.Text,
-		name: IDL.Text,
-		description: IDL.Opt(IDL.Text),
-		canister: IDL.Principal
-	});
-	const NodeType = IDL.Variant({
-		Pin: Pin,
-		Transformer: Transformer,
-		Input: Input,
-		Lookup: Ouput,
-		Ouput: Ouput,
-		Mapper: Mapper
-	});
 	const Node = IDL.Record({
 		id: IDL.Nat32,
 		pin: IDL.Vec(Pin),

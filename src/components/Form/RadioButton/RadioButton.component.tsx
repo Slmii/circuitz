@@ -22,7 +22,6 @@ export const RadioButton = ({ name, label, disabled, row, required, onChange, op
 							</FormLabel>
 						)}
 						<RadioGroup
-							color="secondary"
 							row={row}
 							aria-labelledby={`${slugify(name)}-radio`}
 							{...field}
@@ -36,7 +35,7 @@ export const RadioButton = ({ name, label, disabled, row, required, onChange, op
 									key={option.id}
 									value={option.id}
 									disabled={disabled}
-									control={<Radio size="small" color="primary" />}
+									control={<Radio size="small" color="secondary" />}
 									label={option.label}
 									labelPlacement="end"
 								/>

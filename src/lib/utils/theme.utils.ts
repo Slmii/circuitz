@@ -23,8 +23,8 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 		secondary: 'rgba(230, 230, 230, 0.8)'
 	},
 	background: {
-		default: '#2E2E2E', // A slightly lighter black for the background
-		paper: '#3C3C3C' // A semi-transparent version of the background color
+		default: '#3C3C3C', // A slightly lighter black for the background
+		paper: '#2E2E2E' // A semi-transparent version of the background color
 	},
 	divider: 'rgba(230, 230, 230, 0.3)' // A soft white divider with some transparency
 };
@@ -51,8 +51,8 @@ export const LIGHT_THEME: Readonly<PaletteOptions> = {
 		secondary: 'rgba(0, 0, 0, 0.7)'
 	},
 	background: {
-		default: '#FFFFFF',
-		paper: '#f3f4f6'
+		default: '#f3f4f6',
+		paper: '#FFFFFF'
 	},
 	divider: 'rgba(0, 0, 0, 0.3)'
 };

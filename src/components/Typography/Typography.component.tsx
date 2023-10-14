@@ -71,6 +71,7 @@ export const H4 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTy
 				...props.sx
 			}}
 			variant="h4"
+			fontWeight="bold"
 		>
 			{children}
 		</Typography>
@@ -86,6 +87,7 @@ export const H5 = ({ children, lineClamp, ...props }: PropsWithChildren<CustomTy
 				...props.sx
 			}}
 			variant="h5"
+			fontWeight="bold"
 		>
 			{children}
 		</Typography>

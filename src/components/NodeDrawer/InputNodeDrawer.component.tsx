@@ -13,7 +13,7 @@ import { IconButton } from 'components/IconButton';
 import { v4 as uuidv4 } from 'uuid';
 import { useAddNode, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { VerificationType } from 'declarations/nodes.declarations';
-import { getVerificationToken, getVerificationType, getVerificationWhitelist } from 'lib/utils/nodes.utilts';
+import { getInputNodeFormValues } from 'lib/utils/nodes.utilts';
 import { toPrincipal } from 'lib/utils/identity.utils';
 
 import AceEditor from 'react-ace';
@@ -23,7 +23,7 @@ import 'ace-builds/src-noconflict/theme-cloud9_night';
 import 'ace-builds/src-noconflict/theme-cloud9_day';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-export const InputNodeDrawer = ({ inputNode, open, onClose }: InputNodeDrawerProps) => {
+export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) => {
 	const theme = useTheme();
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
@@ -69,17 +69,7 @@ export const InputNodeDrawer = ({ inputNode, open, onClose }: InputNodeDrawerPro
 		<NodeDrawer onClose={onClose} onSubmit={submitter} isOpen={open} isLoading={isAddNodeLoading} title="Input Node">
 			<Form<InputNodeFormValues>
 				action={handleOnSubmit}
-				defaultValues={{
-					name: inputNode?.name ?? '',
-					description: inputNode?.description[0] ?? '',
-					verificationType: inputNode ? getVerificationType(inputNode.verification_type) : 'none',
-					verificationTypeToken: inputNode ? getVerificationToken(inputNode.verification_type)?.token ?? '' : '',
-					verificationTypeTokenField: inputNode ? getVerificationToken(inputNode.verification_type)?.field ?? '' : '',
-					verificationTypeWhitelist: inputNode
-						? getVerificationWhitelist(inputNode.verification_type)
-						: [{ principal: '' }],
-					sampleData: inputNode?.sample_data[0] ?? ''
-				}}
+				defaultValues={getInputNodeFormValues(node)}
 				myRef={formRef}
 				render={({ watch, setValue }) => (
 					<>
@@ -143,6 +133,7 @@ export const InputNodeDrawer = ({ inputNode, open, onClose }: InputNodeDrawerPro
 								onChange={value => setValue('sampleData', value)}
 								name="UNIQUE_ID_OF_DIV"
 								editorProps={{ $blockScrolling: true }}
+								defaultValue={watch('sampleData')}
 								height="300px"
 								width="100%"
 								setOptions={{

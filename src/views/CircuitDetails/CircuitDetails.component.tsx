@@ -43,10 +43,6 @@ export const Circuit = () => {
 	const { data: nodes, isLoading: isNodesLoading } = useGetCircuitNodes(Number(circuitId));
 	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
 
-	const handleOnTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-		setTab(newValue);
-	};
-
 	const isLoaded =
 		!!circuit && !isCircuitLoading && !!nodeCanisterId && !isNodeCanisterIdLoading && !!nodes && !isNodesLoading;
 	if (!isLoaded) {
@@ -57,7 +53,7 @@ export const Circuit = () => {
 		<Stack direction="column" rowGap={2} sx={{ p: 6 }}>
 			<Breadcrumbs />
 			<H1>{circuit.name}</H1>
-			<Tabs value={tab} onChange={handleOnTabChange} aria-label="basic tabs example">
+			<Tabs value={tab} onChange={(_e, tab) => setTab(tab)} aria-label="basic tabs example">
 				<Tab label="Nodes" {...a11yProps(0)} />
 				<Tab label="Settings" {...a11yProps(1)} />
 				<Tab label="History" {...a11yProps(2)} />
