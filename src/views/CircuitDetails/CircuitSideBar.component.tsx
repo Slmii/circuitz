@@ -1,4 +1,4 @@
-import { Stack, Divider } from '@mui/material';
+import { Stack, Divider, Skeleton } from '@mui/material';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { H4, H5, B1 } from 'components/Typography';
 import { toReadableDate } from 'lib/utils/date.utils';
@@ -78,7 +78,7 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 				nodesCanisterId={nodeCanisterId}
 				render={data => (
 					<>
-						{data.data && (
+						{!!data.data && !data.isLoading ? (
 							<Stack direction="column" spacing={2}>
 								<Stack direction="column" spacing={1}>
 									<H5 fontWeight="bold">Cycles</H5>
@@ -91,6 +91,21 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 								<Stack direction="column" spacing={1}>
 									<H5 fontWeight="bold">Memory</H5>
 									<B1>{formatBytes(Number(data.data.memory_size))}</B1>
+								</Stack>
+							</Stack>
+						) : (
+							<Stack direction="column" spacing={2}>
+								<Stack direction="column" spacing={1}>
+									<Skeleton variant="text" />
+									<Skeleton variant="text" />
+								</Stack>
+								<Stack direction="column" spacing={1}>
+									<Skeleton variant="text" />
+									<Skeleton variant="text" />
+								</Stack>
+								<Stack direction="column" spacing={1}>
+									<Skeleton variant="text" />
+									<Skeleton variant="text" />
 								</Stack>
 							</Stack>
 						)}

@@ -38,7 +38,8 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 										<Stack direction="column" spacing={1}>
 											<H5>What's next?</H5>
 											<Stack direction="row" alignItems="center" spacing={2}>
-												<AddNodeButton icon="request" label="Request" onClick={() => {}} />
+												<AddNodeButton icon="infinite" label="Canister lookup" onClick={() => {}} />
+												<AddNodeButton icon="request" label="HTTP Request lookup" onClick={() => {}} />
 												<AddNodeButton icon="transformer" label="Transformer" onClick={() => {}} />
 												<AddNodeButton icon="mapper" label="Mapper" onClick={() => {}} />
 												<AddNodeButton icon="export" label="Export" onClick={() => {}} />
