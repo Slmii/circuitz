@@ -1,7 +1,11 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export type ApiError = { NotFound: string } | { Unauthorized: string } | { AlreadyExists: string };
+export type ApiError =
+	| { NotFound: string }
+	| { Unauthorized: string }
+	| { AlreadyExists: string }
+	| { InterCanister: string };
 export interface Canister {
 	name: string;
 	description: [] | [string];
@@ -20,6 +24,26 @@ export type ConditionGroupType = { Or: null } | { And: null };
 export interface CustomPinLogic {
 	function: [] | [string];
 	script: [] | [string];
+}
+export interface HttpRequest {
+	url: string;
+	method: HttpRequestMethod;
+	name: string;
+	description: [] | [string];
+	headers: Array<[string, string]>;
+	request_body: [] | [string];
+}
+export type HttpRequestMethod = { GET: null } | { POST: null };
+export interface LookupCanister {
+	method: string;
+	args: Array<[string, string]>;
+	name: string;
+	description: [] | [string];
+	canister: Principal;
+}
+export interface LookupTransformPin {
+	output: string;
+	input: string;
 }
 export interface Mapper {
 	output: string;
@@ -40,10 +64,12 @@ export interface Node {
 	circuit_id: number;
 }
 export type NodeType =
-	| { Request: Request }
-	| { Transformer: Transformer }
+	| { LookupCanister: LookupCanister }
+	| { HttpRequest: HttpRequest }
+	| { Transformer: LookupTransformPin }
 	| { Canister: Canister }
 	| { Ouput: Ouput }
+	| { LookupHttpRequest: HttpRequest }
 	| { Mapper: Mapper };
 export type Operator =
 	| { In: null }
@@ -65,27 +91,11 @@ export interface Pin {
 	order: number;
 }
 export type PinType =
+	| { LookupTransformPin: LookupTransformPin }
 	| { PostResponsePin: CustomPinLogic }
 	| { FilterPin: Array<ConditionGroup> }
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic };
-export interface Request {
-	request_type: RequestType;
-	name: string;
-	description: [] | [string];
-}
-export interface RequestCanister {
-	method: string;
-	canister: Principal;
-}
-export interface RequestHttp {
-	url: string;
-	method: RequestHttpMethod;
-	headers: Array<[string, string]>;
-	request_body: [] | [string];
-}
-export type RequestHttpMethod = { GET: null } | { POST: null };
-export type RequestType = { RequestCanister: RequestCanister } | { RequestHttp: RequestHttp };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export interface Token {
@@ -105,30 +115,29 @@ export interface _SERVICE {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
-	const RequestCanister = IDL.Record({
+	const LookupCanister = IDL.Record({
 		method: IDL.Text,
+		args: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+		name: IDL.Text,
+		description: IDL.Opt(IDL.Text),
 		canister: IDL.Principal
 	});
-	const RequestHttpMethod = IDL.Variant({
+	const HttpRequestMethod = IDL.Variant({
 		GET: IDL.Null,
 		POST: IDL.Null
 	});
-	const RequestHttp = IDL.Record({
+	const HttpRequest = IDL.Record({
 		url: IDL.Text,
-		method: RequestHttpMethod,
+		method: HttpRequestMethod,
+		name: IDL.Text,
+		description: IDL.Opt(IDL.Text),
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
 		request_body: IDL.Opt(IDL.Text)
 	});
-	const RequestType = IDL.Variant({
-		RequestCanister: RequestCanister,
-		RequestHttp: RequestHttp
+	const LookupTransformPin = IDL.Record({
+		output: IDL.Text,
+		input: IDL.Text
 	});
-	const Request = IDL.Record({
-		request_type: RequestType,
-		name: IDL.Text,
-		description: IDL.Opt(IDL.Text)
-	});
-	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
 	const Token = IDL.Record({ field: IDL.Text, token: IDL.Text });
 	const VerificationType = IDL.Variant({
 		None: IDL.Null,
@@ -153,10 +162,12 @@ export const idlFactory = ({ IDL }: any) => {
 		input: IDL.Text
 	});
 	const NodeType = IDL.Variant({
-		Request: Request,
-		Transformer: Transformer,
+		LookupCanister: LookupCanister,
+		HttpRequest: HttpRequest,
+		Transformer: LookupTransformPin,
 		Canister: Canister,
 		Ouput: Ouput,
+		LookupHttpRequest: HttpRequest,
 		Mapper: Mapper
 	});
 	const CustomPinLogic = IDL.Record({
@@ -183,6 +194,7 @@ export const idlFactory = ({ IDL }: any) => {
 		condition: Condition
 	});
 	const PinType = IDL.Variant({
+		LookupTransformPin: LookupTransformPin,
 		PostResponsePin: CustomPinLogic,
 		FilterPin: IDL.Vec(ConditionGroup),
 		MapperPin: Mapper,
@@ -205,7 +217,8 @@ export const idlFactory = ({ IDL }: any) => {
 	const ApiError = IDL.Variant({
 		NotFound: IDL.Text,
 		Unauthorized: IDL.Text,
-		AlreadyExists: IDL.Text
+		AlreadyExists: IDL.Text,
+		InterCanister: IDL.Text
 	});
 	const Result = IDL.Variant({ Ok: Node, Err: ApiError });
 	const Result_1 = IDL.Variant({

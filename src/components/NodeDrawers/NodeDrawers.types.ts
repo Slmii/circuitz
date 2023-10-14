@@ -1,8 +1,9 @@
-import { VerificationType, Node } from 'lib/types';
+import { VerificationType, Node, NodeTypeKey } from 'lib/types';
 
 export interface InputNodeDrawerProps {
-	node?: Node;
 	open: boolean;
+	nodeType: NodeTypeKey;
+	node?: Node;
 	onClose: () => void;
 }
 
@@ -14,4 +15,17 @@ export interface InputNodeFormValues {
 	verificationTypeTokenField: string;
 	verificationTypeWhitelist: { principal: string }[];
 	sampleData: string;
+}
+
+export interface LookupCanisterFormValues {
+	name: string;
+	description: string;
+	canisterId: string;
+	methodName: string;
+	args: LookupCanisterArg[];
+}
+
+export interface LookupCanisterArg {
+	name: string;
+	value: string;
 }

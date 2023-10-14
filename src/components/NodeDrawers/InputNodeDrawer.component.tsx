@@ -6,19 +6,19 @@ import { H5 } from 'components/Typography';
 import { ButtonBase, Paper, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { NodeSource, NodeSourceType } from 'lib/types';
-import { InputNodeDrawerProps } from './InputNodeDrawer.types';
+import { InputNodeDrawerProps } from './NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
 import { Back } from 'components/Navigation';
 
 const NODE_SOURCES: NodeSource[] = [
 	{
-		id: 'canister',
+		id: 'Canister',
 		label: 'Canister',
 		icon: 'icp',
 		disabled: false
 	},
 	{
-		id: 'request',
+		id: 'HttpRequest',
 		label: 'Coming soon',
 		icon: 'http',
 		disabled: true
@@ -36,7 +36,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 	useEffect(() => {
 		// Set node source if we are in 'Edit' mode
 		if (node) {
-			setNodeSource('Canister' in node.nodeType ? 'canister' : 'request');
+			setNodeSource('Canister' in node.nodeType ? 'Canister' : 'HttpRequest');
 		}
 	}, [node]);
 

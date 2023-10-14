@@ -10,12 +10,13 @@ export const Drawer = ({
 	isOpen,
 	isDisabled,
 	isLoading,
+	fullWidth,
 	onClose,
 	onSubmit,
 	children
 }: PropsWithChildren<NodeDrawerProps>) => {
 	return (
-		<MuiDrawer anchor="right" open={isOpen} onClose={onClose}>
+		<MuiDrawer anchor="right" open={isOpen} onClose={onClose} PaperProps={{ sx: { width: fullWidth ? '90%' : 700 } }}>
 			<Stack
 				direction="row"
 				alignItems="center"
@@ -31,7 +32,7 @@ export const Drawer = ({
 				{typeof title === 'string' ? <H3>{title}</H3> : title}
 				<IconButton tooltip="Close" icon="close" onClick={onClose} />
 			</Stack>
-			<Box sx={{ p: 4, width: 700, height: '100%', overflowY: 'auto' }}>{children}</Box>
+			<Box sx={{ p: 4, height: '100%', overflowY: 'auto' }}>{children}</Box>
 			<Stack
 				direction="row"
 				justifyContent="flex-end"

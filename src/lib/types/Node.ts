@@ -24,4 +24,7 @@ export interface NodeSource {
 	disabled: boolean;
 }
 
-export type NodeSourceType = 'canister' | 'request';
+export type NodeSourceType = NodeTypeKey;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type NodeTypeKey = KeysOfUnion<NodeType>;

@@ -15,7 +15,7 @@ import { getInputCanisterFormValues } from 'lib/utils/nodes.utilts';
 import { toPrincipal } from 'lib/utils/identity.utils';
 import { inputCanisterSchema } from 'lib/schemas';
 import { Editor } from 'components/Editor';
-import { InputNodeFormValues } from '../InputNodeDrawer.types';
+import { InputNodeFormValues } from '../NodeDrawers.types';
 
 export const InputCanisterForm = ({
 	formRef,

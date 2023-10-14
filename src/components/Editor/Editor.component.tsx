@@ -18,7 +18,7 @@ export const Editor = ({
 	value: string;
 	mode: string;
 	isReadOnly?: boolean;
-	height?: number;
+	height?: number | string;
 	onChange?: (value: string) => void;
 }) => {
 	const theme = useTheme();
@@ -33,7 +33,7 @@ export const Editor = ({
 			theme={aceEditorTheme}
 			name="UNIQUE_ID_OF_DIV"
 			editorProps={{ $blockScrolling: true }}
-			height={`${height}px`}
+			height={typeof height === 'number' ? `${height}px` : height}
 			width="100%"
 			value={value}
 			readOnly={isReadOnly}

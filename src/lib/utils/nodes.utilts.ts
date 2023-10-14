@@ -1,7 +1,7 @@
 import type { Node as OldNode, VerificationType as OldVerificationType, Token } from 'declarations/nodes.declarations';
 import type { Node, VerificationType } from 'lib/types';
 import { dateFromNano } from './date.utils';
-import { InputNodeFormValues } from 'components/InputNodeDrawer';
+import { InputNodeFormValues, LookupCanisterFormValues } from 'components/NodeDrawers';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -74,27 +74,27 @@ const getVerificationToken = (verificationType: OldVerificationType): Token | un
 
 const getVerificationWhitelist = (verificationType: OldVerificationType): { principal: string }[] => {
 	if ('None' in verificationType) {
-		return [];
+		return [{ principal: '' }];
 	}
 
 	if ('Token' in verificationType) {
-		return [];
+		return [{ principal: '' }];
 	}
 
 	return verificationType.Whitelist.map(principal => ({ principal: principal.toString() }));
 };
 
 export const getNodeTitle = (node: Node): string => {
-	if ('Request' in node.nodeType) {
-		return 'Request';
+	if ('LookupCanister' in node.nodeType) {
+		return 'Lookup Canister';
+	}
+
+	if ('LookupHttpRequest' in node.nodeType) {
+		return 'Lookup HTTP Request';
 	}
 
 	if ('Transformer' in node.nodeType) {
 		return 'Transformer';
-	}
-
-	if ('Canister' in node.nodeType) {
-		return 'Canister';
 	}
 
 	if ('Ouput' in node.nodeType) {
@@ -106,4 +106,26 @@ export const getNodeTitle = (node: Node): string => {
 	}
 
 	return '';
+};
+
+export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValues => {
+	if (!node || !('LookupCanister' in node.nodeType)) {
+		return {
+			args: [{ name: '', value: '' }],
+			canisterId: '',
+			description: '',
+			methodName: '',
+			name: ''
+		};
+	}
+
+	const lookup = node.nodeType.LookupCanister;
+
+	return {
+		args: lookup.args.map(arg => ({ name: arg[0], value: arg[1] })),
+		canisterId: lookup.canister.toString(),
+		description: lookup.description[0] ?? '',
+		methodName: lookup.method,
+		name: lookup.name
+	};
 };
