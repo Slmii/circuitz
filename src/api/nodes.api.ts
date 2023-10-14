@@ -5,7 +5,8 @@ import { nodesCanisterId } from './canisterIds';
 import { unwrapResult } from 'lib/utils/actor.utils';
 import { mapToNode } from 'lib/utils/nodes.utilts';
 import { Node } from 'lib/types';
-import { Principal } from '@dfinity/principal';
+
+// TODO: replace hardcoded canister id with a dynamic one
 
 export abstract class Nodes {
 	/**
@@ -17,16 +18,6 @@ export abstract class Nodes {
 
 		const unwrapped = await unwrapResult(wrapped);
 		return unwrapped[1].map(mapToNode);
-	}
-
-	/**
-	 * Get the Node Canister Ids for a circuit
-	 */
-	static async getNodeCanisterId(): Promise<Principal> {
-		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
-
-		const wrapped = await actor.get_node_canister_id();
-		return unwrapResult(wrapped);
 	}
 
 	/**

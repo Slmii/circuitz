@@ -5,14 +5,13 @@ import { Link } from 'components/Link';
 import { Menu } from 'components/Menu';
 import { SkeletonCircuitMetaData } from 'components/Skeleton';
 import { B1, Caption, H2, H3 } from 'components/Typography';
-import { useGetCircuitTraces, useGetNodeCanisterId } from 'lib/hooks';
+import { useGetCircuitTraces } from 'lib/hooks';
 import { Circuit as ICircuit } from 'lib/types';
 import { useMemo } from 'react';
 import { CircuitStatus } from '../CircuitStatus';
 import pluralize from 'pluralize';
 
 export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
-	const { data: nodeCanisterId, isLoading: isNodeCanisterIdLoading } = useGetNodeCanisterId();
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(circuit.id);
 
 	const traces = useMemo(() => {
@@ -23,7 +22,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
-	const isLoaded = !!nodeCanisterId && !isNodeCanisterIdLoading && !!circuitTraces && !isCircuitTracesLoading;
+	const isLoaded = !!circuitTraces && !isCircuitTracesLoading;
 
 	return (
 		<Grid item xs={12} sm={6} md={4}>
@@ -96,7 +95,7 @@ export const Circuit = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => 
 								</Caption>
 							) : null}
 						</Stack>
-						<CircuitStatus nodesCanisterId={nodeCanisterId} />
+						<CircuitStatus nodesCanisterId={circuit.nodeCanisterId} />
 					</Stack>
 				) : (
 					<SkeletonCircuitMetaData />

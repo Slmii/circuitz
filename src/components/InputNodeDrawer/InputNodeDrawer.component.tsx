@@ -4,7 +4,7 @@ import { NodeType } from 'declarations/nodes.declarations';
 import { InputCanisterForm } from './Forms/InputCanisterForm.component';
 import { H5 } from 'components/Typography';
 import { ButtonBase, Paper, Stack } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NodeSource, NodeSourceType } from 'lib/types';
 import { InputNodeDrawerProps } from './InputNodeDrawer.types';
 import { Drawer } from 'components/Drawer';
@@ -32,21 +32,32 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 
 	const { mutateAsync: addNode, isLoading: isAddNodeLoading } = useAddNode();
 
+	useEffect(() => {
+		// Set node source if we are in 'Edit' mode
+		if (node) {
+			setNodeSource('Canister' in node.nodeType ? 'canister' : 'request');
+		}
+	}, [node]);
+
 	const handleOnSubmit = async (data: NodeType) => {
-		const node = await addNode({
+		await addNode({
 			circuitId: Number(circuitId),
 			data
 		});
 
-		console.log('Added Node', node);
+		onClose();
 	};
 
 	return (
 		<Drawer
 			onClose={() => {
 				onClose();
-				// Reset node source after drawer is closed
-				setTimeout(() => setNodeSource(null), 500);
+
+				// If we are in 'Create' mode, reset node source
+				if (!node) {
+					// Reset node source after drawer is closed
+					setTimeout(() => setNodeSource(null), 500);
+				}
 			}}
 			onSubmit={submitter}
 			isOpen={open}
@@ -56,7 +67,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 		>
 			{nodeSource ? (
 				<Stack alignItems="flex-start" spacing={2}>
-					<Back label="Select Node Source" onBack={() => setNodeSource(null)} />
+					{!node && <Back label="Select Node Source" onBack={() => setNodeSource(null)} />}
 					<InputCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
 				</Stack>
 			) : (

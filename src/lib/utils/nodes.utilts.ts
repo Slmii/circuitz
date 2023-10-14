@@ -1,7 +1,7 @@
 import type { Node as OldNode, VerificationType as OldVerificationType, Token } from 'declarations/nodes.declarations';
 import type { Node, VerificationType } from 'lib/types';
 import { dateFromNano } from './date.utils';
-import { InputNodeFormValues } from 'components/NodeDrawer';
+import { InputNodeFormValues } from 'components/InputNodeDrawer';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -28,7 +28,7 @@ export const getInputCanisterFormValues = (node?: Node): InputNodeFormValues => 
 			verificationType: 'none',
 			verificationTypeToken: '',
 			verificationTypeTokenField: '',
-			verificationTypeWhitelist: []
+			verificationTypeWhitelist: [{ principal: '' }]
 		};
 	}
 

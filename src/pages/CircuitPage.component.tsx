@@ -1,5 +1,5 @@
-import { Circuit } from '../views/CircuitDetails';
+import { CircuitDetails } from '../views/CircuitDetails';
 
 export const CircuitPage = () => {
-	return <Circuit />;
+	return <CircuitDetails />;
 };

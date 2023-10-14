@@ -35,16 +35,15 @@ function CustomTabPanel(props: TabPanelProps) {
 	);
 }
 
-export const Circuit = () => {
+export const CircuitDetails = () => {
 	const [tab, setTab] = useState(0);
-	const circuitId = useGetParam('circuitId');
 
-	const { data: nodeCanisterId, isLoading: isNodeCanisterIdLoading } = useGetNodeCanisterId();
+	const circuitId = useGetParam('circuitId');
+	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
 	const { data: nodes, isLoading: isNodesLoading } = useGetCircuitNodes(Number(circuitId));
 	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
 
-	const isLoaded =
-		!!circuit && !isCircuitLoading && !!nodeCanisterId && !isNodeCanisterIdLoading && !!nodes && !isNodesLoading;
+	const isLoaded = !!circuit && !isCircuitLoading && !!nodes && !isNodesLoading;
 	if (!isLoaded) {
 		return <>Loading...</>;
 	}

@@ -9,26 +9,27 @@ import { CircuitNode, Nodes } from 'components/Node';
 import { InputNodeDrawer } from 'components/InputNodeDrawer';
 
 interface DialogState {
-	node?: INode;
+	open: boolean;
 	type: 'input' | 'output';
+	node?: INode;
 }
 
 export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 	const [isAddNode, setIsAddNode] = useState(false);
-	const [dialogState, setDialogState] = useState<DialogState | null>(null);
+	const [dialogState, setDialogState] = useState<DialogState>({ open: false, type: 'input' });
 
 	return (
 		<>
 			<Stack direction="column" alignItems="flex-start" spacing={isAddNode ? 6 : 3}>
 				{!nodes.length ? (
 					// Show 'Add Input Node' button if there are no nodes at all
-					<CircuitNode id="add" onClick={() => setDialogState({ type: 'input' })}>
+					<CircuitNode id="add" onClick={() => setDialogState({ type: 'input', open: true })}>
 						<Icon icon="add-square" spacingRight fontSize="small" />
 						<B1>Add Input Node</B1>
 					</CircuitNode>
 				) : (
 					<>
-						<Nodes nodes={nodes} onNodeClick={node => setDialogState({ type: 'input', node })} />
+						<Nodes nodes={nodes} onNodeClick={node => setDialogState({ type: 'input', node, open: true })} />
 						<Stack direction="row" spacing={1} alignItems="center">
 							{!isAddNode && <IconButton icon="add-square" onClick={() => setIsAddNode(true)} />}
 							<Collapse in={isAddNode} orientation="horizontal">
@@ -58,8 +59,8 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 			</Stack>
 			<InputNodeDrawer
 				node={dialogState?.node}
-				open={dialogState?.type === 'input'}
-				onClose={() => setDialogState(null)}
+				open={dialogState.open && dialogState.type === 'input'}
+				onClose={() => setDialogState(prevState => ({ ...prevState, open: false }))}
 			/>
 		</>
 	);

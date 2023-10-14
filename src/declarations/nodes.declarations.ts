@@ -88,7 +88,6 @@ export type RequestHttpMethod = { GET: null } | { POST: null };
 export type RequestType = { RequestCanister: RequestCanister } | { RequestHttp: RequestHttp };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
-export type Result_2 = { Ok: Principal } | { Err: ApiError };
 export interface Token {
 	field: string;
 	token: string;
@@ -101,7 +100,6 @@ export type VerificationType = { None: null } | { Token: Token } | { Whitelist: 
 export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
-	get_node_canister_id: ActorMethod<[], Result_2>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -213,10 +211,8 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
-	const Result_2 = IDL.Variant({ Ok: IDL.Principal, Err: ApiError });
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
-		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
-		get_node_canister_id: IDL.Func([], [Result_2], ['query'])
+		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query'])
 	});
 };

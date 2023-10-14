@@ -8,7 +8,7 @@ import { useFormContext, useFieldArray } from 'react-hook-form';
 import { Icon } from 'components/Icon';
 import { IconButton } from 'components/IconButton';
 import { v4 as uuidv4 } from 'uuid';
-import { useGetNodeCanisterId } from 'lib/hooks';
+import { useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { Node } from 'lib/types';
 import { NodeType, VerificationType } from 'declarations/nodes.declarations';
 import { getInputCanisterFormValues } from 'lib/utils/nodes.utilts';
@@ -26,7 +26,8 @@ export const InputCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => Promise<void>;
 }) => {
-	const { data: nodeCanisterId } = useGetNodeCanisterId();
+	const circuitId = useGetParam('circuitId');
+	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
 
 	const handleOnSubmit = async (data: InputNodeFormValues) => {
 		let verificationType: VerificationType = { None: null };
@@ -141,11 +142,10 @@ let address = Address {
 };
 
 let response: Result<(Result<String, Error>,), _> = call::call(
-	"${nodeCanisterId?.toString()}".to_string(),
+	"${nodeCanisterId.toString()}".to_string(),
 	"input_node",
 	(serde_json::to_string($address)),
-)
-.await;
+).await;
 `}
 							isReadOnly
 						/>
@@ -160,7 +160,6 @@ let response: Result<(Result<String, Error>,), _> = call::call(
 							height={350}
 							mode="javascript"
 							value={`
-// Front End
 const address = {
 	street: "10 Downing Street",
 	city: "London",
@@ -178,7 +177,7 @@ const agent = new HttpAgent({
 
 const actor = Actor.createActor(idlFactory, {
 	agent,
-	canisterId: "${nodeCanisterId}"
+	canisterId: "${nodeCanisterId.toString()}"
 });
 
 const response = await actor.input_node(JSON.stingify(address));
