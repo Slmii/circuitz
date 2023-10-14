@@ -83,3 +83,27 @@ const getVerificationWhitelist = (verificationType: OldVerificationType): { prin
 
 	return verificationType.Whitelist.map(principal => ({ principal: principal.toString() }));
 };
+
+export const getNodeTitle = (node: Node): string => {
+	if ('Request' in node.nodeType) {
+		return 'Request';
+	}
+
+	if ('Transformer' in node.nodeType) {
+		return 'Transformer';
+	}
+
+	if ('Canister' in node.nodeType) {
+		return 'Canister';
+	}
+
+	if ('Ouput' in node.nodeType) {
+		return 'Output';
+	}
+
+	if ('Mapper' in node.nodeType) {
+		return 'Mapper';
+	}
+
+	return '';
+};

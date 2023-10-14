@@ -1,7 +1,7 @@
 import { ButtonBase, Stack, useTheme } from '@mui/material';
 import { B1, Caption, H5 } from 'components/Typography';
 import { Trace, Node as INode } from 'lib/types';
-import { getInputCanisterFormValues } from 'lib/utils/nodes.utilts';
+import { getInputCanisterFormValues, getNodeTitle } from 'lib/utils/nodes.utilts';
 import pluralize from 'pluralize';
 import { PropsWithChildren, useMemo } from 'react';
 import Xarrow, { anchorCustomPositionType, useXarrow } from 'react-xarrows';
@@ -43,7 +43,7 @@ export const Node = ({
 
 	return (
 		<Stack spacing={1}>
-			<H5>Input Node</H5>
+			<H5>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
 			<CircuitNode id={node.id.toString()} trace={trace} onClick={() => onNodeClick(node)}>
 				<img src="/public/logos/icp.png" style={{ width: 24, height: 24 }} />
 				<B1>{getInputCanisterFormValues(node).name}</B1>

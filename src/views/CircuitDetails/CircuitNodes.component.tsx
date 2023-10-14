@@ -10,7 +10,7 @@ import { InputNodeDrawer } from 'components/InputNodeDrawer';
 
 interface DialogState {
 	open: boolean;
-	type: 'input' | 'output';
+	type: 'input' | 'output' | 'canister' | 'http-request' | 'transformer' | 'mapper' | 'export';
 	node?: INode;
 }
 
@@ -29,7 +29,9 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 					</CircuitNode>
 				) : (
 					<>
-						<Nodes nodes={nodes} onNodeClick={node => setDialogState({ type: 'input', node, open: true })} />
+						<Stack direction="column" spacing={3}>
+							<Nodes nodes={nodes} onNodeClick={node => setDialogState({ type: 'input', node, open: true })} />
+						</Stack>
 						<Stack direction="row" spacing={1} alignItems="center">
 							{!isAddNode && <IconButton icon="add-square" onClick={() => setIsAddNode(true)} />}
 							<Collapse in={isAddNode} orientation="horizontal">
