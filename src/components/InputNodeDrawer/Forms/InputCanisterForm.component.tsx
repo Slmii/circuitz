@@ -1,7 +1,6 @@
-import { Divider, FormHelperText, Stack } from '@mui/material';
+import { Alert, Divider, Stack } from '@mui/material';
 import { RefObject } from 'react';
 import { Form } from 'components/Form';
-import { InputNodeFormValues } from '../NodeDrawer.types';
 import { Field } from 'components/Form/Field';
 import { RadioButton } from 'components/Form/RadioButton';
 import { H5, B2 } from 'components/Typography';
@@ -16,6 +15,7 @@ import { getInputCanisterFormValues } from 'lib/utils/nodes.utilts';
 import { toPrincipal } from 'lib/utils/identity.utils';
 import { inputCanisterSchema } from 'lib/schemas';
 import { Editor } from 'components/Editor';
+import { InputNodeFormValues } from '../InputNodeDrawer.types';
 
 export const InputCanisterForm = ({
 	formRef,
@@ -62,6 +62,9 @@ export const InputCanisterForm = ({
 			render={({ watch, setValue }) => (
 				<>
 					<Stack direction="column" spacing={2}>
+						<Alert severity="info">
+							An Input Node is a node that receives data from the outside world. This is the first Node in your Circuit.
+						</Alert>
 						<H5 fontWeight="bold">General</H5>
 						<Stack direction="column" spacing={4}>
 							<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
@@ -148,15 +151,16 @@ let response: Result<(Result<String, Error>,), _> = call::call(
 						/>
 						<B2>Javascript</B2>
 						{watch('verificationType') === 'token' && (
-							<FormHelperText error>
+							<Alert severity="error">
 								Be careful with using Token verification on the front-end as it can be easily compromised, unless you
 								don't mind others using your Circuit.
-							</FormHelperText>
+							</Alert>
 						)}
 						<Editor
 							height={350}
 							mode="javascript"
 							value={`
+// Front End
 const address = {
 	street: "10 Downing Street",
 	city: "London",

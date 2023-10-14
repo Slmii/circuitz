@@ -6,7 +6,7 @@ import { Node as INode } from 'lib/types/Node';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
 import { CircuitNode, Nodes } from 'components/Node';
-import { InputNodeDrawer } from 'components/NodeDrawer';
+import { InputNodeDrawer } from 'components/InputNodeDrawer';
 
 interface DialogState {
 	node?: INode;

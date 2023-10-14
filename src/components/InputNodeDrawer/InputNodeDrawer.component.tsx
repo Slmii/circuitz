@@ -1,28 +1,31 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { NodeDrawer } from '../NodeDrawer.component';
-import { InputNodeProps } from '../NodeDrawer.types';
 import { useAddNode, useGetParam } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
-import { InputCanisterForm } from './InputCanisterForm.component';
+import { InputCanisterForm } from './Forms/InputCanisterForm.component';
 import { H5 } from 'components/Typography';
 import { ButtonBase, Paper, Stack } from '@mui/material';
 import { useState } from 'react';
 import { NodeSource, NodeSourceType } from 'lib/types';
+import { InputNodeDrawerProps } from './InputNodeDrawer.types';
+import { Drawer } from 'components/Drawer';
+import { Back } from 'components/Navigation';
 
 const NODE_SOURCES: NodeSource[] = [
 	{
 		id: 'canister',
 		label: 'Canister',
-		icon: 'icp'
+		icon: 'icp',
+		disabled: false
 	},
 	{
 		id: 'request',
-		label: 'Request',
-		icon: 'http'
+		label: 'Coming soon',
+		icon: 'http',
+		disabled: true
 	}
 ];
 
-export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
+export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) => {
 	const [nodeSource, setNodeSource] = useState<NodeSourceType | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
@@ -39,7 +42,7 @@ export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
 	};
 
 	return (
-		<NodeDrawer
+		<Drawer
 			onClose={() => {
 				onClose();
 				// Reset node source after drawer is closed
@@ -49,10 +52,13 @@ export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
 			isOpen={open}
 			isLoading={isAddNodeLoading}
 			isDisabled={!nodeSource}
-			title="Input Node"
+			title={`Input Node${nodeSource ? ` - ${nodeSource.toUpperCase()}` : ''}`}
 		>
 			{nodeSource ? (
-				<InputCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+				<Stack alignItems="flex-start" spacing={2}>
+					<Back label="Select Node Source" onBack={() => setNodeSource(null)} />
+					<InputCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+				</Stack>
 			) : (
 				<Stack spacing={2}>
 					<H5 fontWeight="bold">Select Node Source</H5>
@@ -60,6 +66,7 @@ export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
 						{NODE_SOURCES.map(source => (
 							<Paper
 								key={source.id}
+								disabled={source.disabled}
 								onClick={() => setNodeSource(source.id)}
 								component={ButtonBase}
 								sx={{
@@ -68,7 +75,8 @@ export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
 									flexDirection: 'column',
 									gap: 1,
 									border: theme => `1px solid ${source.id === nodeSource ? theme.palette.primary.main : 'transparent'}`,
-									p: 2
+									p: 2,
+									opacity: source.disabled ? 0.5 : 1
 								}}
 							>
 								<img src={`/public/logos/${source.icon}.png`} style={{ width: 66, height: 66 }} />
@@ -78,6 +86,6 @@ export const InputNode = ({ node, open, onClose }: InputNodeProps) => {
 					</Stack>
 				</Stack>
 			)}
-		</NodeDrawer>
+		</Drawer>
 	);
 };

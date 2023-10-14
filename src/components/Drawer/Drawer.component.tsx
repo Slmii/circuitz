@@ -1,11 +1,11 @@
-import { Box, Drawer, Stack } from '@mui/material';
+import { Box, Drawer as MuiDrawer, Stack } from '@mui/material';
 import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { H3 } from 'components/Typography';
 import { PropsWithChildren } from 'react';
-import { NodeDrawerProps } from './NodeDrawer.types';
+import { NodeDrawerProps } from './Drawer.types';
 
-export const NodeDrawer = ({
+export const Drawer = ({
 	title,
 	isOpen,
 	isDisabled,
@@ -15,7 +15,7 @@ export const NodeDrawer = ({
 	children
 }: PropsWithChildren<NodeDrawerProps>) => {
 	return (
-		<Drawer anchor="right" open={isOpen} onClose={onClose}>
+		<MuiDrawer anchor="right" open={isOpen} onClose={onClose}>
 			<Stack
 				direction="row"
 				alignItems="center"
@@ -28,7 +28,7 @@ export const NodeDrawer = ({
 					borderBottom: theme => `1px solid ${theme.palette.divider}`
 				}}
 			>
-				<H3>{title}</H3>
+				{typeof title === 'string' ? <H3>{title}</H3> : title}
 				<IconButton tooltip="Close" icon="close" onClick={onClose} />
 			</Stack>
 			<Box sx={{ p: 4, width: 700, height: '100%', overflowY: 'auto' }}>{children}</Box>
@@ -51,6 +51,6 @@ export const NodeDrawer = ({
 					Cancel
 				</Button>
 			</Stack>
-		</Drawer>
+		</MuiDrawer>
 	);
 };

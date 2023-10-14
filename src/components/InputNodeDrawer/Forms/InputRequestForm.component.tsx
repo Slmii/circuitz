@@ -1,7 +1,6 @@
 import { Divider, FormHelperText, Stack, useTheme } from '@mui/material';
 import { RefObject, useMemo } from 'react';
 import { Form } from 'components/Form';
-import { InputNodeFormValues } from '../NodeDrawer.types';
 import { Field } from 'components/Form/Field';
 import { RadioButton } from 'components/Form/RadioButton';
 import { H5, B2 } from 'components/Typography';
@@ -15,6 +14,7 @@ import { NodeType, VerificationType } from 'declarations/nodes.declarations';
 import { getInputCanisterFormValues } from 'lib/utils/nodes.utilts';
 import { toPrincipal } from 'lib/utils/identity.utils';
 import AceEditor from 'react-ace';
+import { InputNodeFormValues } from '../InputNodeDrawer.types';
 
 export const InputCanisterForm = ({
 	formRef,

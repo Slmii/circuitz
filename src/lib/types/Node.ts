@@ -21,6 +21,7 @@ export interface NodeSource {
 	id: NodeSourceType;
 	label: string;
 	icon: string;
+	disabled: boolean;
 }
 
 export type NodeSourceType = 'canister' | 'request';

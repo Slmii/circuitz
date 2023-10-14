@@ -3,7 +3,7 @@ import { Icon } from 'components/Icon';
 import { B1 } from 'components/Typography';
 import { useNavigate } from 'react-router-dom';
 
-export const Back = ({ onBack }: { onBack?: () => void }) => {
+export const Back = ({ label = 'Go back', onBack }: { label?: string; onBack?: () => void }) => {
 	const navigate = useNavigate();
 
 	return (
@@ -19,9 +19,12 @@ export const Back = ({ onBack }: { onBack?: () => void }) => {
 			direction="row"
 			spacing={1}
 			alignItems="center"
+			sx={{
+				borderRadius: 1
+			}}
 		>
 			<Icon icon="arrow-left" />
-			<B1>Go back</B1>
+			<B1>{label}</B1>
 		</Stack>
 	);
 };

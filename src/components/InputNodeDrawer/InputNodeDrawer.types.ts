@@ -1,15 +1,6 @@
 import { VerificationType, Node } from 'lib/types';
 
-export interface NodeDrawerProps {
-	title: string;
-	isOpen: boolean;
-	isDisabled: boolean;
-	isLoading: boolean;
-	onClose: () => void;
-	onSubmit: () => void;
-}
-
-export interface InputNodeProps {
+export interface InputNodeDrawerProps {
 	node?: Node;
 	open: boolean;
 	onClose: () => void;
