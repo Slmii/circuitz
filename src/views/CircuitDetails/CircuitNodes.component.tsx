@@ -2,7 +2,7 @@ import { Stack, Collapse, Fade } from '@mui/material';
 import { Icon } from 'components/Icon';
 import { B1, H5 } from 'components/Typography';
 import { useState } from 'react';
-import { Node as INode, NodeTypeKey } from 'lib/types';
+import { Node as INode, NodeSourceType } from 'lib/types';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
 import { CircuitNode, Nodes } from 'components/Node';
@@ -10,7 +10,7 @@ import { LookupNodeDrawer, InputNodeDrawer } from 'components/NodeDrawers';
 
 interface DialogState {
 	open: boolean;
-	type: NodeTypeKey;
+	type: NodeSourceType;
 	node?: INode;
 }
 

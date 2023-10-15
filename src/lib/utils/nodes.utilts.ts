@@ -1,7 +1,13 @@
-import type { Node as OldNode, VerificationType as OldVerificationType, Token } from 'declarations/nodes.declarations';
-import type { Node, VerificationType } from 'lib/types';
+import type {
+	Arg,
+	Node as OldNode,
+	VerificationType as OldVerificationType,
+	Token
+} from 'declarations/nodes.declarations';
+import type { LookCanisterArgType, Node, VerificationType } from 'lib/types';
 import { dateFromNano } from './date.utils';
-import { InputNodeFormValues, LookupCanisterFormValues } from 'components/NodeDrawers';
+import { InputNodeFormValues, LookupCanisterArg, LookupCanisterFormValues } from 'components/NodeDrawers';
+import { toPrincipal } from './identity.utils';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -111,7 +117,7 @@ export const getNodeTitle = (node: Node): string => {
 export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValues => {
 	if (!node || !('LookupCanister' in node.nodeType)) {
 		return {
-			args: [{ name: '', value: '' }],
+			args: [],
 			canisterId: '',
 			description: '',
 			methodName: '',
@@ -122,10 +128,90 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 	const lookup = node.nodeType.LookupCanister;
 
 	return {
-		args: lookup.args.map(arg => ({ name: arg[0], value: arg[1] })),
+		args: lookup.args.map(arg => {
+			const dataType = getLookupCanisterFormArgType(arg);
+			let value = '';
+
+			if ('String' in arg) {
+				value = arg.String;
+			}
+
+			if ('Number' in arg) {
+				value = arg.Number.toString();
+			}
+
+			if ('Boolean' in arg) {
+				value = arg.Boolean.toString();
+			}
+
+			if ('BigInt' in arg) {
+				value = Number(arg.BigInt).toString();
+			}
+
+			if ('Principal' in arg) {
+				value = arg.Principal.toString();
+			}
+
+			return {
+				dataType,
+				value
+			};
+		}),
 		canisterId: lookup.canister.toString(),
 		description: lookup.description[0] ?? '',
 		methodName: lookup.method,
 		name: lookup.name
 	};
+};
+
+export const getLookupCanisterFormArgs = (args: LookupCanisterArg[]): Arg[] => {
+	return args.map((arg): Arg => {
+		if (arg.dataType === 'String') {
+			return {
+				String: arg.value
+			};
+		}
+
+		if (arg.dataType === 'Number') {
+			return {
+				Number: Number(arg.value)
+			};
+		}
+
+		if (arg.dataType === 'BigInt') {
+			return {
+				BigInt: BigInt(arg.value)
+			};
+		}
+
+		if (arg.dataType === 'Principal') {
+			return {
+				Principal: toPrincipal(arg.value)
+			};
+		}
+
+		return {
+			Boolean: arg.value === 'true'
+		};
+	});
+};
+
+export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
+	if ('String' in arg) {
+		return 'String';
+	}
+
+	if ('Number' in arg) {
+		return 'Number';
+	}
+
+	if ('BigInt' in arg) {
+		return 'BigInt';
+	}
+
+	if ('Principal' in arg) {
+		return 'Principal';
+	}
+
+	return 'Boolean';
 };

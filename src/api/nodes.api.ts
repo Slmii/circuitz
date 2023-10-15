@@ -1,5 +1,5 @@
 import { Actor } from './actor.api';
-import type { NodeType, _SERVICE } from 'declarations/nodes.declarations';
+import type { LookupCanister, NodeType, _SERVICE } from 'declarations/nodes.declarations';
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import { unwrapResult } from 'lib/utils/actor.utils';
@@ -40,5 +40,13 @@ export abstract class Nodes {
 		const wrapped = await actor.edit_node(nodeId, data);
 		const unwrapped = await unwrapResult(wrapped);
 		return mapToNode(unwrapped);
+	}
+
+	/**
+	 * Preview Lookup Canister request
+	 */
+	static async previewLookupCanister(data: LookupCanister) {
+		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+		return actor.preview_lookup_request(data);
 	}
 }

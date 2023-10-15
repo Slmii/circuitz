@@ -1,7 +1,11 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export type ApiError = { NotFound: string } | { Unauthorized: string } | { AlreadyExists: string };
+export type ApiError =
+	| { NotFound: string }
+	| { Unauthorized: string }
+	| { AlreadyExists: string }
+	| { InterCanister: string };
 export interface Circuit {
 	id: number;
 	updated_at: bigint;
@@ -54,7 +58,8 @@ export const idlFactory = ({ IDL }: any) => {
 	const ApiError = IDL.Variant({
 		NotFound: IDL.Text,
 		Unauthorized: IDL.Text,
-		AlreadyExists: IDL.Text
+		AlreadyExists: IDL.Text,
+		InterCanister: IDL.Text
 	});
 	const Result = IDL.Variant({ Ok: Circuit, Err: ApiError });
 	const Result_1 = IDL.Variant({ Ok: IDL.Principal, Err: ApiError });

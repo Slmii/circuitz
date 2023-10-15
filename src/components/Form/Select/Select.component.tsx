@@ -4,9 +4,9 @@ import MuiSelect from '@mui/material/Select';
 import { Controller } from 'react-hook-form';
 import slugify from 'slugify';
 import { SelectProps, StandaloneSelectProps } from './Select.types';
-import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import React from 'react';
+import { FormControl, InputLabel } from '@mui/material';
 
 export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSelectProps>(
 	(
@@ -29,14 +29,8 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 		const labelId = `${slugify(name)}-label`;
 
 		return (
-			<Stack
-				direction="column"
-				spacing={0.25}
-				sx={{
-					position: 'relative',
-					width: fullWidth ? '100%' : undefined
-				}}
-			>
+			<FormControl disabled={disabled} fullWidth={fullWidth}>
+				{label && <InputLabel id={`${slugify(name)}-select`}>{label}</InputLabel>}
 				<MuiSelect
 					required={required}
 					displayEmpty
@@ -87,7 +81,7 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 				</MuiSelect>
 				{error ? <FormHelperText error>{error}</FormHelperText> : null}
 				{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
-			</Stack>
+			</FormControl>
 		);
 	}
 );

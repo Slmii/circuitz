@@ -168,6 +168,10 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 			},
 			b: {
 				fontWeight: theme.typography.fontWeightBold
+			},
+			code: {
+				backgroundColor: theme.palette.secondary.main,
+				color: theme.palette.secondary.contrastText
 			}
 		})
 	},

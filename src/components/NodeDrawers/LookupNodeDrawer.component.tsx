@@ -1,13 +1,19 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
+import { useAddNode, useEditNode, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { LookupCanisterForm } from './Forms/LookupCanisterForm.component';
-import { InputNodeDrawerProps } from './NodeDrawers.types';
+import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from './NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
-import { Box, Divider, Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { Button } from 'components/Button';
-import { H5 } from 'components/Typography';
+import { B2, H5 } from 'components/Typography';
 import { Editor } from 'components/Editor';
+import { useFormContext } from 'react-hook-form';
+import { NodeSourceType } from 'lib/types';
+import { useMutation } from '@tanstack/react-query';
+import { api } from 'api/index';
+import { toPrincipal } from 'lib/utils/identity.utils';
+import { getLookupCanisterFormArgs } from 'lib/utils/nodes.utilts';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
 	const circuitId = useGetParam('circuitId');
@@ -32,6 +38,8 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 		onClose();
 	};
 
+	nodeType;
+
 	return (
 		<Drawer
 			onClose={onClose}
@@ -41,23 +49,64 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 			title="Lookup Canister"
 			fullWidth
 		>
-			<Stack direction="row" spacing={4}>
-				<Box width="50%">
-					{nodeType === 'LookupCanister' ? (
-						<LookupCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
-					) : (
-						<div>LookupHttpRequestForm</div>
-					)}
-				</Box>
-				<Divider orientation="vertical" flexItem />
-				<Stack direction="column" spacing={2} width="50%">
-					<H5 fontWeight="bold">Preview data</H5>
-					<Button variant="contained" size="large" startIcon="infinite">
-						Send preview request
-					</Button>
-					<Editor mode="javascript" value="// Preview data" isReadOnly height="100%" />
-				</Stack>
-			</Stack>
+			<LookupCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit}>
+				<PreviewRequest type="LookupCanister" />
+			</LookupCanisterForm>
 		</Drawer>
+	);
+};
+
+type FormData<T extends NodeSourceType> = T extends 'LookupCanister' ? LookupCanisterFormValues : InputNodeFormValues;
+const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
+	const circuitId = useGetParam('circuitId');
+	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
+	const { getValues, trigger } = useFormContext<FormData<typeof type>>();
+
+	const { mutate: preview, data, error, isLoading: isPreviewLoading } = useMutation(api.Nodes.previewLookupCanister);
+
+	return (
+		<>
+			<Divider orientation="vertical" flexItem />
+			<Stack direction="column" spacing={2} width="50%">
+				<H5 fontWeight="bold">Preview data</H5>
+				<Button
+					variant="contained"
+					loading={isPreviewLoading}
+					size="large"
+					startIcon="infinite"
+					onClick={async () => {
+						const isValid = await trigger();
+						if (!isValid) {
+							return;
+						}
+
+						const values = getValues();
+						if (type === 'LookupCanister' && 'canisterId' in values) {
+							preview({
+								args: getLookupCanisterFormArgs(values.args),
+								canister: toPrincipal(values.canisterId),
+								description: values.description.length ? [values.description] : [],
+								method: values.methodName,
+								name: values.name
+							});
+						}
+					}}
+				>
+					Send preview request
+				</Button>
+				<B2>
+					Be sure to authorize Canister ID <code>{nodeCanisterId.toString()}</code> to call the canister you are trying
+					to lookup.
+				</B2>
+				<Editor
+					mode="javascript"
+					value={`${data ? (typeof data === 'string' ? data : JSON.stringify(data, null, 4)) : ''} ${
+						error ? (typeof error === 'string' ? error : JSON.stringify((error as Error).message, null, 4)) : ''
+					}`}
+					isReadOnly
+					height="100%"
+				/>
+			</Stack>
+		</>
 	);
 };

@@ -1,4 +1,5 @@
 import { ButtonBase, Stack, useTheme } from '@mui/material';
+import { Icon } from 'components/Icon';
 import { B1, Caption, H5 } from 'components/Typography';
 import { Trace, Node as INode } from 'lib/types';
 import { getInputCanisterFormValues, getNodeTitle } from 'lib/utils/nodes.utilts';
@@ -45,7 +46,7 @@ export const Node = ({
 		<Stack spacing={1}>
 			<H5>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
 			<CircuitNode id={node.id.toString()} trace={trace} onClick={() => onNodeClick(node)}>
-				<img src="/public/logos/icp.png" style={{ width: 24, height: 24 }} />
+				<Icon icon="infinite" />
 				<B1>{getInputCanisterFormValues(node).name}</B1>
 			</CircuitNode>
 			{!isLast && (

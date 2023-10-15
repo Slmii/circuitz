@@ -1,8 +1,8 @@
-import { VerificationType, Node, NodeTypeKey } from 'lib/types';
+import { VerificationType, Node, NodeSourceType, LookCanisterArgType } from 'lib/types';
 
 export interface InputNodeDrawerProps {
 	open: boolean;
-	nodeType: NodeTypeKey;
+	nodeType: NodeSourceType;
 	node?: Node;
 	onClose: () => void;
 }
@@ -26,6 +26,6 @@ export interface LookupCanisterFormValues {
 }
 
 export interface LookupCanisterArg {
-	name: string;
+	dataType: LookCanisterArgType;
 	value: string;
 }

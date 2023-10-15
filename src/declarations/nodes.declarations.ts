@@ -6,6 +6,14 @@ export type ApiError =
 	| { Unauthorized: string }
 	| { AlreadyExists: string }
 	| { InterCanister: string };
+export type Arg =
+	| { BigInt: bigint }
+	| { String: string }
+	| { Object: Array<[string, Arg]> }
+	| { Boolean: boolean }
+	| { Principal: Principal }
+	| { Array: Vec }
+	| { Number: number };
 export interface Canister {
 	name: string;
 	description: [] | [string];
@@ -36,7 +44,7 @@ export interface HttpRequest {
 export type HttpRequestMethod = { GET: null } | { POST: null };
 export interface LookupCanister {
 	method: string;
-	args: Array<[string, string]>;
+	args: Array<Arg>;
 	name: string;
 	description: [] | [string];
 	canister: Principal;
@@ -98,6 +106,7 @@ export type PinType =
 	| { PrePin: CustomPinLogic };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
+export type Result_2 = { Ok: string } | { Err: ApiError };
 export interface Token {
 	field: string;
 	token: string;
@@ -106,18 +115,54 @@ export interface Transformer {
 	output: string;
 	input: string;
 }
+export type Vec = Array<
+	| { BigInt: bigint }
+	| { String: string }
+	| { Object: Array<[string, Arg]> }
+	| { Boolean: boolean }
+	| { Principal: Principal }
+	| { Array: Vec }
+	| { Number: number }
+>;
 export type VerificationType = { None: null } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
 	edit_node: ActorMethod<[number, NodeType], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
+	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
+	const Arg = IDL.Rec();
+	const Vec = IDL.Rec();
+	Vec.fill(
+		IDL.Vec(
+			IDL.Variant({
+				BigInt: IDL.Nat64,
+				String: IDL.Text,
+				Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
+				Boolean: IDL.Bool,
+				Principal: IDL.Principal,
+				Array: Vec,
+				Number: IDL.Nat32
+			})
+		)
+	);
+	Arg.fill(
+		IDL.Variant({
+			BigInt: IDL.Nat64,
+			String: IDL.Text,
+			Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
+			Boolean: IDL.Bool,
+			Principal: IDL.Principal,
+			Array: Vec,
+			Number: IDL.Nat32
+		})
+	);
 	const LookupCanister = IDL.Record({
 		method: IDL.Text,
-		args: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+		args: IDL.Vec(Arg),
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
 		canister: IDL.Principal
@@ -225,9 +270,11 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
+	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
-		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query'])
+		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
+		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], [])
 	});
 };

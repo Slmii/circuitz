@@ -1,7 +1,9 @@
 import { useTheme } from '@mui/material';
 import { useMemo } from 'react';
 import AceEditor from 'react-ace';
+import { config } from 'ace-builds';
 
+config.setModuleUrl('basePath', '/node_modules/ace-builds/src-noconflict');
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-rust';
 import 'ace-builds/src-noconflict/theme-cloud9_night';

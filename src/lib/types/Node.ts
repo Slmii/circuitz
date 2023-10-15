@@ -1,5 +1,5 @@
 import { Principal } from '@dfinity/principal';
-import { NodeType, Pin } from 'declarations/nodes.declarations';
+import { Arg, NodeType, Pin } from 'declarations/nodes.declarations';
 
 export interface Node {
 	id: number;
@@ -24,7 +24,9 @@ export interface NodeSource {
 	disabled: boolean;
 }
 
-export type NodeSourceType = NodeTypeKey;
-
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type NodeTypeKey = KeysOfUnion<NodeType>;
+type NodeTypeKey = KeysOfUnion<NodeType>;
+type ArgTypeKey = KeysOfUnion<Arg>;
+
+export type NodeSourceType = NodeTypeKey;
+export type LookCanisterArgType = ArgTypeKey;
