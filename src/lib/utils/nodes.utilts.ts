@@ -4,7 +4,7 @@ import type {
 	VerificationType as OldVerificationType,
 	Token
 } from 'declarations/nodes.declarations';
-import type { LookCanisterArgType, Node, VerificationType } from 'lib/types';
+import type { LookCanisterArgType, Node, NodeSourceType, VerificationType } from 'lib/types';
 import { dateFromNano } from './date.utils';
 import { InputNodeFormValues, LookupCanisterArg, LookupCanisterFormValues } from 'components/NodeDrawers';
 import { toPrincipal } from './identity.utils';
@@ -214,4 +214,60 @@ export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
 	}
 
 	return 'Boolean';
+};
+
+export const getNodeSourceType = (node: Node): NodeSourceType => {
+	if ('LookupCanister' in node.nodeType) {
+		return 'LookupCanister';
+	}
+
+	if ('LookupHttpRequest' in node.nodeType) {
+		return 'LookupHttpRequest';
+	}
+
+	if ('Transformer' in node.nodeType) {
+		return 'Transformer';
+	}
+
+	if ('Output' in node.nodeType) {
+		return 'Output';
+	}
+
+	if ('Mapper' in node.nodeType) {
+		return 'Mapper';
+	}
+
+	if ('HttpRequest' in node.nodeType) {
+		return 'HttpRequest';
+	}
+
+	return 'Canister';
+};
+
+export const getNodeName = (node: Node): string => {
+	if ('LookupCanister' in node.nodeType) {
+		return node.nodeType.LookupCanister.name;
+	}
+
+	if ('LookupHttpRequest' in node.nodeType) {
+		return node.nodeType.LookupHttpRequest.name;
+	}
+
+	if ('Transformer' in node.nodeType) {
+		return '';
+	}
+
+	if ('Output' in node.nodeType) {
+		return node.nodeType.Output.name;
+	}
+
+	if ('Mapper' in node.nodeType) {
+		return '';
+	}
+
+	if ('HttpRequest' in node.nodeType) {
+		return node.nodeType.HttpRequest.name;
+	}
+
+	return node.nodeType.Canister.name;
 };

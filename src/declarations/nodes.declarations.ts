@@ -75,8 +75,8 @@ export type NodeType =
 	| { LookupCanister: LookupCanister }
 	| { HttpRequest: HttpRequest }
 	| { Transformer: LookupTransformPin }
+	| { Output: Output }
 	| { Canister: Canister }
-	| { Ouput: Ouput }
 	| { LookupHttpRequest: HttpRequest }
 	| { Mapper: Mapper };
 export type Operator =
@@ -88,7 +88,7 @@ export type Operator =
 	| { LessThan: null }
 	| { GreaterThanOrEqual: null }
 	| { NotEqual: null };
-export interface Ouput {
+export interface Output {
 	method: string;
 	name: string;
 	description: [] | [string];
@@ -183,6 +183,12 @@ export const idlFactory = ({ IDL }: any) => {
 		output: IDL.Text,
 		input: IDL.Text
 	});
+	const Output = IDL.Record({
+		method: IDL.Text,
+		name: IDL.Text,
+		description: IDL.Opt(IDL.Text),
+		canister: IDL.Principal
+	});
 	const Token = IDL.Record({ field: IDL.Text, token: IDL.Text });
 	const VerificationType = IDL.Variant({
 		None: IDL.Null,
@@ -195,12 +201,6 @@ export const idlFactory = ({ IDL }: any) => {
 		sample_data: IDL.Opt(IDL.Text),
 		verification_type: VerificationType
 	});
-	const Ouput = IDL.Record({
-		method: IDL.Text,
-		name: IDL.Text,
-		description: IDL.Opt(IDL.Text),
-		canister: IDL.Principal
-	});
 	const Mapper = IDL.Record({
 		output: IDL.Text,
 		interface: IDL.Text,
@@ -210,8 +210,8 @@ export const idlFactory = ({ IDL }: any) => {
 		LookupCanister: LookupCanister,
 		HttpRequest: HttpRequest,
 		Transformer: LookupTransformPin,
+		Output: Output,
 		Canister: Canister,
-		Ouput: Ouput,
 		LookupHttpRequest: HttpRequest,
 		Mapper: Mapper
 	});

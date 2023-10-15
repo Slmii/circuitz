@@ -7,6 +7,7 @@ import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
 import { CircuitNode, Nodes } from 'components/Node';
 import { LookupNodeDrawer, InputNodeDrawer } from 'components/NodeDrawers';
+import { getNodeSourceType } from 'lib/utils/nodes.utilts';
 
 interface DialogState {
 	open: boolean;
@@ -30,7 +31,10 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 				) : (
 					<>
 						<Stack direction="column" spacing={3}>
-							<Nodes nodes={nodes} onNodeClick={node => setDialogState({ type: 'Canister', node, open: true })} />
+							<Nodes
+								nodes={nodes}
+								onNodeClick={node => setDialogState({ type: getNodeSourceType(node), node, open: true })}
+							/>
 						</Stack>
 						<Stack direction="row" spacing={1} alignItems="center">
 							{!isAddNode && <IconButton icon="add-square" onClick={() => setIsAddNode(true)} />}

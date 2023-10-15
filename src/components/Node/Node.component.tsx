@@ -2,7 +2,7 @@ import { ButtonBase, Stack, useTheme } from '@mui/material';
 import { Icon } from 'components/Icon';
 import { B1, Caption, H5 } from 'components/Typography';
 import { Trace, Node as INode } from 'lib/types';
-import { getInputCanisterFormValues, getNodeTitle } from 'lib/utils/nodes.utilts';
+import { getNodeName, getNodeTitle } from 'lib/utils/nodes.utilts';
 import pluralize from 'pluralize';
 import { PropsWithChildren, useMemo } from 'react';
 import Xarrow, { anchorCustomPositionType, useXarrow } from 'react-xarrows';
@@ -47,7 +47,7 @@ export const Node = ({
 			<H5>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
 			<CircuitNode id={node.id.toString()} trace={trace} onClick={() => onNodeClick(node)}>
 				<Icon icon="infinite" />
-				<B1>{getInputCanisterFormValues(node).name}</B1>
+				<B1>{getNodeName(node)}</B1>
 			</CircuitNode>
 			{!isLast && (
 				<Xarrow
