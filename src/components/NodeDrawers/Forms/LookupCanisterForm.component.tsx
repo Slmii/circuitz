@@ -6,8 +6,8 @@ import { B2, H5 } from 'components/Typography';
 import { Node } from 'lib/types';
 import { Arg, NodeType } from 'declarations/nodes.declarations';
 import { lookupCanisterSchema } from 'lib/schemas';
-import { LookupCanisterFormValues } from '../NodeDrawers.types';
-import { useFieldArray } from 'react-hook-form';
+import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.types';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
 import { getLookupCanisterFormValues } from 'lib/utils/nodes.utilts';
@@ -105,6 +105,9 @@ export const LookupCanisterForm = ({
 };
 
 const LookupCanisterArgs = () => {
+	const args = useWatch({
+		name: 'args'
+	}) as LookupCanisterArg[];
 	const { fields, append, remove } = useFieldArray<LookupCanisterFormValues>({
 		name: 'args'
 	});
@@ -150,6 +153,10 @@ const LookupCanisterArgs = () => {
 										label: 'Principal'
 									},
 									{
+										id: 'Field',
+										label: 'Field'
+									},
+									{
 										id: 'Oject',
 										label: 'Object (soon)',
 										disabled: true
@@ -163,7 +170,21 @@ const LookupCanisterArgs = () => {
 								label="Data type"
 								placeholder="String"
 							/>
-							<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
+							{args[index]?.dataType === 'Field' ? (
+								<Select
+									options={[
+										{
+											id: 'test',
+											label: 'Test'
+										}
+									]}
+									fullWidth
+									name={`args.${index}.value`}
+									label="Value"
+								/>
+							) : (
+								<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
+							)}
 							<IconButton
 								sx={{
 									visibility: fields.length - 1 === index ? 'visible' : 'hidden'
