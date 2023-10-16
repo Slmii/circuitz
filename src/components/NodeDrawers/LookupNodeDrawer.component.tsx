@@ -38,6 +38,7 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 		onClose();
 	};
 
+	// TODO: use to seperate forms
 	nodeType;
 
 	return (
@@ -95,8 +96,8 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 					Send preview request
 				</Button>
 				<B2>
-					Be sure to authorize Canister ID <code>{nodeCanisterId.toString()}</code> to call the canister you are trying
-					to lookup.
+					Make sure to authorize Canister ID <code>{nodeCanisterId.toString()}</code> before accessing the canister you
+					want to query.
 				</B2>
 				<Editor
 					mode="javascript"

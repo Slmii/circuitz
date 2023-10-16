@@ -44,7 +44,7 @@ export const Node = ({
 
 	return (
 		<Stack spacing={1}>
-			<H5>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
+			<H5 sx={{ pl: !isFirst ? 8 : undefined }}>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
 			<CircuitNode id={node.id.toString()} trace={trace} onClick={() => onNodeClick(node)}>
 				<Icon icon="infinite" />
 				<B1>{getNodeName(node)}</B1>

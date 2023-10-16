@@ -106,7 +106,7 @@ export type PinType =
 	| { PrePin: CustomPinLogic };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
-export type Result_2 = { Ok: string } | { Err: ApiError };
+export type Result_2 = { Ok: Uint8Array | number[] } | { Err: ApiError };
 export interface Token {
 	field: string;
 	token: string;
@@ -270,7 +270,7 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
-	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
+	const Result_2 = IDL.Variant({ Ok: IDL.Vec(IDL.Nat8), Err: ApiError });
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
