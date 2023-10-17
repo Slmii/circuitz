@@ -1,4 +1,4 @@
-import { Stack, Collapse, Fade } from '@mui/material';
+import { Stack, Fade } from '@mui/material';
 import { Icon } from 'components/Icon';
 import { B1, H5 } from 'components/Typography';
 import { useState } from 'react';
@@ -30,7 +30,7 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 					</CircuitNode>
 				) : (
 					<>
-						<Stack direction="column" spacing={3}>
+						<Stack direction="column" spacing={8}>
 							<Nodes
 								nodes={nodes}
 								onNodeClick={node => setDialogState({ type: getNodeSourceType(node), node, open: true })}
@@ -38,7 +38,7 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 						</Stack>
 						<Stack direction="row" spacing={1} alignItems="center">
 							{!isAddNode && <IconButton icon="add-square" onClick={() => setIsAddNode(true)} />}
-							<Collapse in={isAddNode} orientation="horizontal">
+							<Fade in={isAddNode}>
 								<div>
 									<Fade in={isAddNode} timeout={0}>
 										<Stack direction="column" spacing={1}>
@@ -67,7 +67,7 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 										</Stack>
 									</Fade>
 								</div>
-							</Collapse>
+							</Fade>
 						</Stack>
 					</>
 				)}

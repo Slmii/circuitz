@@ -101,13 +101,13 @@ export interface Pin {
 }
 export type PinType =
 	| { LookupTransformPin: LookupTransformPin }
-	| { PostResponsePin: CustomPinLogic }
 	| { FilterPin: Array<ConditionGroup> }
 	| { MapperPin: Mapper }
-	| { PrePin: CustomPinLogic };
+	| { PrePin: CustomPinLogic }
+	| { PostPin: CustomPinLogic };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
-export type Result_2 = { Ok: Uint8Array | number[] } | { Err: ApiError };
+export type Result_2 = { Ok: string } | { Err: ApiError };
 export interface Token {
 	field: string;
 	token: string;
@@ -219,10 +219,6 @@ export const idlFactory = ({ IDL }: any) => {
 		LookupHttpRequest: HttpRequest,
 		Mapper: Mapper
 	});
-	const CustomPinLogic = IDL.Record({
-		function: IDL.Opt(IDL.Text),
-		script: IDL.Opt(IDL.Text)
-	});
 	const ConditionGroupType = IDL.Variant({ Or: IDL.Null, And: IDL.Null });
 	const Operator = IDL.Variant({
 		In: IDL.Null,
@@ -242,12 +238,16 @@ export const idlFactory = ({ IDL }: any) => {
 		operator: Operator,
 		condition: Condition
 	});
+	const CustomPinLogic = IDL.Record({
+		function: IDL.Opt(IDL.Text),
+		script: IDL.Opt(IDL.Text)
+	});
 	const PinType = IDL.Variant({
 		LookupTransformPin: LookupTransformPin,
-		PostResponsePin: CustomPinLogic,
 		FilterPin: IDL.Vec(ConditionGroup),
 		MapperPin: Mapper,
-		PrePin: CustomPinLogic
+		PrePin: CustomPinLogic,
+		PostPin: CustomPinLogic
 	});
 	const Pin = IDL.Record({ pin_type: PinType, order: IDL.Nat32 });
 	const Node = IDL.Record({
@@ -274,7 +274,7 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
-	const Result_2 = IDL.Variant({ Ok: IDL.Vec(IDL.Nat8), Err: ApiError });
+	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),

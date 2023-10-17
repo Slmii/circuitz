@@ -12,3 +12,4 @@ export * from './useCircuits';
 export * from './useNodes';
 export * from './useTraces';
 export * from './useGetParam';
+export * from './useOnClickOutside';

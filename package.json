@@ -17,6 +17,7 @@
 		"@dfinity/identity": "^0.19.3",
 		"@dfinity/nns": "^2.0.0",
 		"@dfinity/principal": "^0.19.3",
+		"@dfinity/utils": "^1.0.0",
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
 		"@hookform/resolvers": "^3.3.1",
