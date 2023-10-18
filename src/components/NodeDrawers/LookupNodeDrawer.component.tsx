@@ -101,7 +101,7 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 				</B2>
 				<Editor
 					mode="javascript"
-					value={`${data ? (typeof data === 'string' ? data : JSON.stringify(data, null, 4)) : ''} ${
+					value={`${data ? JSON.stringify(data, null, 4) : ''} ${
 						error ? (typeof error === 'string' ? error : JSON.stringify((error as Error).message, null, 4)) : ''
 					}`}
 					isReadOnly

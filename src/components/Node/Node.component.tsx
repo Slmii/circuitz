@@ -30,7 +30,7 @@ export const Node = ({
 			return {
 				offset: {
 					x: -150,
-					y: -66
+					y: -69
 				},
 				position: 'bottom'
 			};
@@ -39,7 +39,7 @@ export const Node = ({
 		return {
 			offset: {
 				x: -150,
-				y: -33
+				y: -36
 			},
 			position: 'middle'
 		};

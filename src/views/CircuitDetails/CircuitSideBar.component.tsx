@@ -8,6 +8,7 @@ import { CircuitStatus } from '../CircuitStatus';
 import { Circuit } from 'lib/types';
 import { Principal } from '@dfinity/principal';
 import { useToggleCircuitStatus } from 'lib/hooks';
+import { Button } from 'components/Button';
 
 export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; nodeCanisterId: Principal }) => {
 	const { mutate } = useToggleCircuitStatus();
@@ -55,7 +56,14 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 						{!!data.data && !data.isLoading ? (
 							<Stack direction="column" spacing={2}>
 								<Stack direction="column" spacing={1}>
-									<H5 fontWeight="bold">Cycles</H5>
+									<H5 fontWeight="bold">Canister</H5>
+									<B1>{nodeCanisterId.toString()}</B1>
+								</Stack>
+								<Stack direction="column" spacing={1}>
+									<Stack direction="row" justifyContent="space-between" alignItems="center">
+										<H5 fontWeight="bold">Cycles</H5>
+										<Button startIcon="cycles">Top up Cycles</Button>
+									</Stack>
 									<B1>{formatTCycles(data.data.cycles)} T</B1>
 								</Stack>
 								<Stack direction="column" spacing={1}>

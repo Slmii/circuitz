@@ -102,7 +102,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 									opacity: source.disabled ? 0.5 : 1
 								}}
 							>
-								<img src={`/public/logos/${source.icon}.png`} style={{ width: 66, height: 66 }} />
+								<img src={`/logos/${source.icon}.png`} style={{ width: 66, height: 66 }} />
 								<H5>{source.label}</H5>
 							</Paper>
 						))}
