@@ -9,7 +9,7 @@ export const SnackbarProvider = ({ children }: PropsWithChildren) => {
 			maxSnack={4}
 			autoHideDuration={AUTO_HIDE_DURATION}
 			action={snackbarId => (
-				<Button color="inherit" sx={{ fontSize: 10 }} onClick={() => closeSnackbar(snackbarId)}>
+				<Button color="inherit" onClick={() => closeSnackbar(snackbarId)}>
 					Dismiss
 				</Button>
 			)}

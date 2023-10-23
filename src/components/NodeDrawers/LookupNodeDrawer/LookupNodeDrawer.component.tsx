@@ -1,5 +1,5 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useCopyToClipboard, useEditNode, useGetNodeCanisterId, useGetParam, usePreview } from 'lib/hooks';
+import { useAddNode, useEditNode, useGetNodeCanisterId, useGetParam, usePreview } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
@@ -13,6 +13,7 @@ import { NodeSourceType } from 'lib/types';
 import { toPrincipal, getLookupCanisterValuesAsArg } from 'lib/utils';
 import { Dialog } from 'components/Dialog';
 import { useMemo, useState } from 'react';
+import { CopyText } from 'components/CopyText';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
 	const [previewError, setPreviewError] = useState<string | null>(null);
@@ -80,7 +81,6 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 type FormData<T extends NodeSourceType> = T extends 'LookupCanister' ? LookupCanisterFormValues : InputNodeFormValues;
 const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 	const { getValues, trigger } = useFormContext<FormData<typeof type>>();
-	const { copy } = useCopyToClipboard();
 
 	const circuitId = useGetParam('circuitId');
 	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
@@ -135,18 +135,8 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 				</Button>
 				<B2>
 					Make sure to authorize Canister ID{' '}
-					<Button
-						disableElevation
-						component="code"
-						size="small"
-						color="secondary"
-						variant="contained"
-						sx={{ minHeight: 'unset', px: 0.5 }}
-						onClick={() => copy(nodeCanisterId.toString())}
-					>
-						{nodeCanisterId.toString()}
-					</Button>{' '}
-					before accessing the canister you want to query.
+					<CopyText textToCopy={nodeCanisterId.toString()}> {nodeCanisterId.toString()} </CopyText> before accessing the
+					canister you want to query.
 				</B2>
 				<Editor mode="javascript" value={response} isReadOnly height="100%" />
 			</Stack>
