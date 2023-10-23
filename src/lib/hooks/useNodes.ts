@@ -19,6 +19,26 @@ export const useGetNodeCanisterId = (circuitId: number) => {
 	return circuit?.nodeCanisterId ?? Principal.anonymous();
 };
 
+export const useDeleteNode = () => {
+	const { errorSnackbar } = useSnackbar();
+	const queryClient = useQueryClient();
+
+	return useMutation(api.Nodes.deleteNode, {
+		onSuccess: node => {
+			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], nodes => {
+				if (!nodes) {
+					return [];
+				}
+
+				return nodes.filter(n => n.id !== node.id);
+			});
+		},
+		onError: () => {
+			errorSnackbar(MUTATE_ERROR);
+		}
+	});
+};
+
 export const useAddNode = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();

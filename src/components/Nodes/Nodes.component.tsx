@@ -1,21 +1,19 @@
 import { Xwrapper } from 'react-xarrows';
 import { Node } from './Node.component';
-import { useGetCircuitTraces, useGetParam } from 'lib/hooks';
+import { useDeleteNode, useGetCircuitTraces, useGetParam } from 'lib/hooks';
 import { useMemo } from 'react';
 import { NodesProps } from './Nodes.types';
 import { useRecoilState } from 'recoil';
 import { deleteNodeState } from 'lib/recoil';
 import { Dialog } from 'components/Dialog';
 import { B1 } from 'components/Typography';
-import { useMutation } from '@tanstack/react-query';
-import { api } from 'api/index';
 
 export const Nodes = ({ nodes, onNodeClick }: NodesProps) => {
 	const [{ isDeleteNodeModalOpen, nodeToDelete }, setDeleteNodeState] = useRecoilState(deleteNodeState);
 
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitTraces } = useGetCircuitTraces(Number(circuitId));
-	const { mutateAsync: deleteNode, isLoading: isDeleteNodeLoading } = useMutation(api.Nodes.deleteNode);
+	const { mutateAsync: deleteNode, isLoading: isDeleteNodeLoading } = useDeleteNode();
 
 	const traces = useMemo(() => {
 		if (!circuitTraces) {

@@ -22,10 +22,10 @@ export abstract class Nodes {
 	/**
 	 * Delete a node from a circuit
 	 */
-	static async deleteNode(circuitId: number): Promise<Node> {
+	static async deleteNode(nodeId: number): Promise<Node> {
 		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
 
-		const wrapped = await actor.delete_node(circuitId);
+		const wrapped = await actor.delete_node(nodeId);
 		const unwrapped = await unwrapResult(wrapped);
 		return mapToNode(unwrapped);
 	}
