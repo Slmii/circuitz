@@ -59,3 +59,7 @@ export const useEditNode = () => {
 		}
 	});
 };
+
+export const usePreview = () => {
+	return useMutation(api.Nodes.previewLookupCanister);
+};

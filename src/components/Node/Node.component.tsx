@@ -47,7 +47,7 @@ export const Node = ({
 	return (
 		<Stack spacing={1}>
 			<H5 sx={{ pl: !isFirst ? 8 : undefined }}>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
-			<CircuitNode id={node.id.toString()} trace={trace} onClick={() => onNodeClick(node)}>
+			<CircuitNode id={node.id.toString()} isFirst={isFirst} trace={trace} onClick={() => onNodeClick(node)}>
 				<Icon icon="infinite" />
 				<B1>{getNodeName(node)}</B1>
 			</CircuitNode>
@@ -76,11 +76,12 @@ export const Node = ({
 
 export const CircuitNode = ({
 	id,
+	isFirst,
 	trace,
 	nested = false,
 	onClick,
 	children
-}: PropsWithChildren<{ id: string; trace?: Trace; nested?: boolean; onClick: () => void }>) => {
+}: PropsWithChildren<{ id: string; isFirst: boolean; trace?: Trace; nested?: boolean; onClick: () => void }>) => {
 	const updateXarrow = useXarrow();
 	const [isShowSettings, setIsShowSettings] = useState(false);
 	const [isShowPins, setIsShowPins] = useState(false);
@@ -93,8 +94,8 @@ export const CircuitNode = ({
 				id={`node-${id}`}
 				onClick={onClick}
 				onLoad={updateXarrow}
-				onMouseEnter={() => setIsShowSettings(true)}
-				onMouseLeave={() => setIsShowSettings(false)}
+				onMouseEnter={() => !isFirst && setIsShowSettings(true)}
+				onMouseLeave={() => !isFirst && setIsShowSettings(false)}
 				sx={{
 					display: 'flex',
 					flexDirection: 'column',

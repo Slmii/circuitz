@@ -24,7 +24,7 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 			<Stack direction="column" alignItems="flex-start" spacing={isAddNode ? 6 : 3}>
 				{!nodes.length ? (
 					// Show 'Add Input Node' button if there are no nodes at all
-					<CircuitNode id="add" onClick={() => setDialogState({ type: 'Canister', open: true })}>
+					<CircuitNode isFirst id="add" onClick={() => setDialogState({ type: 'Canister', open: true })}>
 						<Icon icon="add-square" spacingRight fontSize="small" />
 						<B1>Add Input Node</B1>
 					</CircuitNode>

@@ -75,7 +75,7 @@ export const LookupNodeCanisterForm = ({
 									type="number"
 									label="Cycles (T)"
 									placeholder="10_000_000_000"
-									helperText="In order to know how many cycles you need, you can use the Preview request feature."
+									helperText="In order to know how many cycles you need, you can use the Preview request feature. The amount of cycles will depend on the amount of arguments you have."
 								/>
 							</Stack>
 						</Stack>
@@ -106,90 +106,78 @@ const LookupCanisterArgs = () => {
 
 	return (
 		<>
-			{!fields.length ? (
-				<Button
-					startIcon="add"
-					sx={{ width: 'fit-content' }}
-					variant="outlined"
-					size="large"
-					onClick={() => append({ dataType: 'String', value: '' })}
-				>
-					Add first argument
-				</Button>
-			) : (
-				<>
-					{fields.map((config, index) => (
-						<Stack direction="row" spacing={1} key={config.id} alignItems="center">
-							<Select
-								fullWidth
-								name={`args.${index}.dataType`}
-								options={[
-									{
-										id: 'String',
-										label: 'String'
-									},
-									{
-										id: 'Number',
-										label: 'Number'
-									},
-									{
-										id: 'BigInt',
-										label: 'BigInt'
-									},
-									{
-										id: 'Boolean',
-										label: 'Boolean'
-									},
-									{
-										id: 'Principal',
-										label: 'Principal'
-									},
-									{
-										id: 'Field',
-										label: 'Field'
-									},
-									{
-										id: 'Oject',
-										label: 'Object (soon)',
-										disabled: true
-									},
-									{
-										id: 'Array',
-										label: 'Array (soon)',
-										disabled: true
-									}
-								]}
-								label="Data type"
-								placeholder="String"
-							/>
-							{args[index]?.dataType === 'Field' ? (
-								<Select
-									options={[
-										{
-											id: 'test',
-											label: 'Test'
-										}
-									]}
-									fullWidth
-									name={`args.${index}.value`}
-									label="Value"
-								/>
-							) : (
-								<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
-							)}
-							<IconButton
-								sx={{
-									visibility: fields.length - 1 === index ? 'visible' : 'hidden'
-								}}
-								icon="add"
-								tooltip="Add argument"
-								onClick={() => append({ dataType: 'String', value: '' })}
-							/>
-							<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
-						</Stack>
-					))}
-				</>
-			)}
+			{fields.map((config, index) => (
+				<Stack direction="row" spacing={1} key={config.id} alignItems="center">
+					<Select
+						fullWidth
+						name={`args.${index}.dataType`}
+						options={[
+							{
+								id: 'String',
+								label: 'String'
+							},
+							{
+								id: 'Number',
+								label: 'Number'
+							},
+							{
+								id: 'BigInt',
+								label: 'BigInt'
+							},
+							{
+								id: 'Boolean',
+								label: 'Boolean'
+							},
+							{
+								id: 'Principal',
+								label: 'Principal'
+							},
+							{
+								id: 'Field',
+								label: 'Field'
+							},
+							{
+								id: 'Oject',
+								label: 'Object (soon)',
+								disabled: true
+							},
+							{
+								id: 'Array',
+								label: 'Array (soon)',
+								disabled: true
+							}
+						]}
+						label="Data type"
+						placeholder="String"
+					/>
+					{args[index]?.dataType === 'Field' ? (
+						// TODO: apply all logic of previous nodes with the sampleData and get the fields in the options in the Select
+						<Select
+							options={[
+								{
+									id: 'test',
+									label: 'Test'
+								}
+							]}
+							fullWidth
+							name={`args.${index}.value`}
+							label="Value"
+						/>
+					) : (
+						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
+					)}
+					<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
+				</Stack>
+			))}
+			<Button
+				startIcon="add"
+				sx={{ width: 'fit-content' }}
+				variant="outlined"
+				size="large"
+				onClick={() => append({ dataType: 'String', value: '' })}
+			>
+				{!fields.length ? 'Add first argument' : 'Add argument'}
+			</Button>
 		</>
 	);
 };

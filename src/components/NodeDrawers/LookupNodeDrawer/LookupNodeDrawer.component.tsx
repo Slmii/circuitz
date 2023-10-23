@@ -1,5 +1,5 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useEditNode, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
+import { useAddNode, useCopyToClipboard, useEditNode, useGetNodeCanisterId, useGetParam, usePreview } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
@@ -10,18 +10,36 @@ import { B2, H5 } from 'components/Typography';
 import { Editor } from 'components/Editor';
 import { useFormContext } from 'react-hook-form';
 import { NodeSourceType } from 'lib/types';
-import { useMutation } from '@tanstack/react-query';
-import { api } from 'api/index';
-import { toPrincipal, getLookupCanisterValuesAsArg, replaceBigIntWithNumber } from 'lib/utils';
+import { toPrincipal, getLookupCanisterValuesAsArg } from 'lib/utils';
+import { Dialog } from 'components/Dialog';
+import { useMemo, useState } from 'react';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
+	const [previewError, setPreviewError] = useState<string | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
 
 	const { mutateAsync: addNode, isLoading: isAddNodeLoading } = useAddNode();
 	const { mutateAsync: editNode, isLoading: isEditNodeLoading } = useEditNode();
+	const { mutateAsync: preview, isLoading: isPreviewLoading } = usePreview();
 
 	const handleOnSubmit = async (data: NodeType) => {
+		if ('LookupCanister' in data) {
+			const previewResponse = await preview({
+				args: data.LookupCanister.args,
+				canister: toPrincipal(data.LookupCanister.canister.toString()),
+				description: data.LookupCanister.description,
+				method: data.LookupCanister.method,
+				name: data.LookupCanister.name,
+				cycles: data.LookupCanister.cycles
+			});
+
+			if ('Err' in previewResponse) {
+				setPreviewError(JSON.stringify(previewResponse, null, 4));
+				return;
+			}
+		}
+
 		if (!node) {
 			await addNode({
 				circuitId: Number(circuitId),
@@ -33,36 +51,56 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 				data
 			});
 		}
-
-		onClose();
 	};
 
 	// TODO: use to seperate forms
 	nodeType;
 
 	return (
-		<Drawer
-			onClose={onClose}
-			onSubmit={submitter}
-			isOpen={open}
-			isLoading={isAddNodeLoading || isEditNodeLoading}
-			title="Lookup Canister"
-			fullWidth
-		>
-			<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit}>
-				<PreviewRequest type="LookupCanister" />
-			</LookupNodeCanisterForm>
-		</Drawer>
+		<>
+			<Drawer
+				onClose={onClose}
+				onSubmit={submitter}
+				isOpen={open}
+				isLoading={isAddNodeLoading || isEditNodeLoading || isPreviewLoading}
+				title="Lookup Canister"
+				fullWidth
+			>
+				<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit}>
+					<PreviewRequest type="LookupCanister" />
+				</LookupNodeCanisterForm>
+			</Drawer>
+			<Dialog open={!!previewError} onClose={() => setPreviewError(null)} title="Error" onCancelText="Close">
+				<pre>{previewError}</pre>
+			</Dialog>
+		</>
 	);
 };
 
 type FormData<T extends NodeSourceType> = T extends 'LookupCanister' ? LookupCanisterFormValues : InputNodeFormValues;
 const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
+	const { getValues, trigger } = useFormContext<FormData<typeof type>>();
+	const { copy } = useCopyToClipboard();
+
 	const circuitId = useGetParam('circuitId');
 	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
-	const { getValues, trigger } = useFormContext<FormData<typeof type>>();
+	const { mutate: preview, data, error, isLoading: isPreviewLoading } = usePreview();
 
-	const { mutate: preview, data, error, isLoading: isPreviewLoading } = useMutation(api.Nodes.previewLookupCanister);
+	const response = useMemo(() => {
+		if (error) {
+			return JSON.stringify(error, null, 4);
+		}
+
+		if (!data) {
+			return '';
+		}
+
+		if ('Ok' in data) {
+			return JSON.stringify(JSON.parse(data.Ok), null, 4);
+		}
+
+		return JSON.stringify(data, null, 4);
+	}, [data, error]);
 
 	return (
 		<>
@@ -96,17 +134,21 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 					Send preview request
 				</Button>
 				<B2>
-					Make sure to authorize Canister ID <code>{nodeCanisterId.toString()}</code> before accessing the canister you
-					want to query.
+					Make sure to authorize Canister ID{' '}
+					<Button
+						disableElevation
+						component="code"
+						size="small"
+						color="secondary"
+						variant="contained"
+						sx={{ minHeight: 'unset', px: 0.5 }}
+						onClick={() => copy(nodeCanisterId.toString())}
+					>
+						{nodeCanisterId.toString()}
+					</Button>{' '}
+					before accessing the canister you want to query.
 				</B2>
-				<Editor
-					mode="javascript"
-					value={`${data ? JSON.stringify(replaceBigIntWithNumber(data), null, 4) : ''} ${
-						error ? (typeof error === 'string' ? error : JSON.stringify((error as Error).message, null, 4)) : ''
-					}`}
-					isReadOnly
-					height="100%"
-				/>
+				<Editor mode="javascript" value={response} isReadOnly height="100%" />
 			</Stack>
 		</>
 	);

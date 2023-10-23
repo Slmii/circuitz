@@ -160,6 +160,13 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 			code: {
 				backgroundColor: theme.palette.secondary.main,
 				color: theme.palette.secondary.contrastText
+			},
+			pre: {
+				backgroundColor: theme.palette.secondary.main,
+				color: theme.palette.secondary.contrastText,
+				padding: theme.spacing(2),
+				borderRadius: theme.shape.borderRadius,
+				overflowX: 'auto'
 			}
 		})
 	},
