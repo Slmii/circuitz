@@ -26,13 +26,13 @@ export const CircuitNode = ({
 	const ref = useOnClickOutside(() => setIsShowPins(false));
 
 	return (
-		<Stack direction="row" spacing={1} alignItems="center" ref={ref}>
+		<Stack direction="row" spacing={2} alignItems="center" ref={ref}>
 			<ButtonBase
 				id={`node-${nodeId}`}
 				onClick={onClick}
 				onLoad={updateXarrow}
-				onMouseEnter={() => !isFirst && setIsShowSettings(true)}
-				onMouseLeave={() => !isFirst && setIsShowSettings(false)}
+				onMouseEnter={() => nodeId && setIsShowSettings(true)}
+				onMouseLeave={() => nodeId && setIsShowSettings(false)}
 				sx={{
 					display: 'flex',
 					flexDirection: 'column',
@@ -83,12 +83,16 @@ export const CircuitNode = ({
 							setDeleteNode({ isDeleteNodeModalOpen: true, nodeToDelete: nodeId });
 						}}
 					/>
-					<Divider orientation="vertical" flexItem />
-					<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
-					<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
-					<IconButton icon="filter" size="small" tooltip="FilterPin" />
-					<IconButton icon="mapper" size="small" tooltip="MapperPin" />
-					<IconButton icon="transformer" size="small" tooltip="LookupTransformPin" />
+					{!isFirst && (
+						<>
+							<Divider orientation="vertical" flexItem />
+							<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
+							<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
+							<IconButton icon="filter" size="small" tooltip="FilterPin" />
+							<IconButton icon="mapper" size="small" tooltip="MapperPin" />
+							<IconButton icon="transformer" size="small" tooltip="LookupTransformPin" />
+						</>
+					)}
 				</Stack>
 			</Fade>
 		</Stack>
