@@ -20,6 +20,7 @@
 			"components/*": ["./src/components/*"],
 			"lib/*": ["./src/lib/*"],
 			"pages/*": ["./src/pages/*"],
+			"views/*": ["./src/views/*"],
 			"api/*": ["./src/api/*"],
 			"assets/*": ["./src/assets/*"],
 			"declarations/*": ["./src/declarations/*"]

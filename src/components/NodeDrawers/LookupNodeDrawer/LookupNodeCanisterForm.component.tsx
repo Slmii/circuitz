@@ -22,7 +22,7 @@ export const LookupNodeCanisterForm = ({
 }: PropsWithChildren<{
 	formRef: RefObject<HTMLFormElement>;
 	node?: Node;
-	onProcessNode: (data: NodeType) => Promise<void>;
+	onProcessNode: (data: NodeType) => void;
 }>) => {
 	const handleOnSubmit = async (data: LookupCanisterFormValues) => {
 		onProcessNode({
@@ -48,8 +48,8 @@ export const LookupNodeCanisterForm = ({
 					<Stack spacing={4} width="50%">
 						<Stack direction="column" spacing={2}>
 							<Alert severity="info">
-								A Lookup Canister Node is used to query data from an external Canister and send it to the next Node in
-								the Circuit.
+								A Lookup Canister Node queries data from an external Canister and forwards it to the subsequent Node in
+								the Circuit
 							</Alert>
 							<H5 fontWeight="bold">General</H5>
 							<Stack direction="column" spacing={4}>
@@ -75,7 +75,7 @@ export const LookupNodeCanisterForm = ({
 									type="number"
 									label="Cycles (T)"
 									placeholder="10_000_000_000"
-									helperText="In order to know how many cycles you need, you can use the Preview request feature. The amount of cycles will depend on the amount of arguments you have."
+									helperText="To determine the required cycles, use the Preview request feature. The cycle count varies based on the number of arguments."
 								/>
 							</Stack>
 						</Stack>
@@ -83,8 +83,8 @@ export const LookupNodeCanisterForm = ({
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Arguments</H5>
 							<B2>
-								The order of the arguments is important. The first argument will be the first argument of the method,
-								the second argument will be the second argument of the method, and so on.
+								Argument order matters. The first argument corresponds to the method's first parameter, the second to
+								its second, and so forth.
 							</B2>
 							<LookupCanisterArgs />
 						</Stack>

@@ -2,20 +2,16 @@ import { Stack, Fade } from '@mui/material';
 import { Icon } from 'components/Icon';
 import { B1, H5 } from 'components/Typography';
 import { useState } from 'react';
-import { Node as INode, NodeSourceType } from 'lib/types';
+import { Node } from 'lib/types';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
-import { CircuitNode, Nodes } from 'components/Node';
+import { Nodes } from 'components/Nodes';
 import { LookupNodeDrawer, InputNodeDrawer } from 'components/NodeDrawers';
 import { getNodeSourceType } from 'lib/utils';
+import { CircuitNode } from './CircuitNode.component';
+import { DialogState } from './CircuitDetails.types';
 
-interface DialogState {
-	open: boolean;
-	type: NodeSourceType;
-	node?: INode;
-}
-
-export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
+export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [isAddNode, setIsAddNode] = useState(false);
 	const [dialogState, setDialogState] = useState<DialogState>({ open: false, type: 'Canister' });
 
@@ -24,7 +20,7 @@ export const CircuitNodes = ({ nodes }: { nodes: INode[] }) => {
 			<Stack direction="column" alignItems="flex-start" spacing={isAddNode ? 6 : 3}>
 				{!nodes.length ? (
 					// Show 'Add Input Node' button if there are no nodes at all
-					<CircuitNode isFirst id="add" onClick={() => setDialogState({ type: 'Canister', open: true })}>
+					<CircuitNode isFirst nodeId={0} onClick={() => setDialogState({ type: 'Canister', open: true })}>
 						<Icon icon="add-square" spacingRight fontSize="small" />
 						<B1>Add Input Node</B1>
 					</CircuitNode>

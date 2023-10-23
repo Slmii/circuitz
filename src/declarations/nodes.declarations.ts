@@ -139,6 +139,7 @@ export type Vec = Array<
 export type VerificationType = { None: null } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
+	delete_node: ActorMethod<[number], Result>;
 	edit_node: ActorMethod<[number, NodeType], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
@@ -296,6 +297,7 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
+		delete_node: IDL.Func([IDL.Nat32], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
 		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),

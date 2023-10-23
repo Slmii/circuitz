@@ -1,97 +1,34 @@
-import { Box, ButtonBase, Divider, Fade, Stack, useTheme } from '@mui/material';
-import { Icon } from 'components/Icon';
+import { Stack, ButtonBase, Fade, Box, Divider } from '@mui/material';
 import { IconButton } from 'components/IconButton';
-import { B1, Caption, H5 } from 'components/Typography';
+import { Caption } from 'components/Typography';
 import { useOnClickOutside } from 'lib/hooks';
-import { Trace, Node as INode } from 'lib/types';
-import { getNodeName, getNodeTitle, stopPropagation } from 'lib/utils';
+import { stopPropagation } from 'lib/utils';
 import pluralize from 'pluralize';
-import { PropsWithChildren, useMemo, useState } from 'react';
-import Xarrow, { anchorCustomPositionType, useXarrow } from 'react-xarrows';
-
-export const Node = ({
-	node,
-	isLast,
-	isFirst,
-	trace,
-	onNodeClick
-}: {
-	node: INode;
-	isFirst: boolean;
-	isLast: boolean;
-	trace?: Trace;
-	onNodeClick: (node: INode) => void;
-}) => {
-	const theme = useTheme();
-
-	const endAnchor = useMemo((): anchorCustomPositionType => {
-		if (isFirst) {
-			return {
-				offset: {
-					x: -150,
-					y: -69
-				},
-				position: 'bottom'
-			};
-		}
-
-		return {
-			offset: {
-				x: -150,
-				y: -36
-			},
-			position: 'middle'
-		};
-	}, [isFirst]);
-
-	return (
-		<Stack spacing={1}>
-			<H5 sx={{ pl: !isFirst ? 8 : undefined }}>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
-			<CircuitNode id={node.id.toString()} isFirst={isFirst} trace={trace} onClick={() => onNodeClick(node)}>
-				<Icon icon="infinite" />
-				<B1>{getNodeName(node)}</B1>
-			</CircuitNode>
-			{!isLast && (
-				<Xarrow
-					startAnchor={{
-						offset: {
-							x: -150,
-							y: 33
-						},
-						position: 'middle'
-					}}
-					endAnchor={endAnchor}
-					lineColor={theme.palette.secondary.main}
-					headColor={theme.palette.secondary.main}
-					path="grid"
-					strokeWidth={1}
-					headSize={10}
-					start={`node-${node.id}`}
-					end={`node-${node.id + 1}`}
-				/>
-			)}
-		</Stack>
-	);
-};
+import { PropsWithChildren, useState } from 'react';
+import { useXarrow } from 'react-xarrows';
+import { CircuitNodeProps } from './CircuitDetails.types';
+import { useSetRecoilState } from 'recoil';
+import { deleteNodeState } from 'lib/recoil';
 
 export const CircuitNode = ({
-	id,
+	nodeId,
 	isFirst,
 	trace,
 	nested = false,
 	onClick,
 	children
-}: PropsWithChildren<{ id: string; isFirst: boolean; trace?: Trace; nested?: boolean; onClick: () => void }>) => {
+}: PropsWithChildren<CircuitNodeProps>) => {
 	const updateXarrow = useXarrow();
 	const [isShowSettings, setIsShowSettings] = useState(false);
 	const [isShowPins, setIsShowPins] = useState(false);
 
+	const setDeleteNode = useSetRecoilState(deleteNodeState);
 	const ref = useOnClickOutside(() => setIsShowPins(false));
 
 	return (
 		<Stack direction="row" spacing={1} alignItems="center" ref={ref}>
 			<ButtonBase
-				id={`node-${id}`}
+				id={`node-${nodeId}`}
 				onClick={onClick}
 				onLoad={updateXarrow}
 				onMouseEnter={() => !isFirst && setIsShowSettings(true)}
@@ -137,7 +74,15 @@ export const CircuitNode = ({
 			</ButtonBase>
 			<Fade in={isShowPins}>
 				<Stack direction="row" spacing={1}>
-					<IconButton icon="trash" size="small" tooltip="Delete Node" />
+					<IconButton
+						icon="trash"
+						size="small"
+						tooltip="Delete Node"
+						onClick={() => {
+							setIsShowPins(false);
+							setDeleteNode({ isDeleteNodeModalOpen: true, nodeToDelete: nodeId });
+						}}
+					/>
 					<Divider orientation="vertical" flexItem />
 					<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
 					<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />

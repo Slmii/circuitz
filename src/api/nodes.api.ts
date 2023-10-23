@@ -20,6 +20,17 @@ export abstract class Nodes {
 	}
 
 	/**
+	 * Delete a node from a circuit
+	 */
+	static async deleteNode(circuitId: number): Promise<Node> {
+		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+
+		const wrapped = await actor.delete_node(circuitId);
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToNode(unwrapped);
+	}
+
+	/**
 	 * Add a node to a circuit
 	 */
 	static async addNode({ circuitId, data }: { circuitId: number; data: NodeType }): Promise<Node> {

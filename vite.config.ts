@@ -29,6 +29,7 @@ export default defineConfig({
 			components: path.resolve('./src/components'),
 			lib: path.resolve('./src/lib'),
 			pages: path.resolve('./src/pages'),
+			views: path.resolve('./src/views'),
 			api: path.resolve('./src/api'),
 			assets: path.resolve('./src/assets'),
 			declarations: path.resolve('./src/declarations'),

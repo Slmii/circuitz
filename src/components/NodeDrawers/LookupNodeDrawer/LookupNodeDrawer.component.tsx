@@ -4,7 +4,7 @@ import { NodeType } from 'declarations/nodes.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
-import { Divider, Stack } from '@mui/material';
+import { Alert, Divider, Stack } from '@mui/material';
 import { Button } from 'components/Button';
 import { B2, H5 } from 'components/Typography';
 import { Editor } from 'components/Editor';
@@ -16,42 +16,37 @@ import { useMemo, useState } from 'react';
 import { CopyText } from 'components/CopyText';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
+	const [formData, setFormData] = useState<NodeType | null>(null);
 	const [previewError, setPreviewError] = useState<string | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
 
 	const { mutateAsync: addNode, isLoading: isAddNodeLoading } = useAddNode();
 	const { mutateAsync: editNode, isLoading: isEditNodeLoading } = useEditNode();
-	const { mutateAsync: preview, isLoading: isPreviewLoading } = usePreview();
 
-	const handleOnSubmit = async (data: NodeType) => {
-		if ('LookupCanister' in data) {
-			const previewResponse = await preview({
-				args: data.LookupCanister.args,
-				canister: toPrincipal(data.LookupCanister.canister.toString()),
-				description: data.LookupCanister.description,
-				method: data.LookupCanister.method,
-				name: data.LookupCanister.name,
-				cycles: data.LookupCanister.cycles
-			});
-
-			if ('Err' in previewResponse) {
-				setPreviewError(JSON.stringify(previewResponse, null, 4));
-				return;
-			}
+	const handleOnConfirmCycles = async () => {
+		if (!formData) {
+			return formData;
 		}
 
+		// Close dialog
+		setFormData(null);
+
+		// Add call
 		if (!node) {
 			await addNode({
 				circuitId: Number(circuitId),
-				data
+				data: formData
 			});
-		} else {
-			await editNode({
-				nodeId: node.id,
-				data
-			});
+
+			return;
 		}
+
+		// Edit call
+		await editNode({
+			nodeId: node.id,
+			data: formData
+		});
 	};
 
 	// TODO: use to seperate forms
@@ -63,16 +58,29 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 				onClose={onClose}
 				onSubmit={submitter}
 				isOpen={open}
-				isLoading={isAddNodeLoading || isEditNodeLoading || isPreviewLoading}
+				isLoading={isAddNodeLoading || isEditNodeLoading}
 				title="Lookup Canister"
 				fullWidth
 			>
-				<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit}>
+				<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={setFormData}>
 					<PreviewRequest type="LookupCanister" />
 				</LookupNodeCanisterForm>
 			</Drawer>
 			<Dialog open={!!previewError} onClose={() => setPreviewError(null)} title="Error" onCancelText="Close">
 				<pre>{previewError}</pre>
+			</Dialog>
+			<Dialog
+				open={!!formData}
+				onConfirmText="Confirm"
+				onConfirm={handleOnConfirmCycles}
+				title="Confirm cycles"
+				onCancelText="Close"
+				onClose={() => setFormData(null)}
+			>
+				<Alert severity="error">
+					Ensure the correct number of cycles is set. If unsure, use the <b>Preview request</b> to verify. Insufficient
+					cycles will cause the call to fail.
+				</Alert>
 			</Dialog>
 		</>
 	);
@@ -134,9 +142,8 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 					Send preview request
 				</Button>
 				<B2>
-					Make sure to authorize Canister ID{' '}
-					<CopyText textToCopy={nodeCanisterId.toString()}> {nodeCanisterId.toString()} </CopyText> before accessing the
-					canister you want to query.
+					Before querying the desired canister, ensure Canister ID{' '}
+					<CopyText textToCopy={nodeCanisterId.toString()}> {nodeCanisterId.toString()} </CopyText> is authorized.
 				</B2>
 				<Editor mode="javascript" value={response} isReadOnly height="100%" />
 			</Stack>

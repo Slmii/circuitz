@@ -5,7 +5,6 @@ import { Field } from 'components/Form/Field';
 import { RadioButton } from 'components/Form/RadioButton';
 import { H5, B2 } from 'components/Typography';
 import { useFormContext, useFieldArray } from 'react-hook-form';
-import { Icon } from 'components/Icon';
 import { IconButton } from 'components/IconButton';
 import { v4 as uuidv4 } from 'uuid';
 import { useGetNodeCanisterId, useGetParam } from 'lib/hooks';
@@ -63,7 +62,7 @@ export const InputNodeCanisterForm = ({
 				<>
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
-							An Input Node is a node that receives data from the outside world. This is the first Node in your Circuit.
+							An Input Node accepts data from the external world and is the initial Node in your Circuit.
 						</Alert>
 						<H5 fontWeight="bold">General</H5>
 						<Stack direction="column" spacing={4}>
@@ -82,8 +81,8 @@ export const InputNodeCanisterForm = ({
 					<Stack direction="column" spacing={2}>
 						<H5 fontWeight="bold">Verification</H5>
 						<B2>
-							Verification <b>"Whitelist"</b> is recommended for Input Nodes. This will ensure that only the specified
-							principals (callers) can send data to this Input Node.
+							It's advised to use the <b>Whitelist</b> verification for Input Nodes. This guarantees that only
+							designated principals (callers) can transmit data to the node.
 						</B2>
 						<RadioButton
 							name="verificationType"
@@ -110,19 +109,16 @@ export const InputNodeCanisterForm = ({
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>
-						<Stack direction="row" alignItems="center">
-							<H5 fontWeight="bold">Sample data</H5>
-							<Icon
-								icon="info"
-								spacingLeft
-								tooltip="This is the sample data that will be used in the circuit. You can manually enter sample JSON data in the field below."
-							/>
-						</Stack>
+						<H5 fontWeight="bold">Sample data</H5>
+						<B2>
+							Here's the sample data for the circuit. Enter your sample JSON data below. This data will serve as the
+							foundation and will undergo processing by the configured nodes.
+						</B2>
 						<Editor mode="javascript" onChange={value => setValue('sampleData', value)} value={watch('sampleData')} />
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>
-						<H5 fontWeight="bold">How to send data to this Input Node?</H5>
+						<H5 fontWeight="bold">How do you transmit data to this Input Node?</H5>
 						<B2>Rust</B2>
 						<Editor
 							height={256}
