@@ -9,6 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import slugify from 'slugify';
 import React from 'react';
+import { formatTokenAmount } from 'lib/utils';
 
 export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFieldProps>(
 	(
@@ -145,8 +146,10 @@ export const Field = (props: FieldProps) => {
 					{...field}
 					errorMessage={fieldState.error?.message}
 					onChange={e => {
-						field.onChange(props.type === 'number' ? Number(e.target.value) : e.target.value);
-						props.onChange?.(e.target.value);
+						const value = props.type === 'number' ? formatTokenAmount(e.target.value) : e.target.value;
+
+						field.onChange(value);
+						props.onChange?.(value);
 					}}
 				/>
 			)}

@@ -16,7 +16,12 @@ export const Drawer = ({
 	children
 }: PropsWithChildren<NodeDrawerProps>) => {
 	return (
-		<MuiDrawer anchor="right" open={isOpen} onClose={onClose} PaperProps={{ sx: { width: fullWidth ? '90%' : 700 } }}>
+		<MuiDrawer
+			anchor="right"
+			open={isOpen}
+			onClose={onClose}
+			PaperProps={{ sx: { width: fullWidth ? '90%' : 700, borderLeft: theme => `1px solid ${theme.palette.divider}` } }}
+		>
 			<Stack
 				direction="row"
 				alignItems="center"

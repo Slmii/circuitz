@@ -1,9 +1,7 @@
 import { Stack, Divider, Skeleton } from '@mui/material';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { H4, H5, B1 } from 'components/Typography';
-import { toReadableDate } from 'lib/utils/date.utils';
-import { formatTCycles } from 'lib/utils/ic.utils';
-import { formatBytes } from 'lib/utils/number.utils';
+import { toReadableDate, formatTCycles, formatBytes } from 'lib/utils';
 import { CircuitStatus } from '../CircuitStatus';
 import { Circuit } from 'lib/types';
 import { Principal } from '@dfinity/principal';

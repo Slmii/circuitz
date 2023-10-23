@@ -151,18 +151,6 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 	},
 	MuiCssBaseline: {
 		styleOverrides: theme => ({
-			'&::-webkit-scrollbar': {
-				width: '2px',
-				height: '2px'
-			},
-			'&::-webkit-scrollbar-track': {
-				borderRadius: '50px',
-				background: theme.palette.secondary.main
-			},
-			'&::-webkit-scrollbar-thumb': {
-				backgroundColor: theme.palette.secondary.main,
-				borderRadius: '50px'
-			},
 			bold: {
 				fontWeight: theme.typography.fontWeightBold
 			},

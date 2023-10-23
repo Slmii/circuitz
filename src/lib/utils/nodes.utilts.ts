@@ -121,7 +121,8 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 			canisterId: '',
 			description: '',
 			methodName: '',
-			name: ''
+			name: '',
+			cycles: ''
 		};
 	}
 
@@ -160,11 +161,12 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 		canisterId: lookup.canister.toString(),
 		description: lookup.description[0] ?? '',
 		methodName: lookup.method,
-		name: lookup.name
+		name: lookup.name,
+		cycles: Number(lookup.cycles).toString()
 	};
 };
 
-export const getLookupCanisterFormArgs = (args: LookupCanisterArg[]): Arg[] => {
+export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[]): Arg[] => {
 	return args.map((arg): Arg => {
 		if (arg.dataType === 'String') {
 			return {
@@ -193,6 +195,28 @@ export const getLookupCanisterFormArgs = (args: LookupCanisterArg[]): Arg[] => {
 		return {
 			Boolean: arg.value === 'true'
 		};
+	});
+};
+
+export const getLookupCanisterValuesAsArray = (args: LookupCanisterArg[]) => {
+	return args.map(arg => {
+		if (arg.dataType === 'String') {
+			return arg.value;
+		}
+
+		if (arg.dataType === 'Number') {
+			return Number(arg.value);
+		}
+
+		if (arg.dataType === 'BigInt') {
+			return BigInt(arg.value);
+		}
+
+		if (arg.dataType === 'Principal') {
+			return toPrincipal(arg.value);
+		}
+
+		return arg.value === 'true';
 	});
 };
 

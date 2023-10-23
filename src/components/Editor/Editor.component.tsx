@@ -40,6 +40,7 @@ export const Editor = ({
 			value={value}
 			readOnly={isReadOnly}
 			onChange={onChange}
+			wrapEnabled
 			setOptions={{
 				enableBasicAutocompletion: true,
 				enableLiveAutocompletion: true,

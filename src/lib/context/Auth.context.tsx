@@ -1,8 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from 'api/index';
 import { DELEGATION, IDENTITY, II_AUTH } from 'lib/constants';
-import { getDelegation, unwrapResult } from 'lib/utils/actor.utils';
-import { validateIdentity } from 'lib/utils/identity.utils';
+import { getDelegation, unwrapResult, validateIdentity } from 'lib/utils';
 import { createContext } from 'react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSnackbar } from 'lib/hooks';

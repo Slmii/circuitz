@@ -2,7 +2,7 @@
 import { createTheme, Theme } from '@mui/material/styles';
 import React, { PropsWithChildren } from 'react';
 import { useLocalStorage } from 'lib/hooks';
-import { components, LIGHT_THEME, DARK_THEME } from 'lib/utils/theme.utils';
+import { components, LIGHT_THEME, DARK_THEME } from 'lib/utils';
 
 interface ColorModeContextInterface {
 	theme: Theme;

@@ -10,6 +10,7 @@ export const FORM_ERRORS = {
 	maxSelection: (max: number) => `Please select at most ${max} ${pluralize('option', max)}`,
 	selection: 'Please select an option',
 	alphaNumeric: 'Please provide an alphanumeric value',
+	numeric: 'Please provide a numeric value',
 	url: 'Please provide a valid URL',
 	minDate: 'Please provide a date in the future',
 	principal: 'Please provide a valid Principal ID',

@@ -1,8 +1,8 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { useAddNode, useEditNode, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
-import { LookupCanisterForm } from './Forms/LookupCanisterForm.component';
-import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from './NodeDrawers.types';
+import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
+import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
 import { Divider, Stack } from '@mui/material';
 import { Button } from 'components/Button';
@@ -12,8 +12,7 @@ import { useFormContext } from 'react-hook-form';
 import { NodeSourceType } from 'lib/types';
 import { useMutation } from '@tanstack/react-query';
 import { api } from 'api/index';
-import { toPrincipal } from 'lib/utils/identity.utils';
-import { getLookupCanisterFormArgs } from 'lib/utils/nodes.utilts';
+import { toPrincipal, getLookupCanisterValuesAsArg, replaceBigIntWithNumber } from 'lib/utils';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
 	const circuitId = useGetParam('circuitId');
@@ -50,9 +49,9 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 			title="Lookup Canister"
 			fullWidth
 		>
-			<LookupCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit}>
+			<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit}>
 				<PreviewRequest type="LookupCanister" />
-			</LookupCanisterForm>
+			</LookupNodeCanisterForm>
 		</Drawer>
 	);
 };
@@ -84,11 +83,12 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 						const values = getValues();
 						if (type === 'LookupCanister' && 'canisterId' in values) {
 							preview({
-								args: getLookupCanisterFormArgs(values.args),
+								args: getLookupCanisterValuesAsArg(values.args),
 								canister: toPrincipal(values.canisterId),
 								description: values.description.length ? [values.description] : [],
 								method: values.methodName,
-								name: values.name
+								name: values.name,
+								cycles: BigInt(values.cycles)
 							});
 						}
 					}}
@@ -101,7 +101,7 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 				</B2>
 				<Editor
 					mode="javascript"
-					value={`${data ? JSON.stringify(data, null, 4) : ''} ${
+					value={`${data ? JSON.stringify(replaceBigIntWithNumber(data), null, 4) : ''} ${
 						error ? (typeof error === 'string' ? error : JSON.stringify((error as Error).message, null, 4)) : ''
 					}`}
 					isReadOnly

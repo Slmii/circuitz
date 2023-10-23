@@ -30,10 +30,9 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 
 		return (
 			<FormControl disabled={disabled} fullWidth={fullWidth}>
-				{label && <InputLabel id={`${slugify(name)}-select`}>{label}</InputLabel>}
+				{label && <InputLabel id={labelId}>{label}</InputLabel>}
 				<MuiSelect
 					required={required}
-					displayEmpty
 					label={label}
 					error={Boolean(error)}
 					MenuProps={{

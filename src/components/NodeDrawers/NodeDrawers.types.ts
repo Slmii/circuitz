@@ -22,6 +22,7 @@ export interface LookupCanisterFormValues {
 	description: string;
 	canisterId: string;
 	methodName: string;
+	cycles: string;
 	args: LookupCanisterArg[];
 }
 

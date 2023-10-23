@@ -4,8 +4,7 @@ import { IconButton } from 'components/IconButton';
 import { B1, Caption, H5 } from 'components/Typography';
 import { useOnClickOutside } from 'lib/hooks';
 import { Trace, Node as INode } from 'lib/types';
-import { stopPropagation } from 'lib/utils/browser-events.utils';
-import { getNodeName, getNodeTitle } from 'lib/utils/nodes.utilts';
+import { getNodeName, getNodeTitle, stopPropagation } from 'lib/utils';
 import pluralize from 'pluralize';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import Xarrow, { anchorCustomPositionType, useXarrow } from 'react-xarrows';
@@ -123,6 +122,7 @@ export const CircuitNode = ({
 					<Fade in={isShowSettings}>
 						<Box>
 							<IconButton
+								component="div"
 								size="small"
 								icon="settings"
 								tooltip="Setting"

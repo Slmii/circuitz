@@ -4,8 +4,7 @@ import { SkeletonCircuitStatus } from 'components/Skeleton';
 import { Spacer } from 'components/Spacer';
 import { Caption } from 'components/Typography';
 import { useGetCircuitStatus } from 'lib/hooks';
-import { formatTCycles } from 'lib/utils/ic.utils';
-import { formatBytes } from 'lib/utils/number.utils';
+import { formatTCycles, formatBytes } from 'lib/utils';
 import { ReactNode } from 'react';
 
 export const CircuitStatus = ({

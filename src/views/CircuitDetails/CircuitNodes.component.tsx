@@ -7,7 +7,7 @@ import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
 import { CircuitNode, Nodes } from 'components/Node';
 import { LookupNodeDrawer, InputNodeDrawer } from 'components/NodeDrawers';
-import { getNodeSourceType } from 'lib/utils/nodes.utilts';
+import { getNodeSourceType } from 'lib/utils';
 
 interface DialogState {
 	open: boolean;

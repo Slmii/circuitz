@@ -34,6 +34,10 @@ export interface CustomPinLogic {
 	function: [] | [string];
 	script: [] | [string];
 }
+export interface HttpHeader {
+	value: string;
+	name: string;
+}
 export interface HttpRequest {
 	url: string;
 	method: HttpRequestMethod;
@@ -43,16 +47,18 @@ export interface HttpRequest {
 	request_body: [] | [string];
 }
 export type HttpRequestMethod = { GET: null } | { POST: null };
+export interface HttpResponse {
+	status: bigint;
+	body: Uint8Array | number[];
+	headers: Array<HttpHeader>;
+}
 export interface LookupCanister {
 	method: string;
 	args: Array<Arg>;
 	name: string;
 	description: [] | [string];
+	cycles: bigint;
 	canister: Principal;
-}
-export interface LookupTransformPin {
-	output: string;
-	input: string;
 }
 export interface Mapper {
 	output: string;
@@ -75,7 +81,7 @@ export interface Node {
 export type NodeType =
 	| { LookupCanister: LookupCanister }
 	| { HttpRequest: HttpRequest }
-	| { Transformer: LookupTransformPin }
+	| { Transformer: Transformer }
 	| { Output: Output }
 	| { Canister: Canister }
 	| { LookupHttpRequest: HttpRequest }
@@ -100,7 +106,7 @@ export interface Pin {
 	order: number;
 }
 export type PinType =
-	| { LookupTransformPin: LookupTransformPin }
+	| { LookupTransformPin: Transformer }
 	| { FilterPin: Array<ConditionGroup> }
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic }
@@ -111,6 +117,10 @@ export type Result_2 = { Ok: string } | { Err: ApiError };
 export interface Token {
 	field: string;
 	token: string;
+}
+export interface TransformArgs {
+	context: Uint8Array | number[];
+	response: HttpResponse;
 }
 export interface Transformer {
 	output: string;
@@ -132,6 +142,7 @@ export interface _SERVICE {
 	edit_node: ActorMethod<[number, NodeType], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
+	transform: ActorMethod<[TransformArgs], HttpResponse>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -169,6 +180,7 @@ export const idlFactory = ({ IDL }: any) => {
 		args: IDL.Vec(Arg),
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
+		cycles: IDL.Nat,
 		canister: IDL.Principal
 	});
 	const HttpRequestMethod = IDL.Variant({
@@ -183,10 +195,7 @@ export const idlFactory = ({ IDL }: any) => {
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
 		request_body: IDL.Opt(IDL.Text)
 	});
-	const LookupTransformPin = IDL.Record({
-		output: IDL.Text,
-		input: IDL.Text
-	});
+	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
 	const Output = IDL.Record({
 		method: IDL.Text,
 		name: IDL.Text,
@@ -213,7 +222,7 @@ export const idlFactory = ({ IDL }: any) => {
 	const NodeType = IDL.Variant({
 		LookupCanister: LookupCanister,
 		HttpRequest: HttpRequest,
-		Transformer: LookupTransformPin,
+		Transformer: Transformer,
 		Output: Output,
 		Canister: Canister,
 		LookupHttpRequest: HttpRequest,
@@ -243,7 +252,7 @@ export const idlFactory = ({ IDL }: any) => {
 		script: IDL.Opt(IDL.Text)
 	});
 	const PinType = IDL.Variant({
-		LookupTransformPin: LookupTransformPin,
+		LookupTransformPin: Transformer,
 		FilterPin: IDL.Vec(ConditionGroup),
 		MapperPin: Mapper,
 		PrePin: CustomPinLogic,
@@ -275,10 +284,21 @@ export const idlFactory = ({ IDL }: any) => {
 		Err: ApiError
 	});
 	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
+	const HttpHeader = IDL.Record({ value: IDL.Text, name: IDL.Text });
+	const HttpResponse = IDL.Record({
+		status: IDL.Nat,
+		body: IDL.Vec(IDL.Nat8),
+		headers: IDL.Vec(HttpHeader)
+	});
+	const TransformArgs = IDL.Record({
+		context: IDL.Vec(IDL.Nat8),
+		response: HttpResponse
+	});
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
-		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], [])
+		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),
+		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
 	});
 };

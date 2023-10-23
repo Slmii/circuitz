@@ -11,13 +11,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { Node } from 'lib/types';
 import { NodeType, VerificationType } from 'declarations/nodes.declarations';
-import { getInputCanisterFormValues } from 'lib/utils/nodes.utilts';
-import { toPrincipal } from 'lib/utils/identity.utils';
+import { toPrincipal, getInputCanisterFormValues } from 'lib/utils';
 import { inputCanisterSchema } from 'lib/schemas';
 import { Editor } from 'components/Editor';
 import { InputNodeFormValues } from '../NodeDrawers.types';
 
-export const InputCanisterForm = ({
+export const InputNodeCanisterForm = ({
 	formRef,
 	node,
 	onProcessNode

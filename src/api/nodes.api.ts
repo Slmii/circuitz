@@ -2,8 +2,7 @@ import { Actor } from './actor.api';
 import type { LookupCanister, NodeType, _SERVICE } from 'declarations/nodes.declarations';
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
-import { unwrapResult } from 'lib/utils/actor.utils';
-import { mapToNode } from 'lib/utils/nodes.utilts';
+import { mapToNode, unwrapResult } from 'lib/utils';
 import { Node } from 'lib/types';
 
 // TODO: replace hardcoded canister id with a dynamic one

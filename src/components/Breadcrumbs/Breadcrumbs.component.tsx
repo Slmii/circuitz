@@ -4,7 +4,7 @@ import MuiLink from '@mui/material/Link';
 import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useGetCircuits } from 'lib/hooks';
-import { getUrlBreadcrumbs } from 'lib/utils/url';
+import { getUrlBreadcrumbs } from 'lib/utils';
 import { Caption } from 'components/Typography';
 
 export const Breadcrumbs = () => {

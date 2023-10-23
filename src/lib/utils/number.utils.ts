@@ -18,3 +18,7 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
+
+export const formatTokenAmount = (value: string) => {
+	return value.replace(/(\.\d{5})\d+/g, '$1');
+};

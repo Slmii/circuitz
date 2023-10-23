@@ -4,17 +4,17 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
 import { Node } from 'lib/types';
-import { Arg, NodeType } from 'declarations/nodes.declarations';
+import { NodeType } from 'declarations/nodes.declarations';
 import { lookupCanisterSchema } from 'lib/schemas';
 import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
-import { getLookupCanisterFormValues } from 'lib/utils/nodes.utilts';
+import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg } from 'lib/utils';
 import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 
-export const LookupCanisterForm = ({
+export const LookupNodeCanisterForm = ({
 	formRef,
 	node,
 	onProcessNode,
@@ -31,23 +31,8 @@ export const LookupCanisterForm = ({
 				description: data.description.length ? [data.description] : [],
 				canister: Principal.fromText(data.canisterId),
 				method: data.methodName,
-				args: data.args.map((arg): Arg => {
-					if (arg.dataType === 'String') {
-						return {
-							String: arg.value
-						};
-					}
-
-					if (arg.dataType === 'Number') {
-						return {
-							Number: Number(arg.value)
-						};
-					}
-
-					return {
-						Boolean: arg.value === 'true'
-					};
-				})
+				cycles: BigInt(data.cycles),
+				args: getLookupCanisterValuesAsArg(data.args)
 			}
 		});
 	};
@@ -85,6 +70,13 @@ export const LookupCanisterForm = ({
 							<Stack direction="column" spacing={4}>
 								<Field name="canisterId" label="Canister ID" placeholder="Enter Canister ID" />
 								<Field name="methodName" label="Method name" placeholder="Enter a method name" />
+								<Field
+									name="cycles"
+									type="number"
+									label="Cycles (T)"
+									placeholder="10_000_000_000"
+									helperText="In order to know how many cycles you need, you can use the Preview request feature."
+								/>
 							</Stack>
 						</Stack>
 						<Divider />

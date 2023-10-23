@@ -28,6 +28,7 @@
 		"ace-builds": "^1.30.0",
 		"date-fns": "^2.30.0",
 		"dompurify": "^3.0.6",
+		"ic0": "^0.2.8",
 		"luxon": "^3.4.3",
 		"mui-image": "^1.0.7",
 		"notistack": "^3.0.1",

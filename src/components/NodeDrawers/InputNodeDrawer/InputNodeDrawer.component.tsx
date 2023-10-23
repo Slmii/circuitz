@@ -1,12 +1,12 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
-import { InputCanisterForm } from './Forms/InputCanisterForm.component';
+import { InputNodeCanisterForm } from './InputNodeCanisterForm.component';
 import { H5 } from 'components/Typography';
 import { ButtonBase, Paper, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { NodeSource, NodeSourceType } from 'lib/types';
-import { InputNodeDrawerProps } from './NodeDrawers.types';
+import { InputNodeDrawerProps } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
 import { Back } from 'components/Navigation';
 
@@ -80,7 +80,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 					className={isAddNodeLoading || isEditNodeLoading ? 'form-loading' : undefined}
 				>
 					{!node && <Back label="Select Node Source" onBack={() => setNodeSource(null)} />}
-					<InputCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+					<InputNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
 				</Stack>
 			) : (
 				<Stack spacing={2}>
