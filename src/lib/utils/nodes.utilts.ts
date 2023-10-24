@@ -303,6 +303,12 @@ export const getNodeName = (node: Node): string => {
 export function getSampleDataFields<T extends object>(obj: T, path: string[] = []): Option[] {
 	return Object.entries(obj).reduce<Option[]>((acc, [key, value]) => {
 		const newPath = [...path, key];
+
+		if (Array.isArray(value)) {
+			return acc;
+		}
+
+		// Check if object, so not array, and not null, and not undefined
 		if (typeof value === 'object') {
 			return [...acc, ...getSampleDataFields(value, newPath)];
 		} else {

@@ -82,7 +82,9 @@ const dataTypes: Option<DataType>[] = [
 ];
 
 export const FilterPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTMLFormElement>; node?: Node }) => {
-	const { data: sampleData, isLoading: isSampleDataLoading } = useGetSampleData(node?.id ?? 0);
+	const { data: sampleData, isLoading: isSampleDataLoading } = useGetSampleData(node?.id ?? 0, {
+		isFilterPreview: true
+	});
 
 	const fields = useMemo((): Option[] => {
 		if (!sampleData) {
@@ -132,11 +134,11 @@ export const FilterPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 							<Button variant="contained" size="large" startIcon="filter" loading={!isLoaded}>
 								Preview
 							</Button>
-							<Editor mode="javascript" value={JSON.stringify(sampleData, null, 4)} height={450} />
+							<Editor mode="javascript" isReadOnly value={JSON.stringify(sampleData, null, 4)} height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
-							<Editor mode="javascript" value="" height={32} />
+							<Editor mode="javascript" isReadOnly value="" height={32} />
 						</Stack>
 					</Stack>
 				</Stack>

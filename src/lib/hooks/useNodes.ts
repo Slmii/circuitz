@@ -74,6 +74,9 @@ export const useEditNode = () => {
 
 				return nodes;
 			});
+
+			// Invalidate the sample data cache
+			queryClient.invalidateQueries([QUERY_KEYS.SAMPLE_DATA, node.circuitId]);
 		},
 		onError: () => {
 			errorSnackbar(MUTATE_ERROR);
@@ -90,7 +93,7 @@ export const useGetSampleData = (currentNode: number, options?: SampleDataOption
 	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	return useQuery({
-		queryKey: ['', circuitId],
+		queryKey: [QUERY_KEYS.SAMPLE_DATA, Number(circuitId), currentNode],
 		enabled: !!circuitNodes,
 		queryFn: () => api.Nodes.getSampleData(circuitNodes ?? [], currentNode, options)
 	});

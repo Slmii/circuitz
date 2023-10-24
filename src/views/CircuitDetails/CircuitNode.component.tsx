@@ -18,10 +18,10 @@ export const CircuitNode = ({
 	onClick,
 	children
 }: PropsWithChildren<CircuitNodeProps>) => {
-	const updateXarrow = useXarrow();
 	const [isShowSettings, setIsShowSettings] = useState(false);
 	const [isShowPins, setIsShowPins] = useState(false);
 
+	const updateXarrow = useXarrow();
 	const setPrinDrawer = useSetRecoilState(pinDrawerState);
 	const setDeleteNode = useSetRecoilState(deleteNodeState);
 	const ref = useOnClickOutside(() => setIsShowPins(false));
