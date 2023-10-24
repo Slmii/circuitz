@@ -15,7 +15,7 @@ export const Node = ({ node, isLast, isFirst, trace, onNodeClick }: NodeProps) =
 			return {
 				offset: {
 					x: -150,
-					y: -69
+					y: 90
 				},
 				position: 'bottom'
 			};
@@ -24,7 +24,7 @@ export const Node = ({ node, isLast, isFirst, trace, onNodeClick }: NodeProps) =
 		return {
 			offset: {
 				x: -150,
-				y: -36
+				y: 123
 			},
 			position: 'middle'
 		};
@@ -33,7 +33,7 @@ export const Node = ({ node, isLast, isFirst, trace, onNodeClick }: NodeProps) =
 	return (
 		<Stack spacing={1}>
 			<H5 sx={{ pl: !isFirst ? 8 : undefined }}>{isFirst ? 'Input Node' : getNodeTitle(node)}</H5>
-			<CircuitNode nodeId={node.id} isFirst={isFirst} trace={trace} onClick={() => onNodeClick(node)}>
+			<CircuitNode node={node} isFirst={isFirst} trace={trace} onClick={() => onNodeClick(node)}>
 				<Icon icon="infinite" />
 				<B1>{getNodeName(node)}</B1>
 			</CircuitNode>
@@ -53,7 +53,7 @@ export const Node = ({ node, isLast, isFirst, trace, onNodeClick }: NodeProps) =
 					strokeWidth={1}
 					headSize={10}
 					start={`node-${node.id}`}
-					end={`node-${node.id + 1}`}
+					end={`node-${node.id}`}
 				/>
 			)}
 		</Stack>

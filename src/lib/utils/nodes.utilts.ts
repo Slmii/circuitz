@@ -8,6 +8,7 @@ import type { LookCanisterArgType, Node, NodeSourceType, VerificationType } from
 import { dateFromNano } from './date.utils';
 import { InputNodeFormValues, LookupCanisterArg, LookupCanisterFormValues } from 'components/NodeDrawers';
 import { toPrincipal } from './identity.utils';
+import { Option } from 'components/Form/Select';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -295,3 +296,18 @@ export const getNodeName = (node: Node): string => {
 
 	return node.nodeType.Canister.name;
 };
+
+/**
+ * Get all the nested fields from the sample data object, seperated by a dot.
+ */
+export function getSampleDataFields<T extends object>(obj: T, path: string[] = []): Option[] {
+	return Object.entries(obj).reduce<Option[]>((acc, [key, value]) => {
+		const newPath = [...path, key];
+		if (typeof value === 'object') {
+			return [...acc, ...getSampleDataFields(value, newPath)];
+		} else {
+			const path = newPath.join('.');
+			return [...acc, { id: path, label: path }];
+		}
+	}, []);
+}

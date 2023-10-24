@@ -1,14 +1,30 @@
+import { PinSourceType } from 'lib/types';
 import { atom } from 'recoil';
 
 interface DeleteNodeState {
-	isDeleteNodeModalOpen: boolean;
-	nodeToDelete?: number;
+	open: boolean;
+	nodeId?: number;
+}
+
+export interface PinDrawerState {
+	open: boolean;
+	type: PinSourceType;
+	node?: Node;
 }
 
 export const deleteNodeState = atom<DeleteNodeState>({
 	key: 'deleteNodeState',
 	default: {
-		isDeleteNodeModalOpen: false,
-		nodeToDelete: undefined
+		open: false,
+		nodeId: undefined
+	}
+});
+
+export const pinDrawerState = atom<PinDrawerState>({
+	key: 'pinDrawerState',
+	default: {
+		open: false,
+		type: 'FilterPin',
+		node: undefined
 	}
 });

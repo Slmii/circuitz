@@ -1,4 +1,14 @@
-import { VerificationType, Node, NodeSourceType, LookCanisterArgType } from 'lib/types';
+import {
+	VerificationType,
+	Node,
+	NodeSourceType,
+	LookCanisterArgType,
+	OperatorType,
+	ConditionType,
+	ConditionGroupType,
+	OperandType,
+	DataType
+} from 'lib/types';
 
 export interface InputNodeDrawerProps {
 	open: boolean;
@@ -29,4 +39,18 @@ export interface LookupCanisterFormValues {
 export interface LookupCanisterArg {
 	dataType: LookCanisterArgType;
 	value: string;
+}
+
+export interface FilterPinFormValues {
+	rules: FilterPin[];
+	condition: ConditionType;
+	conditionGroup: ConditionGroupType;
+}
+
+export interface FilterPin {
+	field: string;
+	operator: OperatorType | '';
+	value: string;
+	operandType: OperandType;
+	dataType: DataType;
 }

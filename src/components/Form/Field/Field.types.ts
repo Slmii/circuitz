@@ -1,6 +1,6 @@
 import { Icons } from 'components/icons';
 import { BaseTextFieldProps } from '@mui/material/TextField/TextField';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, ReactNode } from 'react';
 
 export interface FieldProps extends Omit<StandaloneFieldProps, 'onChange' | 'value' | 'errorMessage'> {
 	onChange?: (value: string) => void;
@@ -23,7 +23,7 @@ export interface StandaloneFieldProps extends BaseTextFieldProps {
 	onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	startIcon?: Icons;
 	endIcon?: Icons;
-	endElement?: JSX.Element;
+	endElement?: ReactNode;
 	helperText?: string;
 	multiline?: boolean;
 	multilineRows?: number;

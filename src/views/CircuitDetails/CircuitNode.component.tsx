@@ -8,10 +8,10 @@ import { PropsWithChildren, useState } from 'react';
 import { useXarrow } from 'react-xarrows';
 import { CircuitNodeProps } from './CircuitDetails.types';
 import { useSetRecoilState } from 'recoil';
-import { deleteNodeState } from 'lib/recoil';
+import { deleteNodeState, pinDrawerState } from 'lib/recoil';
 
 export const CircuitNode = ({
-	nodeId,
+	node,
 	isFirst,
 	trace,
 	nested = false,
@@ -22,17 +22,18 @@ export const CircuitNode = ({
 	const [isShowSettings, setIsShowSettings] = useState(false);
 	const [isShowPins, setIsShowPins] = useState(false);
 
+	const setPrinDrawer = useSetRecoilState(pinDrawerState);
 	const setDeleteNode = useSetRecoilState(deleteNodeState);
 	const ref = useOnClickOutside(() => setIsShowPins(false));
 
 	return (
 		<Stack direction="row" spacing={2} alignItems="center" ref={ref}>
 			<ButtonBase
-				id={`node-${nodeId}`}
+				id={`node-${node?.id ?? 0}`}
 				onClick={onClick}
 				onLoad={updateXarrow}
-				onMouseEnter={() => nodeId && setIsShowSettings(true)}
-				onMouseLeave={() => nodeId && setIsShowSettings(false)}
+				onMouseEnter={() => node && setIsShowSettings(true)}
+				onMouseLeave={() => node && setIsShowSettings(false)}
 				sx={{
 					display: 'flex',
 					flexDirection: 'column',
@@ -79,8 +80,12 @@ export const CircuitNode = ({
 						size="small"
 						tooltip="Delete Node"
 						onClick={() => {
+							if (!node) {
+								return;
+							}
+
 							setIsShowPins(false);
-							setDeleteNode({ isDeleteNodeModalOpen: true, nodeToDelete: nodeId });
+							setDeleteNode({ open: true, nodeId: node.id });
 						}}
 					/>
 					{!isFirst && (
@@ -88,9 +93,32 @@ export const CircuitNode = ({
 							<Divider orientation="vertical" flexItem />
 							<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
 							<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
-							<IconButton icon="filter" size="small" tooltip="FilterPin" />
-							<IconButton icon="mapper" size="small" tooltip="MapperPin" />
-							<IconButton icon="transformer" size="small" tooltip="LookupTransformPin" />
+							<IconButton
+								icon="filter"
+								size="small"
+								tooltip="FilterPin"
+								onClick={() => {
+									setIsShowPins(false);
+									setPrinDrawer({ open: true, type: 'FilterPin' });
+								}}
+							/>
+							{node && !('LookupCanister' in node.nodeType) && !('LookupHttpRequest' in node.nodeType) && (
+								<IconButton
+									icon="mapper"
+									size="small"
+									tooltip="MapperPin"
+									onClick={() => setPrinDrawer({ open: true, type: 'MapperPin' })}
+								/>
+							)}
+							{node && ('LookupCanister' in node.nodeType || 'LookupHttpRequest' in node.nodeType) && (
+								// Only for Lookups
+								<IconButton
+									icon="transformer"
+									size="small"
+									tooltip="LookupTransformPin"
+									onClick={() => setPrinDrawer({ open: true, type: 'LookupTransformPin' })}
+								/>
+							)}
 						</>
 					)}
 				</Stack>

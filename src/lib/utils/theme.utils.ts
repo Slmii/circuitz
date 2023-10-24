@@ -235,7 +235,7 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 				padding: '6px 20px'
 			},
 			sizeSmall: {
-				minHeight: 60,
+				minHeight: 24,
 				padding: '2px 12px'
 			}
 		}

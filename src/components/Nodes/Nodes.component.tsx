@@ -9,7 +9,7 @@ import { Dialog } from 'components/Dialog';
 import { B1 } from 'components/Typography';
 
 export const Nodes = ({ nodes, onNodeClick }: NodesProps) => {
-	const [{ isDeleteNodeModalOpen, nodeToDelete }, setDeleteNodeState] = useRecoilState(deleteNodeState);
+	const [{ open: isDeleteNodeModalOpen, nodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
 
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitTraces } = useGetCircuitTraces(Number(circuitId));
@@ -41,15 +41,15 @@ export const Nodes = ({ nodes, onNodeClick }: NodesProps) => {
 				title="Delete node"
 				open={isDeleteNodeModalOpen}
 				onConfirm={async () => {
-					if (nodeToDelete) {
-						await deleteNode(nodeToDelete);
-						setDeleteNodeState({ isDeleteNodeModalOpen: false });
+					if (nodeId) {
+						await deleteNode(nodeId);
+						setDeleteNodeState({ open: false });
 					}
 				}}
 				onConfirmText="Delete"
 				onConfirmColor="error"
 				onConfirmLoading={isDeleteNodeLoading}
-				onClose={() => setDeleteNodeState({ isDeleteNodeModalOpen: false })}
+				onClose={() => setDeleteNodeState({ open: false })}
 				onCancelText="Cancel"
 				onCancelDisabled={isDeleteNodeLoading}
 			>

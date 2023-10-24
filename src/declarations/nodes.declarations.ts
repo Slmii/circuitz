@@ -22,17 +22,16 @@ export interface Canister {
 	verification_type: VerificationType;
 }
 export type Condition = { Is: null } | { Not: null };
-export interface ConditionGroup {
-	field: string;
-	condition_group_type: [] | [ConditionGroupType];
-	value: string;
-	operator: Operator;
-	condition: Condition;
-}
-export type ConditionGroupType = { Or: null } | { And: null };
+export type ConditionGroup = { Or: null } | { And: null };
 export interface CustomPinLogic {
 	function: [] | [string];
 	script: [] | [string];
+}
+export type DataType = { BigInt: null } | { String: null } | { Boolean: null } | { Principal: null } | { Number: null };
+export interface FilterPin {
+	condition_group: [] | [ConditionGroup];
+	rules: Array<Rules>;
+	condition: Condition;
 }
 export interface HttpHeader {
 	value: string;
@@ -86,10 +85,14 @@ export type NodeType =
 	| { Canister: Canister }
 	| { LookupHttpRequest: HttpRequest }
 	| { Mapper: Mapper };
+export interface Operand {
+	operand_type: OperandType;
+	date_type: DataType;
+}
+export type OperandType = { Field: null } | { Value: null };
 export type Operator =
-	| { In: null }
 	| { Equal: null }
-	| { NotIn: null }
+	| { Contains: null }
 	| { LessThanOrEqual: null }
 	| { GreaterThan: null }
 	| { LessThan: null }
@@ -107,13 +110,19 @@ export interface Pin {
 }
 export type PinType =
 	| { LookupTransformPin: Transformer }
-	| { FilterPin: Array<ConditionGroup> }
+	| { FilterPin: FilterPin }
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic }
 	| { PostPin: CustomPinLogic };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export type Result_2 = { Ok: string } | { Err: ApiError };
+export interface Rules {
+	field: string;
+	value: string;
+	operand: Operand;
+	operator: Operator;
+}
 export interface Token {
 	field: string;
 	token: string;
@@ -229,23 +238,38 @@ export const idlFactory = ({ IDL }: any) => {
 		LookupHttpRequest: HttpRequest,
 		Mapper: Mapper
 	});
-	const ConditionGroupType = IDL.Variant({ Or: IDL.Null, And: IDL.Null });
+	const ConditionGroup = IDL.Variant({ Or: IDL.Null, And: IDL.Null });
+	const OperandType = IDL.Variant({ Field: IDL.Null, Value: IDL.Null });
+	const DataType = IDL.Variant({
+		BigInt: IDL.Null,
+		String: IDL.Null,
+		Boolean: IDL.Null,
+		Principal: IDL.Null,
+		Number: IDL.Null
+	});
+	const Operand = IDL.Record({
+		operand_type: OperandType,
+		date_type: DataType
+	});
 	const Operator = IDL.Variant({
-		In: IDL.Null,
 		Equal: IDL.Null,
-		NotIn: IDL.Null,
+		Contains: IDL.Null,
 		LessThanOrEqual: IDL.Null,
 		GreaterThan: IDL.Null,
 		LessThan: IDL.Null,
 		GreaterThanOrEqual: IDL.Null,
 		NotEqual: IDL.Null
 	});
-	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
-	const ConditionGroup = IDL.Record({
+	const Rules = IDL.Record({
 		field: IDL.Text,
-		condition_group_type: IDL.Opt(ConditionGroupType),
 		value: IDL.Text,
-		operator: Operator,
+		operand: Operand,
+		operator: Operator
+	});
+	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
+	const FilterPin = IDL.Record({
+		condition_group: IDL.Opt(ConditionGroup),
+		rules: IDL.Vec(Rules),
 		condition: Condition
 	});
 	const CustomPinLogic = IDL.Record({
@@ -254,7 +278,7 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const PinType = IDL.Variant({
 		LookupTransformPin: Transformer,
-		FilterPin: IDL.Vec(ConditionGroup),
+		FilterPin: FilterPin,
 		MapperPin: Mapper,
 		PrePin: CustomPinLogic,
 		PostPin: CustomPinLogic

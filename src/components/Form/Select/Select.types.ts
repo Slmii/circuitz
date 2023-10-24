@@ -13,8 +13,8 @@ export interface SelectProps {
 	customLabel?: (option: Option) => JSX.Element | string;
 }
 
-export interface Option {
-	id: string;
+export interface Option<T = string> {
+	id: T;
 	label: string;
 	disabled?: boolean;
 }
