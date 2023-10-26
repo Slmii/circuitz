@@ -1,4 +1,4 @@
-import { Stack, ButtonBase, Fade, Divider, Chip } from '@mui/material';
+import { Stack, ButtonBase, Fade, Chip } from '@mui/material';
 import { IconButton } from 'components/IconButton';
 import { B1, Caption, H5 } from 'components/Typography';
 import { getNodeMetaData, getNodeIcon, stopPropagation } from 'lib/utils';
@@ -40,6 +40,8 @@ export const CircuitNode = ({ node, trace, isFirst, onNodeSelect }: CircuitNodeP
 			justifyContent="space-between"
 			alignItems="flex-start"
 			width="100%"
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
 			sx={{
 				backgroundColor: 'background.paper',
 				borderRadius: 1
@@ -47,9 +49,8 @@ export const CircuitNode = ({ node, trace, isFirst, onNodeSelect }: CircuitNodeP
 		>
 			<ButtonBase
 				onClick={() => onNodeSelect(node)}
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
 				sx={{
+					position: 'relative',
 					width: '100%',
 					gap: 2,
 					p: 2,
@@ -100,10 +101,11 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 
 	return (
 		<Fade in={isShowPins}>
-			<Stack direction="row" spacing={1} ml={4}>
+			<Stack direction="row" spacing={1} sx={{ position: 'absolute', top: theme => theme.spacing(2), right: 0 }}>
 				<IconButton
 					icon="trash"
 					size="small"
+					color="error"
 					tooltip="Delete Node"
 					{...stopPropagation({
 						onClick: () => setDeleteNode({ open: true, nodeId: node.id })
@@ -111,7 +113,6 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 				/>
 				{!isFirstNode && (
 					<>
-						<Divider orientation="vertical" flexItem />
 						<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
 						<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
 						<IconButton

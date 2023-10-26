@@ -43,7 +43,7 @@ export const CircuitCard = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: ()
 							}}
 						/>
 						<Menu
-							label={<IconButton icon="more" size="small" />}
+							label={<IconButton icon="more" />}
 							id="circuit-menu"
 							menu={[
 								{

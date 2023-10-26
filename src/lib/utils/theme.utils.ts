@@ -291,6 +291,19 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 				}
 			})
 		}
+	},
+	MuiSvgIcon: {
+		styleOverrides: {
+			fontSizeLarge: {
+				fontSize: 32
+			},
+			fontSizeMedium: {
+				fontSize: 24
+			},
+			fontSizeSmall: {
+				fontSize: 16
+			}
+		}
 	}
 };
 

@@ -153,7 +153,7 @@ export const FilterPinDrawerForm = ({
 					<Stack direction="column" spacing={4} width="50%" height="100%">
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Input</H5>
-							<Button variant="contained" size="large" startIcon="filter" loading={!isLoaded}>
+							<Button variant="contained" size="large" startIcon="filter-linear" loading={!isLoaded}>
 								Preview
 							</Button>
 							<Editor mode="javascript" isReadOnly value={JSON.stringify(sampleData, null, 4)} height={450} />
