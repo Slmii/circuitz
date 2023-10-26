@@ -1,5 +1,5 @@
 import { Stack, Grid } from '@mui/material';
-import { CreateCircuit, Circuit } from './Circuit.component';
+import { CircuitCard, CircuitCardPaper } from './CircuitCard.component';
 import { IconButton } from 'components/IconButton';
 import { useState } from 'react';
 import { Dialog } from 'components/Dialog';
@@ -11,6 +11,7 @@ import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { B1, H1 } from 'components/Typography';
 import { SkeletonCircuitCard } from 'components/Skeleton';
 import { useAddCircuit, useEditCircuit, useGetCircuits } from 'lib/hooks';
+import { Button } from 'components/Button';
 
 interface CircuitFormValues {
 	name: string;
@@ -73,10 +74,24 @@ export const Circuits = () => {
 					<Grid container spacing={2}>
 						<>
 							{!circuits.length ? (
-								<CreateCircuit onClick={() => setIsFormOpen(true)} />
+								<Grid item xs={12} sm={6} md={4}>
+									<CircuitCardPaper>
+										<Button
+											size="large"
+											startIcon="add"
+											variant="contained"
+											onClick={() => {
+												setCircuit(null);
+												setIsFormOpen(true);
+											}}
+										>
+											Add Circuit
+										</Button>
+									</CircuitCardPaper>
+								</Grid>
 							) : (
 								circuits.map(circuit => (
-									<Circuit
+									<CircuitCard
 										key={circuit.id}
 										circuit={circuit}
 										onEdit={() => {

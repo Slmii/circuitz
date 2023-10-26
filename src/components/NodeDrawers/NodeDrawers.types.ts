@@ -42,12 +42,12 @@ export interface LookupCanisterArg {
 }
 
 export interface FilterPinFormValues {
-	rules: FilterPin[];
+	rules: FilterRule[];
 	condition: ConditionType;
 	conditionGroup: ConditionGroupType;
 }
 
-export interface FilterPin {
+export interface FilterRule {
 	field: string;
 	operator: OperatorType | '';
 	value: string;

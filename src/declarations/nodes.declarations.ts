@@ -30,7 +30,7 @@ export interface CustomPinLogic {
 export type DataType = { BigInt: null } | { String: null } | { Boolean: null } | { Principal: null } | { Number: null };
 export interface FilterPin {
 	condition_group: [] | [ConditionGroup];
-	rules: Array<Rules>;
+	rules: Array<Rule>;
 	condition: Condition;
 }
 export interface HttpHeader {
@@ -59,6 +59,10 @@ export interface LookupCanister {
 	cycles: bigint;
 	canister: Principal;
 }
+export interface LookupTransformPin {
+	output: string;
+	input: string;
+}
 export interface Mapper {
 	output: string;
 	interface: string;
@@ -80,14 +84,12 @@ export interface Node {
 export type NodeType =
 	| { LookupCanister: LookupCanister }
 	| { HttpRequest: HttpRequest }
-	| { Transformer: Transformer }
 	| { Output: Output }
 	| { Canister: Canister }
-	| { LookupHttpRequest: HttpRequest }
-	| { Mapper: Mapper };
+	| { LookupHttpRequest: HttpRequest };
 export interface Operand {
 	operand_type: OperandType;
-	date_type: DataType;
+	data_type: DataType;
 }
 export type OperandType = { Field: null } | { Value: null };
 export type Operator =
@@ -109,7 +111,7 @@ export interface Pin {
 	order: number;
 }
 export type PinType =
-	| { LookupTransformPin: Transformer }
+	| { LookupTransformPin: LookupTransformPin }
 	| { FilterPin: FilterPin }
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic }
@@ -117,7 +119,7 @@ export type PinType =
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export type Result_2 = { Ok: string } | { Err: ApiError };
-export interface Rules {
+export interface Rule {
 	field: string;
 	value: string;
 	operand: Operand;
@@ -130,10 +132,6 @@ export interface Token {
 export interface TransformArgs {
 	context: Uint8Array | number[];
 	response: HttpResponse;
-}
-export interface Transformer {
-	output: string;
-	input: string;
 }
 export type Vec = Array<
 	| { BigInt: bigint }
@@ -205,7 +203,6 @@ export const idlFactory = ({ IDL }: any) => {
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
 		request_body: IDL.Opt(IDL.Text)
 	});
-	const Transformer = IDL.Record({ output: IDL.Text, input: IDL.Text });
 	const Output = IDL.Record({
 		method: IDL.Text,
 		name: IDL.Text,
@@ -224,19 +221,16 @@ export const idlFactory = ({ IDL }: any) => {
 		sample_data: IDL.Opt(IDL.Text),
 		verification_type: VerificationType
 	});
-	const Mapper = IDL.Record({
-		output: IDL.Text,
-		interface: IDL.Text,
-		input: IDL.Text
-	});
 	const NodeType = IDL.Variant({
 		LookupCanister: LookupCanister,
 		HttpRequest: HttpRequest,
-		Transformer: Transformer,
 		Output: Output,
 		Canister: Canister,
-		LookupHttpRequest: HttpRequest,
-		Mapper: Mapper
+		LookupHttpRequest: HttpRequest
+	});
+	const LookupTransformPin = IDL.Record({
+		output: IDL.Text,
+		input: IDL.Text
 	});
 	const ConditionGroup = IDL.Variant({ Or: IDL.Null, And: IDL.Null });
 	const OperandType = IDL.Variant({ Field: IDL.Null, Value: IDL.Null });
@@ -249,7 +243,7 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const Operand = IDL.Record({
 		operand_type: OperandType,
-		date_type: DataType
+		data_type: DataType
 	});
 	const Operator = IDL.Variant({
 		Equal: IDL.Null,
@@ -260,7 +254,7 @@ export const idlFactory = ({ IDL }: any) => {
 		GreaterThanOrEqual: IDL.Null,
 		NotEqual: IDL.Null
 	});
-	const Rules = IDL.Record({
+	const Rule = IDL.Record({
 		field: IDL.Text,
 		value: IDL.Text,
 		operand: Operand,
@@ -269,15 +263,20 @@ export const idlFactory = ({ IDL }: any) => {
 	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
 	const FilterPin = IDL.Record({
 		condition_group: IDL.Opt(ConditionGroup),
-		rules: IDL.Vec(Rules),
+		rules: IDL.Vec(Rule),
 		condition: Condition
+	});
+	const Mapper = IDL.Record({
+		output: IDL.Text,
+		interface: IDL.Text,
+		input: IDL.Text
 	});
 	const CustomPinLogic = IDL.Record({
 		function: IDL.Opt(IDL.Text),
 		script: IDL.Opt(IDL.Text)
 	});
 	const PinType = IDL.Variant({
-		LookupTransformPin: Transformer,
+		LookupTransformPin: LookupTransformPin,
 		FilterPin: FilterPin,
 		MapperPin: Mapper,
 		PrePin: CustomPinLogic,

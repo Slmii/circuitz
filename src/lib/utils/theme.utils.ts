@@ -47,7 +47,7 @@ export const LIGHT_THEME: Readonly<PaletteOptions> = {
 		main: '#FFAA2A'
 	},
 	text: {
-		primary: '#00000',
+		primary: '#000000',
 		secondary: 'rgba(0, 0, 0, 0.7)'
 	},
 	background: {

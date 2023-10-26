@@ -1,15 +1,14 @@
 import { NodeSourceType, Node, Trace } from 'lib/types';
 
 export interface CircuitNodeProps {
+	node: Node;
 	isFirst: boolean;
-	node?: Node;
 	trace?: Trace;
-	nested?: boolean;
-	onClick: () => void;
+	onNodeSelect: (node: Node) => void;
 }
 
 export interface NodeDialogProps {
 	open: boolean;
-	type: NodeSourceType;
+	type: NodeSourceType | 'Unknown';
 	node?: Node;
 }

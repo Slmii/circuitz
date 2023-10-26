@@ -1,12 +1,11 @@
 import { Stack, Divider, Skeleton } from '@mui/material';
 import { StandaloneSwitch } from 'components/Form/Switch';
-import { H4, H5, B1 } from 'components/Typography';
+import { H4, H5, B1, H1 } from 'components/Typography';
 import { toReadableDate, formatTCycles, formatBytes } from 'lib/utils';
 import { CircuitStatus } from '../CircuitStatus';
 import { Circuit } from 'lib/types';
 import { Principal } from '@dfinity/principal';
 import { useToggleCircuitStatus } from 'lib/hooks';
-import { Button } from 'components/Button';
 
 export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; nodeCanisterId: Principal }) => {
 	const { mutate } = useToggleCircuitStatus();
@@ -18,9 +17,7 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 			sx={{
 				flex: '1 1 30%',
 				padding: 4,
-				backgroundColor: 'background.paper',
-				border: theme => `1px solid ${theme.palette.divider}`,
-				borderRadius: 1
+				backgroundColor: 'background.paper'
 			}}
 		>
 			<Stack
@@ -36,6 +33,11 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 					onChange={() => mutate({ circuitId: circuit.id, enabled: circuit.isEnabled })}
 				/>
 			</Stack>
+			<Stack direction="column" spacing={2}>
+				<H1>{circuit.name}</H1>
+				{circuit.description.length ? <B1>{circuit.description}</B1> : null}
+			</Stack>
+			<Divider />
 			<Stack direction="column" spacing={2}>
 				<Stack direction="column" spacing={1}>
 					<H5 fontWeight="bold">Last updated at</H5>
@@ -58,10 +60,7 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 									<B1>{nodeCanisterId.toString()}</B1>
 								</Stack>
 								<Stack direction="column" spacing={1}>
-									<Stack direction="row" justifyContent="space-between" alignItems="center">
-										<H5 fontWeight="bold">Cycles</H5>
-										<Button startIcon="cycles">Top up Cycles</Button>
-									</Stack>
+									<H5 fontWeight="bold">Cycles</H5>
 									<B1>{formatTCycles(data.data.cycles)} T</B1>
 								</Stack>
 								<Stack direction="column" spacing={1}>
@@ -92,11 +91,6 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 					</>
 				)}
 			/>
-			<Divider />
-			<Stack direction="column" spacing={1}>
-				<H5 fontWeight="bold">Description</H5>
-				<B1>{circuit.description.length ? circuit.description : '-'}</B1>
-			</Stack>
 		</Stack>
 	);
 };

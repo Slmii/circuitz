@@ -1,14 +1,19 @@
 import type {
 	Arg,
+	DataType,
 	Node as OldNode,
 	VerificationType as OldVerificationType,
+	OperandType,
+	Operator,
+	Rule,
 	Token
 } from 'declarations/nodes.declarations';
 import type { LookCanisterArgType, Node, NodeSourceType, VerificationType } from 'lib/types';
 import { dateFromNano } from './date.utils';
-import { InputNodeFormValues, LookupCanisterArg, LookupCanisterFormValues } from 'components/NodeDrawers';
+import { FilterRule, InputNodeFormValues, LookupCanisterArg, LookupCanisterFormValues } from 'components/NodeDrawers';
 import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
+import { Icons } from 'components/icons';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -100,16 +105,8 @@ export const getNodeTitle = (node: Node): string => {
 		return 'Lookup HTTP Request';
 	}
 
-	if ('Transformer' in node.nodeType) {
-		return 'Transformer';
-	}
-
 	if ('Ouput' in node.nodeType) {
 		return 'Output';
-	}
-
-	if ('Mapper' in node.nodeType) {
-		return 'Mapper';
 	}
 
 	return '';
@@ -241,60 +238,44 @@ export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
 	return 'Boolean';
 };
 
-export const getNodeSourceType = (node: Node): NodeSourceType => {
+export const getNodeMetaData = (node: Node): { name: string; description: string; type: NodeSourceType } => {
 	if ('LookupCanister' in node.nodeType) {
-		return 'LookupCanister';
+		return {
+			name: node.nodeType.LookupCanister.name,
+			description: node.nodeType.LookupCanister.description[0] ?? '',
+			type: 'LookupCanister'
+		};
 	}
 
 	if ('LookupHttpRequest' in node.nodeType) {
-		return 'LookupHttpRequest';
-	}
-
-	if ('Transformer' in node.nodeType) {
-		return 'Transformer';
-	}
-
-	if ('Output' in node.nodeType) {
-		return 'Output';
-	}
-
-	if ('Mapper' in node.nodeType) {
-		return 'Mapper';
-	}
-
-	if ('HttpRequest' in node.nodeType) {
-		return 'HttpRequest';
-	}
-
-	return 'Canister';
-};
-
-export const getNodeName = (node: Node): string => {
-	if ('LookupCanister' in node.nodeType) {
-		return node.nodeType.LookupCanister.name;
-	}
-
-	if ('LookupHttpRequest' in node.nodeType) {
-		return node.nodeType.LookupHttpRequest.name;
-	}
-
-	if ('Transformer' in node.nodeType) {
-		return '';
+		return {
+			name: node.nodeType.LookupHttpRequest.name,
+			description: node.nodeType.LookupHttpRequest.description[0] ?? '',
+			type: 'LookupHttpRequest'
+		};
 	}
 
 	if ('Output' in node.nodeType) {
-		return node.nodeType.Output.name;
-	}
-
-	if ('Mapper' in node.nodeType) {
-		return '';
+		return {
+			name: node.nodeType.Output.name,
+			description: node.nodeType.Output.description[0] ?? '',
+			type: 'Output'
+		};
 	}
 
 	if ('HttpRequest' in node.nodeType) {
-		return node.nodeType.HttpRequest.name;
+		return {
+			name: node.nodeType.HttpRequest.name,
+			description: node.nodeType.HttpRequest.description[0] ?? '',
+			type: 'HttpRequest'
+		};
 	}
 
-	return node.nodeType.Canister.name;
+	return {
+		name: node.nodeType.Canister.name,
+		description: node.nodeType.Canister.description[0] ?? '',
+		type: 'Canister'
+	};
 };
 
 /**
@@ -317,3 +298,58 @@ export function getSampleDataFields<T extends object>(obj: T, path: string[] = [
 		}
 	}, []);
 }
+
+export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
+	return pins.map((pin): Rule => {
+		let dataType: DataType = { String: null };
+		if (pin.dataType === 'BigInt') {
+			dataType = { BigInt: null };
+		} else if (pin.dataType === 'Boolean') {
+			dataType = { Boolean: null };
+		} else if (pin.dataType === 'Number') {
+			dataType = { Number: null };
+		} else if (pin.dataType === 'Principal') {
+			dataType = { Principal: null };
+		}
+
+		let operandType: OperandType = { Field: null };
+		if (pin.operandType === 'Value') {
+			operandType = { Value: null };
+		}
+
+		let operator: Operator = { Equal: null };
+		if (pin.operator === 'NotEqual') {
+			operator = { NotEqual: null };
+		} else if (pin.operator === 'GreaterThan') {
+			operator = { GreaterThan: null };
+		} else if (pin.operator === 'GreaterThanOrEqual') {
+			operator = { GreaterThanOrEqual: null };
+		} else if (pin.operator === 'LessThan') {
+			operator = { LessThan: null };
+		} else if (pin.operator === 'LessThanOrEqual') {
+			operator = { LessThanOrEqual: null };
+		}
+
+		return {
+			field: pin.field,
+			value: pin.value,
+			operand: {
+				data_type: dataType,
+				operand_type: operandType
+			},
+			operator: operator
+		};
+	});
+};
+
+export const getNodeIcon = (node: Node): Icons => {
+	if ('LookupCanister' in node.nodeType || 'Canister' in node.nodeType) {
+		return 'infinite';
+	}
+
+	if ('LookupHttpRequest' in node.nodeType || 'HttpRequest' in node.nodeType) {
+		return 'request';
+	}
+
+	return 'output-linear';
+};

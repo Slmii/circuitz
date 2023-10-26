@@ -2,7 +2,7 @@ import { Actor } from './actor.api';
 import type { LookupCanister, NodeType, _SERVICE } from 'declarations/nodes.declarations';
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
-import { mapToNode, unwrapResult } from 'lib/utils';
+import { httpRequest, mapToNode, unwrapResult } from 'lib/utils';
 import { Node, SampleDataOptions } from 'lib/types';
 
 // TODO: replace hardcoded canister id with a dynamic one
@@ -73,31 +73,11 @@ export abstract class Nodes {
 			}
 
 			if ('HttpRequest' in node.nodeType) {
-				const requestBodyAsString = node.nodeType.HttpRequest.request_body[0]
-					? node.nodeType.HttpRequest.request_body[0]
-					: '{}';
-
-				const headers = node.nodeType.HttpRequest.headers.reduce(
-					(acc, header) => {
-						acc[header[0]] = header[1];
-						return acc;
-					},
-					{} as Record<string, string>
-				);
-
-				try {
-					const response = await fetch(node.nodeType.HttpRequest.url, {
-						method: 'GET' in node.nodeType.HttpRequest.method ? 'GET' : 'POST',
-						body: JSON.parse(requestBodyAsString),
-						headers
-					});
-					const data = await response.json();
-					sampleData['data'] = data;
-				} catch (error) {
-					sampleData['data'] = error as Record<string, unknown>;
-				}
+				sampleData['data'] = await httpRequest(node.nodeType.HttpRequest);
 			}
 			// End Input Nodes
+
+			// ==========
 
 			// Do not execute the node itself if
 			// - The preview is for the filter, and
@@ -114,26 +94,7 @@ export abstract class Nodes {
 			}
 
 			if ('LookupHttpRequest' in node.nodeType) {
-				const requestBodyAsString = node.nodeType.LookupHttpRequest.request_body[0]
-					? node.nodeType.LookupHttpRequest.request_body[0]
-					: '{}';
-
-				const headers = node.nodeType.LookupHttpRequest.headers.reduce(
-					(acc, header) => {
-						acc[header[0]] = header[1];
-						return acc;
-					},
-					{} as Record<string, string>
-				);
-
-				const response = await fetch(node.nodeType.LookupHttpRequest.url, {
-					method: 'GET' in node.nodeType.LookupHttpRequest.method ? 'GET' : 'POST',
-					body: JSON.parse(requestBodyAsString),
-					headers
-				});
-				const data = await response.json();
-
-				sampleData['LookupHttpRequest'] = data;
+				sampleData['LookupHttpRequest'] = await httpRequest(node.nodeType.LookupHttpRequest);
 			}
 
 			if ('Transformer' in node.nodeType) {

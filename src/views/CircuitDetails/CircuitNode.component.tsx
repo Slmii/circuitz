@@ -1,128 +1,141 @@
-import { Stack, ButtonBase, Fade, Box, Divider } from '@mui/material';
+import { Stack, ButtonBase, Fade, Divider, Chip } from '@mui/material';
 import { IconButton } from 'components/IconButton';
-import { Caption } from 'components/Typography';
-import { useOnClickOutside } from 'lib/hooks';
-import { stopPropagation } from 'lib/utils';
+import { B1, Caption, H5 } from 'components/Typography';
+import { getNodeMetaData, getNodeIcon, stopPropagation } from 'lib/utils';
+import { Node } from 'lib/types';
 import pluralize from 'pluralize';
-import { PropsWithChildren, useState } from 'react';
-import { useXarrow } from 'react-xarrows';
+import { useState } from 'react';
 import { CircuitNodeProps } from './CircuitDetails.types';
 import { useSetRecoilState } from 'recoil';
 import { deleteNodeState, pinDrawerState } from 'lib/recoil';
+import { Icon } from 'components/Icon';
+import { StandaloneSwitch } from 'components/Form/Switch';
+import { CircularProgress } from 'components/Progress';
 
-export const CircuitNode = ({
-	node,
-	isFirst,
-	trace,
-	nested = false,
-	onClick,
-	children
-}: PropsWithChildren<CircuitNodeProps>) => {
-	const [isShowSettings, setIsShowSettings] = useState(false);
+export const CircuitNode = ({ node, trace, isFirst, onNodeSelect }: CircuitNodeProps) => {
 	const [isShowPins, setIsShowPins] = useState(false);
+	const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
 
-	const updateXarrow = useXarrow();
-	const setPrinDrawer = useSetRecoilState(pinDrawerState);
-	const setDeleteNode = useSetRecoilState(deleteNodeState);
-	const ref = useOnClickOutside(() => setIsShowPins(false));
+	const { description, name, type } = getNodeMetaData(node);
+
+	const handleMouseEnter = () => {
+		setDelayHandler(
+			setTimeout(() => {
+				setIsShowPins(true);
+			}, 500)
+		);
+	};
+
+	const handleMouseLeave = () => {
+		setIsShowPins(false);
+
+		if (delayHandler) {
+			clearTimeout(delayHandler);
+		}
+	};
 
 	return (
-		<Stack direction="row" spacing={2} alignItems="center" ref={ref}>
+		<Stack
+			direction="row"
+			justifyContent="space-between"
+			alignItems="flex-start"
+			width="100%"
+			sx={{
+				backgroundColor: 'background.paper',
+				borderRadius: 1
+			}}
+		>
 			<ButtonBase
-				id={`node-${node?.id ?? 0}`}
-				onClick={onClick}
-				onLoad={updateXarrow}
-				onMouseEnter={() => node && setIsShowSettings(true)}
-				onMouseLeave={() => node && setIsShowSettings(false)}
+				onClick={() => onNodeSelect(node)}
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
 				sx={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'flex-start',
-					gap: 1,
+					width: '100%',
+					gap: 2,
 					p: 2,
-					width: 400,
-					mb: 8,
-					ml: nested ? 15 : 0,
-					backgroundColor: 'background.default',
-					borderRadius: 1,
-					color: 'text.primary',
-					border: theme => `1px solid ${theme.palette.divider}`
+					justifyContent: 'flex-start',
+					borderTopLeftRadius: 'inherit',
+					borderBottomLeftRadius: 'inherit'
 				}}
 			>
-				<Stack direction="row" width="100%" justifyContent="space-between" alignItems="center">
-					<Stack direction="row" alignItems="center" spacing={1}>
-						{children}
-					</Stack>
-					{trace && trace.errors.length && (
-						<Caption color="error.main">
-							{trace.errors.length} {pluralize('error', trace.errors.length)}
+				<Icon icon={isFirst ? 'input-linear' : getNodeIcon(node)} color="primary" />
+				<Stack direction="column" alignItems="flex-start">
+					<H5 fontWeight="bold">{name}</H5>
+					<B1 color="text.secondary">{description}</B1>
+					<Caption mt={1} color="text.primary" fontWeight="bold">
+						Type: {isFirst ? 'Input Node' : type}
+					</Caption>
+					{trace?.errors.length && (
+						<Caption mt={1} color="error.main">
+							{trace.errors.length} {pluralize('error', trace?.errors.length)}
 						</Caption>
 					)}
-					<Fade in={isShowSettings}>
-						<Box>
+				</Stack>
+				<NodePins node={node} isFirstNode={isFirst} isShowPins={isShowPins} />
+			</ButtonBase>
+			<Stack direction="row" alignItems="center" spacing={1} p={2}>
+				<Chip
+					label={node.isEnabled ? 'Active' : 'Inactive'}
+					size="small"
+					sx={{
+						color: node.isEnabled ? 'success.light' : 'error.light',
+						fontWeight: 'bold'
+					}}
+				/>
+				<StandaloneSwitch value={node.isEnabled} name="active" onChange={() => {}} />
+				{node.isRunning && (
+					<Stack direction="row" alignItems="center" spacing={1} sx={{ ml: '24px !important' }}>
+						<CircularProgress />
+						<B1>Running</B1>
+					</Stack>
+				)}
+			</Stack>
+		</Stack>
+	);
+};
+
+const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: boolean; isFirstNode: boolean }) => {
+	const setPrinDrawer = useSetRecoilState(pinDrawerState);
+	const setDeleteNode = useSetRecoilState(deleteNodeState);
+
+	return (
+		<Fade in={isShowPins}>
+			<Stack direction="row" spacing={1} ml={4}>
+				<IconButton
+					icon="trash"
+					size="small"
+					tooltip="Delete Node"
+					{...stopPropagation({
+						onClick: () => setDeleteNode({ open: true, nodeId: node.id })
+					})}
+				/>
+				{!isFirstNode && (
+					<>
+						<Divider orientation="vertical" flexItem />
+						<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
+						<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
+						<IconButton
+							icon="filter"
+							size="small"
+							tooltip="FilterPin"
+							{...stopPropagation({
+								onClick: () => setPrinDrawer({ open: true, type: 'FilterPin' })
+							})}
+						/>
+						{('LookupCanister' in node.nodeType || 'LookupHttpRequest' in node.nodeType) && (
+							// Only for Lookups
 							<IconButton
-								component="div"
+								icon="transformer"
 								size="small"
-								icon="settings"
-								tooltip="Setting"
+								tooltip="LookupTransformPin"
 								{...stopPropagation({
-									onClick: () => setIsShowPins(!isShowPins)
+									onClick: () => setPrinDrawer({ open: true, type: 'LookupTransformPin' })
 								})}
 							/>
-						</Box>
-					</Fade>
-				</Stack>
-			</ButtonBase>
-			<Fade in={isShowPins}>
-				<Stack direction="row" spacing={1}>
-					<IconButton
-						icon="trash"
-						size="small"
-						tooltip="Delete Node"
-						onClick={() => {
-							if (!node) {
-								return;
-							}
-
-							setIsShowPins(false);
-							setDeleteNode({ open: true, nodeId: node.id });
-						}}
-					/>
-					{!isFirst && (
-						<>
-							<Divider orientation="vertical" flexItem />
-							<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
-							<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
-							<IconButton
-								icon="filter"
-								size="small"
-								tooltip="FilterPin"
-								onClick={() => {
-									setIsShowPins(false);
-									setPrinDrawer({ open: true, type: 'FilterPin' });
-								}}
-							/>
-							{node && !('LookupCanister' in node.nodeType) && !('LookupHttpRequest' in node.nodeType) && (
-								<IconButton
-									icon="mapper"
-									size="small"
-									tooltip="MapperPin"
-									onClick={() => setPrinDrawer({ open: true, type: 'MapperPin' })}
-								/>
-							)}
-							{node && ('LookupCanister' in node.nodeType || 'LookupHttpRequest' in node.nodeType) && (
-								// Only for Lookups
-								<IconButton
-									icon="transformer"
-									size="small"
-									tooltip="LookupTransformPin"
-									onClick={() => setPrinDrawer({ open: true, type: 'LookupTransformPin' })}
-								/>
-							)}
-						</>
-					)}
-				</Stack>
-			</Fade>
-		</Stack>
+						)}
+					</>
+				)}
+			</Stack>
+		</Fade>
 	);
 };

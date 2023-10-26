@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 export const Layout = () => {
 	const { pathname } = useLocation();
 
-	const isNodesPage = useMemo(() => {
+	const isCircuitsDetailsPage = useMemo(() => {
 		return pathname.includes('/circuits/');
 	}, [pathname]);
 
@@ -16,9 +16,9 @@ export const Layout = () => {
 			<Providers>
 				<Header />
 				<Container
-					maxWidth={isNodesPage ? false : 'md'}
+					maxWidth={isCircuitsDetailsPage ? false : 'md'}
 					sx={{
-						padding: isNodesPage ? '0 !important' : undefined
+						padding: isCircuitsDetailsPage ? '0 !important' : undefined
 					}}
 				>
 					<Outlet />

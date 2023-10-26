@@ -1,5 +1,4 @@
-import { Stack, Tab, Tabs } from '@mui/material';
-import { H1 } from 'components/Typography';
+import { Box, Stack, Tab, Tabs } from '@mui/material';
 import { useGetCircuit, useGetCircuitNodes, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { useState } from 'react';
 import { Breadcrumbs } from 'components/Breadcrumbs';
@@ -49,24 +48,23 @@ export const CircuitDetails = () => {
 	}
 
 	return (
-		<Stack direction="column" rowGap={2} sx={{ p: 6 }}>
-			<Breadcrumbs />
-			<H1>{circuit.name}</H1>
-			<Tabs value={tab} onChange={(_e, tab) => setTab(tab)} aria-label="basic tabs example">
-				<Tab label="Nodes" {...a11yProps(0)} />
-				<Tab label="Settings" {...a11yProps(1)} />
-				<Tab label="History" {...a11yProps(2)} />
-			</Tabs>
-			<Stack direction="row" spacing={4}>
-				<Stack
-					sx={{
-						flex: '1 1 70%',
-						padding: 4,
-						backgroundColor: 'background.paper',
-						border: theme => `1px solid ${theme.palette.divider}`,
-						borderRadius: 1
-					}}
-				>
+		<Stack
+			direction="row"
+			height="calc(100vh - 64px)"
+			sx={{ borderTop: theme => `1px solid ${theme.palette.divider}` }}
+		>
+			<Stack
+				direction="column"
+				gap={1}
+				sx={{ flex: '1 1 70%', padding: 4, borderRight: theme => `1px solid ${theme.palette.divider}` }}
+			>
+				<Breadcrumbs />
+				<Tabs value={tab} onChange={(_e, tab) => setTab(tab)} aria-label="basic tabs example">
+					<Tab label="Nodes" {...a11yProps(0)} />
+					<Tab label="Settings" {...a11yProps(1)} />
+					<Tab label="History" {...a11yProps(2)} />
+				</Tabs>
+				<Box mt={2}>
 					<CustomTabPanel value={tab} index={0}>
 						<CircuitNodes nodes={nodes} />
 					</CustomTabPanel>
@@ -76,9 +74,9 @@ export const CircuitDetails = () => {
 					<CustomTabPanel value={tab} index={2}>
 						Item Three
 					</CustomTabPanel>
-				</Stack>
-				<CircuitSideBar circuit={circuit} nodeCanisterId={nodeCanisterId} />
+				</Box>
 			</Stack>
+			<CircuitSideBar circuit={circuit} nodeCanisterId={nodeCanisterId} />
 		</Stack>
 	);
 };

@@ -44,6 +44,17 @@ export const useEditCircuit = () => {
 
 				return old;
 			});
+
+			queryClient.setQueryData<Circuit>([QUERY_KEYS.CIRCUIT, circuit.id], old => {
+				if (!old) {
+					return;
+				}
+
+				return {
+					...old,
+					...circuit
+				};
+			});
 		},
 		onError: () => {
 			errorSnackbar(MUTATE_ERROR);
@@ -59,8 +70,9 @@ export const useToggleCircuitStatus = () => {
 		onMutate: ({ circuitId, enabled }) => {
 			// Snapshot
 			const previousCircuit = queryClient.getQueryData([QUERY_KEYS.CIRCUIT, circuitId]);
+			const previousCircuits = queryClient.getQueryData([QUERY_KEYS.CIRCUITS]);
 
-			// Optimistic update
+			// Optimistic updates
 			queryClient.setQueryData<Circuit>([QUERY_KEYS.CIRCUIT, circuitId], old => {
 				if (!old) {
 					return;
@@ -69,8 +81,23 @@ export const useToggleCircuitStatus = () => {
 				return { ...old, isEnabled: !enabled };
 			});
 
+			queryClient.setQueryData<Circuit[]>([QUERY_KEYS.CIRCUITS], old => {
+				if (!old) {
+					return;
+				}
+
+				// Find the index of the circuit that was edited
+				const index = old.findIndex(c => c.id === circuitId);
+
+				// Replace the old circuit with the new one
+				old[index].isEnabled = !enabled;
+
+				return old;
+			});
+
 			return {
-				previousCircuit
+				previousCircuit,
+				previousCircuits
 			};
 		},
 		onError: (_error, variables, context) => {
@@ -79,6 +106,10 @@ export const useToggleCircuitStatus = () => {
 			// Rollback
 			if (context?.previousCircuit) {
 				queryClient.setQueryData([QUERY_KEYS.CIRCUIT, variables.circuitId], context.previousCircuit);
+			}
+
+			if (context?.previousCircuits) {
+				queryClient.setQueryData([QUERY_KEYS.CIRCUITS], context.previousCircuits);
 			}
 		}
 	});

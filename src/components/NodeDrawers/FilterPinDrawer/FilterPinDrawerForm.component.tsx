@@ -14,7 +14,8 @@ import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetSampleData } from 'lib/hooks';
-import { getSampleDataFields } from 'lib/utils';
+import { getFilterPinValuesAsArg, getSampleDataFields } from 'lib/utils';
+import { Pin } from 'declarations/nodes.declarations';
 
 const operators: Option<OperatorType>[] = [
 	{
@@ -81,7 +82,15 @@ const dataTypes: Option<DataType>[] = [
 	}
 ];
 
-export const FilterPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTMLFormElement>; node?: Node }) => {
+export const FilterPinDrawerForm = ({
+	formRef,
+	node,
+	onProcessFilter
+}: {
+	formRef: RefObject<HTMLFormElement>;
+	node?: Node;
+	onProcessFilter: (data: Pin) => void;
+}) => {
 	const { data: sampleData, isLoading: isSampleDataLoading } = useGetSampleData(node?.id ?? 0, {
 		isFilterPreview: true
 	});
@@ -94,11 +103,24 @@ export const FilterPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 		return getSampleDataFields(sampleData);
 	}, [sampleData]);
 
+	const handleOnSubmit = async (data: FilterPinFormValues) => {
+		onProcessFilter({
+			order: node?.order ?? 0,
+			pin_type: {
+				FilterPin: {
+					condition: data.condition === 'Is' ? { Is: null } : { Not: null },
+					condition_group: data.rules.length > 1 ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
+					rules: getFilterPinValuesAsArg(data.rules)
+				}
+			}
+		});
+	};
+
 	const isLoaded = !!sampleData && !isSampleDataLoading;
 
 	return (
 		<Form<FilterPinFormValues>
-			action={() => {}}
+			action={handleOnSubmit}
 			defaultValues={{
 				rules: [
 					{

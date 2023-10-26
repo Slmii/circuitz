@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useGetCircuits } from 'lib/hooks';
 import { getUrlBreadcrumbs } from 'lib/utils';
-import { Caption } from 'components/Typography';
+import { B2 } from 'components/Typography';
 
 export const Breadcrumbs = () => {
 	const { data: circuits } = useGetCircuits();
@@ -40,15 +40,15 @@ export const Breadcrumbs = () => {
 
 	return (
 		<MuiBreadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon sx={{ fontSize: 16 }} />}>
-			<MuiLink fontSize={12} component={Link} color="text.secondary" to="/circuits">
+			<MuiLink fontSize={14} component={Link} color="text.secondary" to="/circuits">
 				Circuits
 			</MuiLink>
 			{breadcrumbs.map((breadcrumb, idx) => {
 				if (breadcrumbs.length === idx + 1) {
 					return (
-						<Caption key={breadcrumb.id} color="text.primary">
+						<B2 key={breadcrumb.id} color="text.primary">
 							{breadcrumb.name}
-						</Caption>
+						</B2>
 					);
 				}
 

@@ -4,7 +4,7 @@ import { QUERY_KEYS } from 'lib/constants';
 
 export const useGetCircuitTraces = (circuitId: number) => {
 	return useQuery({
-		queryKey: [QUERY_KEYS.CIRCUIT_TRACES],
+		queryKey: [QUERY_KEYS.CIRCUIT_TRACES, circuitId],
 		queryFn: () => api.Traces.getTraces(circuitId)
 	});
 };
