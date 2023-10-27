@@ -14,3 +14,4 @@ export * from './useGetParam';
 export * from './useOnClickOutside';
 export * from './useQueryParams';
 export * from './useFormSubmit';
+export * from './useDraggable';
