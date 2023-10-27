@@ -35,12 +35,8 @@ export const CircuitCard = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: ()
 						<Chip
 							label={circuit.isEnabled ? 'Active' : 'Inactive'}
 							size="small"
-							sx={{
-								ml: 'auto',
-								mr: 1,
-								color: circuit.isEnabled ? 'success.light' : 'error.light',
-								fontWeight: 'bold'
-							}}
+							color={circuit.isEnabled ? 'success' : 'error'}
+							sx={{ ml: 'auto' }}
 						/>
 						<Menu
 							label={<IconButton icon="more" />}

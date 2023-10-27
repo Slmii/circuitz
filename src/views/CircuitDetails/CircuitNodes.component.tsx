@@ -1,6 +1,6 @@
 import { Stack, Fade, ButtonBase } from '@mui/material';
 import { B1, H5 } from 'components/Typography';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Node, NodeSourceType } from 'lib/types';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
@@ -13,6 +13,10 @@ import { deleteNodeState, pinDrawerState } from 'lib/recoil';
 import { useDeleteNode, useGetCircuitTraces, useGetParam, useOnClickOutside } from 'lib/hooks';
 import { Icon } from 'components/Icon';
 import { Dialog } from 'components/Dialog';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from 'lib/constants';
 
 export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [isAddNode, setIsAddNode] = useState(false);
@@ -23,6 +27,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [{ open: isPinDrawerOpen, type: pinDrawerType }, setPrinDrawer] = useRecoilState(pinDrawerState);
 
 	const circuitId = useGetParam('circuitId');
+	const queryClient = useQueryClient();
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
 	const { mutateAsync: deleteNode, isLoading: isDeleteNodeLoading } = useDeleteNode();
 
@@ -33,6 +38,44 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
+
+	const handleOnMoveNode = useCallback((dragIndex: number, hoverIndex: number) => {
+		// TODO: make call for updating node order and active state
+		queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, Number(circuitId)], old => {
+			if (!old) {
+				return [];
+			}
+
+			const dragNode = old[dragIndex];
+			const newNodes = [...old];
+
+			newNodes.splice(dragIndex, 1);
+			newNodes.splice(hoverIndex, 0, dragNode);
+
+			return newNodes;
+		});
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const renderNode = useCallback(
+		(node: Node, index: number) => {
+			return (
+				<CircuitNode
+					key={node.id}
+					index={index}
+					node={node}
+					trace={traces.find(trace => trace.nodeId === node.id)}
+					isFirst={index === 0}
+					onNodeSelect={node => setNodeDialogProps({ type: getNodeMetaData(node).type, node, open: true })}
+					onMoveNode={handleOnMoveNode}
+				/>
+			);
+		},
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[traces]
+	);
 
 	if (!(!!circuitTraces && !isCircuitTracesLoading)) {
 		return null;
@@ -63,15 +106,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 					</Stack>
 				) : (
 					<>
-						{nodes.map((node, index) => (
-							<CircuitNode
-								key={node.id}
-								node={node}
-								trace={traces.find(trace => trace.nodeId === node.id)}
-								isFirst={index === 0}
-								onNodeSelect={node => setNodeDialogProps({ type: getNodeMetaData(node).type, node, open: true })}
-							/>
-						))}
+						<DndProvider backend={HTML5Backend}>{nodes.map((node, index) => renderNode(node, index))}</DndProvider>
 						<Stack direction="column" spacing={1} mt={4} alignItems="flex-start">
 							<IconButton icon={!isAddNode ? 'add-square' : 'close'} onClick={() => setIsAddNode(!isAddNode)} />
 							<Fade in={isAddNode}>

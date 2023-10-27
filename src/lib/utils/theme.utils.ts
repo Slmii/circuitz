@@ -304,6 +304,13 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 				fontSize: 16
 			}
 		}
+	},
+	MuiChip: {
+		styleOverrides: {
+			root: {
+				fontWeight: 'bold'
+			}
+		}
 	}
 };
 
