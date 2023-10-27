@@ -1,4 +1,4 @@
-import { Stack, ButtonBase, Fade, Chip, Box } from '@mui/material';
+import { Stack, ButtonBase, Fade, Chip } from '@mui/material';
 import { IconButton } from 'components/IconButton';
 import { B1, B2, Caption, H5 } from 'components/Typography';
 import { getNodeMetaData, getNodeIcon, stopPropagation } from 'lib/utils';
@@ -11,13 +11,10 @@ import { deleteNodeState, pinDrawerState } from 'lib/recoil';
 import { Icon } from 'components/Icon';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { CircularProgress } from 'components/Progress';
-import { useDraggable } from 'lib/hooks';
 
-export const CircuitNode = ({ node, trace, isFirst, index, onNodeSelect, onMoveNode }: CircuitNodeProps) => {
+export const CircuitNode = ({ node, trace, isFirst, index, onNodeSelect, onToggleNodeStatus }: CircuitNodeProps) => {
 	const [isShowPins, setIsShowPins] = useState(false);
 	const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
-
-	const { dragRef, handlerId, opacity, previewRef } = useDraggable(index, onMoveNode);
 	const { description, name, type } = getNodeMetaData(node);
 
 	const handleMouseEnter = () => {
@@ -37,40 +34,15 @@ export const CircuitNode = ({ node, trace, isFirst, index, onNodeSelect, onMoveN
 	};
 
 	return (
-		<Stack
-			direction="row"
-			alignItems="center"
-			spacing={2}
-			{...(!isFirst && {
-				ref: previewRef,
-				'data-handler-id': handlerId
-			})}
-			sx={{
-				opacity
-			}}
-		>
-			<Stack direction="row" alignItems="center" spacing={1}>
-				{!isFirst && (
-					<Box ref={dragRef}>
-						<Icon
-							icon="drag"
-							color="secondary"
-							sx={{
-								'&:hover': {
-									cursor: 'grab'
-								}
-							}}
-						/>
-					</Box>
-				)}
-				<B1
-					sx={{
-						width: 10
-					}}
-				>
-					{index + 1}
-				</B1>
-			</Stack>
+		<Stack direction="row" alignItems="center" spacing={2}>
+			<B1
+				fontWeight="bold"
+				sx={{
+					width: 10
+				}}
+			>
+				{index + 1}
+			</B1>
 			<Stack
 				direction="row"
 				justifyContent="space-between"
@@ -116,7 +88,7 @@ export const CircuitNode = ({ node, trace, isFirst, index, onNodeSelect, onMoveN
 						size="small"
 						color={node.isEnabled ? 'success' : 'error'}
 					/>
-					<StandaloneSwitch value={node.isEnabled} name="active" onChange={() => {}} />
+					<StandaloneSwitch value={node.isEnabled} name="active" onChange={() => onToggleNodeStatus(node)} />
 					{node.isRunning && (
 						<Stack direction="row" alignItems="center" spacing={1} sx={{ ml: '24px !important' }}>
 							<CircularProgress />

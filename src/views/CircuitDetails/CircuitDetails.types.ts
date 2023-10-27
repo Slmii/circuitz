@@ -2,11 +2,11 @@ import { NodeSourceType, Node, Trace } from 'lib/types';
 
 export interface CircuitNodeProps {
 	node: Node;
-	isFirst: boolean;
 	index: number;
+	isFirst: boolean;
 	trace?: Trace;
 	onNodeSelect: (node: Node) => void;
-	onMoveNode: (dragIndex: number, hoverIndex: number) => void;
+	onToggleNodeStatus: (node: Node) => void;
 }
 
 export interface NodeDialogProps {

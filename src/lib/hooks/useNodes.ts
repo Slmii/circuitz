@@ -98,3 +98,42 @@ export const useGetSampleData = (currentNode: number, options?: SampleDataOption
 		queryFn: () => api.Nodes.getSampleData(circuitNodes ?? [], currentNode, options)
 	});
 };
+
+export const useToggleNodeStatus = () => {
+	const queryClient = useQueryClient();
+	const { errorSnackbar } = useSnackbar();
+
+	return useMutation(api.Nodes.toggleStatus, {
+		onMutate: ({ nodeId, circuitId, enabled }) => {
+			// Snapshot
+			const previousCircuitNodes = queryClient.getQueryData([QUERY_KEYS.CIRCUIT_NODES, circuitId]);
+
+			// Optimistic updates
+			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, circuitId], old => {
+				if (!old) {
+					return;
+				}
+
+				// Find the index of the node that was edited
+				const index = old.findIndex(node => node.id === nodeId);
+
+				// Replace the old node with the new one
+				old[index].isEnabled = !enabled;
+
+				return old;
+			});
+
+			return {
+				previousCircuitNodes
+			};
+		},
+		onError: (_error, variables, context) => {
+			errorSnackbar(MUTATE_ERROR);
+
+			// Rollback
+			if (context?.previousCircuitNodes) {
+				queryClient.setQueryData([QUERY_KEYS.CIRCUIT_NODES, variables.circuitId], context.previousCircuitNodes);
+			}
+		}
+	});
+};

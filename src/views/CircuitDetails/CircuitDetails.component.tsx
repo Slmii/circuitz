@@ -56,7 +56,7 @@ export const CircuitDetails = () => {
 			<Stack
 				direction="column"
 				gap={1}
-				sx={{ flex: '1 1 70%', padding: 4, borderRight: theme => `1px solid ${theme.palette.divider}` }}
+				sx={{ flex: '1 1 80%', padding: 4, borderRight: theme => `1px solid ${theme.palette.divider}` }}
 			>
 				<Breadcrumbs />
 				<Tabs value={tab} onChange={(_e, tab) => setTab(tab)} aria-label="basic tabs example">

@@ -16,7 +16,7 @@ export abstract class Nodes {
 		const wrapped = await actor.get_circuit_nodes(circuitId);
 
 		const unwrapped = await unwrapResult(wrapped);
-		return unwrapped[1].map(mapToNode);
+		return unwrapped[1].map(mapToNode).sort((a, b) => a.order - b.order);
 	}
 
 	/**
@@ -60,6 +60,16 @@ export abstract class Nodes {
 		return actor.preview_lookup_request(data);
 	}
 
+	/**
+	 * Edit order of node
+	 */
+	static async editOrder({ nodeId, order }: { nodeId: number; order: number; dragIndex: number; hoverIndex: number }) {
+		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+
+		const unwrapped = await actor.edit_order(nodeId, order);
+		return unwrapResult(unwrapped);
+	}
+
 	static async getSampleData(nodes: Node[], currentNode: number, options?: SampleDataOptions) {
 		const sampleData: Record<string, unknown> = {};
 		// Only executes nodes that are before the start node
@@ -96,16 +106,34 @@ export abstract class Nodes {
 			if ('LookupHttpRequest' in node.nodeType) {
 				sampleData['LookupHttpRequest'] = await httpRequest(node.nodeType.LookupHttpRequest);
 			}
-
-			if ('Transformer' in node.nodeType) {
-				// TODO
-			}
-
-			if ('Mapper' in node.nodeType) {
-				// TODO
-			}
 		}
 
 		return sampleData;
+	}
+
+	/**
+	 * Toggle enabled/disabled state of a node
+	 */
+	static async toggleStatus({
+		nodeId,
+		enabled
+	}: {
+		nodeId: number;
+		circuitId: number;
+		enabled: boolean;
+	}): Promise<Node> {
+		const actor = await Actor.createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+
+		if (enabled) {
+			const wrapped = await actor.disable_node(nodeId);
+
+			const unwrapped = await unwrapResult(wrapped);
+			return mapToNode(unwrapped);
+		}
+
+		const wrapped = await actor.enable_node(nodeId);
+
+		const unwrapped = await unwrapResult(wrapped);
+		return mapToNode(unwrapped);
 	}
 }

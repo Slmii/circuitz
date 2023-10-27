@@ -1,18 +1,17 @@
 import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import type { Identifier, XYCoord } from 'dnd-core';
+import { OnMoveProps } from 'lib/types';
 
 interface DragItem {
 	index: number;
-	id: string;
-	type: string;
 }
 
 const ItemTypes = {
 	NODE: 'node'
 };
 
-export const useDraggable = (index: number, onMove: (dragIndex: number, hoverIndex: number) => void) => {
+export function useDraggable(index: number, onMove: (data: OnMoveProps) => void) {
 	const dragRef = useRef<HTMLDivElement>(null);
 	const previewRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +62,7 @@ export const useDraggable = (index: number, onMove: (dragIndex: number, hoverInd
 			}
 
 			// Time to actually perform the action
-			onMove(dragIndex, hoverIndex);
+			onMove({ dragIndex, hoverIndex, monitor });
 
 			// Note: we're mutating the monitor item here!
 			// Generally it's better to avoid mutations,
@@ -73,14 +72,15 @@ export const useDraggable = (index: number, onMove: (dragIndex: number, hoverInd
 		}
 	});
 
-	const [{ opacity }, drag, preview] = useDrag({
+	const [collect, drag, preview] = useDrag({
 		type: ItemTypes.NODE,
 		item: () => {
 			return { index };
 		},
 		collect: monitor => ({
 			isDragging: monitor.isDragging(),
-			opacity: monitor.isDragging() ? 0.5 : 1
+			didDrop: monitor.didDrop(),
+			opacity: monitor.isDragging() ? 0 : 1
 		})
 	});
 
@@ -91,6 +91,6 @@ export const useDraggable = (index: number, onMove: (dragIndex: number, hoverInd
 		previewRef,
 		dragRef,
 		handlerId,
-		opacity
+		...collect
 	};
-};
+}

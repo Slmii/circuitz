@@ -15,7 +15,7 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 			direction="column"
 			spacing={4}
 			sx={{
-				flex: '1 1 30%',
+				flex: '1 1 20%',
 				padding: 4,
 				backgroundColor: 'background.paper'
 			}}

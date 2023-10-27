@@ -147,7 +147,10 @@ export type VerificationType = { None: null } | { Token: Token } | { Whitelist: 
 export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
 	delete_node: ActorMethod<[number], Result>;
+	disable_node: ActorMethod<[number], Result>;
 	edit_node: ActorMethod<[number, NodeType], Result>;
+	edit_order: ActorMethod<[number, number], Result>;
+	enable_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
@@ -321,7 +324,10 @@ export const idlFactory = ({ IDL }: any) => {
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		delete_node: IDL.Func([IDL.Nat32], [Result], []),
+		disable_node: IDL.Func([IDL.Nat32], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
+		edit_order: IDL.Func([IDL.Nat32, IDL.Nat32], [Result], []),
+		enable_node: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
 		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),
 		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
