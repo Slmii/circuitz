@@ -76,6 +76,11 @@ export abstract class Nodes {
 		const nodesToExecute = nodes.filter(node => currentNode < node.id);
 
 		for (const node of nodesToExecute) {
+			// Skip disabled nodes
+			if (!node.isEnabled) {
+				continue;
+			}
+
 			// Input Nodes (Starting point )
 			if ('Canister' in node.nodeType) {
 				const sampleDataAsString = node.nodeType.Canister.sample_data[0] ? node.nodeType.Canister.sample_data[0] : '{}';
