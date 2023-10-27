@@ -119,8 +119,6 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 				/>
 				{!isFirstNode && (
 					<>
-						<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
-						<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
 						<IconButton
 							icon="filter"
 							size="small"
@@ -131,15 +129,27 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 						/>
 						{('LookupCanister' in node.nodeType || 'LookupHttpRequest' in node.nodeType) && (
 							// Only for Lookups
-							<IconButton
-								icon="transformer"
-								size="small"
-								tooltip="LookupTransformPin"
-								{...stopPropagation({
-									onClick: () => setPrinDrawer({ open: true, type: 'LookupTransformPin' })
-								})}
-							/>
+							<>
+								<IconButton
+									icon="filter"
+									size="small"
+									tooltip="LookupFilterPin"
+									{...stopPropagation({
+										onClick: () => setPrinDrawer({ open: true, type: 'LookupFilterPin' })
+									})}
+								/>
+								<IconButton
+									icon="transformer"
+									size="small"
+									tooltip="LookupTransformPin"
+									{...stopPropagation({
+										onClick: () => setPrinDrawer({ open: true, type: 'LookupTransformPin' })
+									})}
+								/>
+							</>
 						)}
+						<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
+						<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
 					</>
 				)}
 			</Stack>

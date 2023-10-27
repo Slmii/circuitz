@@ -111,6 +111,8 @@ export abstract class Nodes {
 			if ('LookupHttpRequest' in node.nodeType) {
 				sampleData['LookupHttpRequest'] = await httpRequest(node.nodeType.LookupHttpRequest);
 			}
+
+			// TODO: add pins logic
 		}
 
 		return sampleData;

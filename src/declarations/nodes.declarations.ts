@@ -115,7 +115,8 @@ export type PinType =
 	| { FilterPin: FilterPin }
 	| { MapperPin: Mapper }
 	| { PrePin: CustomPinLogic }
-	| { PostPin: CustomPinLogic };
+	| { PostPin: CustomPinLogic }
+	| { LookupFilterPin: FilterPin };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export type Result_2 = { Ok: string } | { Err: ApiError };
@@ -283,7 +284,8 @@ export const idlFactory = ({ IDL }: any) => {
 		FilterPin: FilterPin,
 		MapperPin: Mapper,
 		PrePin: CustomPinLogic,
-		PostPin: CustomPinLogic
+		PostPin: CustomPinLogic,
+		LookupFilterPin: FilterPin
 	});
 	const Pin = IDL.Record({ pin_type: PinType, order: IDL.Nat32 });
 	const Node = IDL.Record({
