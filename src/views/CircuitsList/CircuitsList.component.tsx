@@ -78,7 +78,7 @@ export const Circuits = () => {
 									<CircuitCardPaper>
 										<Button
 											size="large"
-											startIcon="add"
+											startIcon="add-linear"
 											variant="contained"
 											onClick={() => {
 												setCircuit(null);

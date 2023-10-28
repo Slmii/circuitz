@@ -80,7 +80,7 @@ export const CircuitNode = ({ node, trace, isFirst, index, onNodeSelect, onToggl
 							</Caption>
 						)}
 					</Stack>
-					<NodePins node={node} isFirstNode={isFirst} isShowPins={isShowPins} />
+					<NodePins node={node} isShowPins={isShowPins} isFirstNode={isFirst} />
 				</ButtonBase>
 				<Stack direction="row" alignItems="center" spacing={1} p={2}>
 					<Chip
@@ -107,10 +107,9 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 
 	return (
 		<Fade in={isShowPins}>
-			<Stack direction="row" spacing={1} sx={{ position: 'absolute', top: theme => theme.spacing(2), right: 0 }}>
+			<Stack direction="row" spacing={1} sx={{ position: 'absolute', top: theme => theme.spacing(1), right: 0 }}>
 				<IconButton
 					icon="trash"
-					size="small"
 					color="error"
 					tooltip="Delete Node"
 					{...stopPropagation({
@@ -121,7 +120,6 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 					<>
 						<IconButton
 							icon="filter"
-							size="small"
 							tooltip="FilterPin"
 							{...stopPropagation({
 								onClick: () => setPrinDrawer({ open: true, type: 'FilterPin' })
@@ -132,7 +130,6 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 							<>
 								<IconButton
 									icon="filter"
-									size="small"
 									tooltip="LookupFilterPin"
 									{...stopPropagation({
 										onClick: () => setPrinDrawer({ open: true, type: 'LookupFilterPin' })
@@ -140,7 +137,6 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 								/>
 								<IconButton
 									icon="transformer"
-									size="small"
 									tooltip="LookupTransformPin"
 									{...stopPropagation({
 										onClick: () => setPrinDrawer({ open: true, type: 'LookupTransformPin' })
@@ -148,8 +144,8 @@ const NodePins = ({ node, isShowPins, isFirstNode }: { node: Node; isShowPins: b
 								/>
 							</>
 						)}
-						<IconButton icon="javascript" size="small" tooltip="PrePin (soon)" disabled />
-						<IconButton icon="javascript" size="small" tooltip="PostPin (soon)" disabled />
+						<IconButton icon="javascript" tooltip="PrePin (soon)" disabled />
+						<IconButton icon="javascript" tooltip="PostPin (soon)" disabled />
 					</>
 				)}
 			</Stack>

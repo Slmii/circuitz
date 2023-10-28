@@ -170,7 +170,7 @@ const LookupCanisterArgs = () => {
 				</Stack>
 			))}
 			<Button
-				startIcon="add"
+				startIcon="add-linear"
 				sx={{ width: 'fit-content' }}
 				variant="outlined"
 				size="large"

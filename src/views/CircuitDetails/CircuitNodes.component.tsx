@@ -58,7 +58,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 								borderRadius: 'inherit'
 							}}
 						>
-							<Icon icon="add" spacingRight />
+							<Icon icon="add-linear" spacingRight />
 							<H5 fontWeight="bold">Add Input Node</H5>
 						</ButtonBase>
 					</Stack>
@@ -78,7 +78,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 							/>
 						))}
 						<Stack direction="column" spacing={1} mt={4} alignItems="flex-start">
-							<IconButton icon={!isAddNode ? 'add-square' : 'close'} onClick={() => setIsAddNode(!isAddNode)} />
+							<IconButton icon={!isAddNode ? 'add-square' : 'close-square'} onClick={() => setIsAddNode(!isAddNode)} />
 							<Fade in={isAddNode}>
 								<Stack direction="column" spacing={1} ref={ref}>
 									<H5>What's next?</H5>

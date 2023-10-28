@@ -64,7 +64,7 @@ export const Dialog = ({
 				}}
 				color="inherit"
 				tooltip="Close"
-				icon="close"
+				icon="close-linear"
 				onClick={onClose}
 			/>
 			{title ? <DialogTitle>{title}</DialogTitle> : null}

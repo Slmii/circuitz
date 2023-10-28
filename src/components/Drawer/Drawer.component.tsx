@@ -35,7 +35,7 @@ export const Drawer = ({
 				}}
 			>
 				{typeof title === 'string' ? <H3>{title}</H3> : title}
-				<IconButton tooltip="Close" icon="close" onClick={onClose} />
+				<IconButton tooltip="Close" icon="close-linear" onClick={onClose} />
 			</Stack>
 			<Box sx={{ p: 4, height: '100%', overflowY: 'auto' }}>{children}</Box>
 			<Stack

@@ -228,7 +228,7 @@ const InputNodeVerficationType = () => {
 							endElement={
 								<>
 									{fields.length - 1 === index && (
-										<IconButton icon="add" tooltip="Add Principal" onClick={() => append({ principal: '' })} />
+										<IconButton icon="add-linear" tooltip="Add Principal" onClick={() => append({ principal: '' })} />
 									)}
 									{fields.length > 1 && (
 										<IconButton
