@@ -14,7 +14,7 @@ import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetSampleData } from 'lib/hooks';
-import { getFilterPinValuesAsArg, getSampleDataFields } from 'lib/utils';
+import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues } from 'lib/utils';
 import { Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 
@@ -109,7 +109,7 @@ export const FilterPinDrawerForm = ({
 			pin_type: {
 				FilterPin: {
 					condition: data.condition === 'Is' ? { Is: null } : { Not: null },
-					condition_group: data.rules.length > 1 ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
+					condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
 					rules: getFilterPinValuesAsArg(data.rules)
 				}
 			}
@@ -121,19 +121,7 @@ export const FilterPinDrawerForm = ({
 	return (
 		<Form<FilterPinFormValues>
 			action={handleOnSubmit}
-			defaultValues={{
-				condition: 'Is',
-				conditionGroup: null,
-				rules: [
-					{
-						field: '',
-						operator: '',
-						value: '',
-						dataType: 'String',
-						operandType: 'Value'
-					}
-				]
-			}}
+			defaultValues={getFilterPinFormValues(node)}
 			schema={filterPinSchema}
 			myRef={formRef}
 			render={() => (

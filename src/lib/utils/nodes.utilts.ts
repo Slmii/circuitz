@@ -1,16 +1,31 @@
 import type {
 	Arg,
-	DataType,
+	DataType as OldDataType,
+	FilterPin,
 	Node as OldNode,
 	VerificationType as OldVerificationType,
-	OperandType,
-	Operator,
+	OperandType as OldOperandType,
+	Operator as OldOperator,
 	Rule,
 	Token
 } from 'declarations/nodes.declarations';
-import type { LookCanisterArgType, Node, NodeSourceType, VerificationType } from 'lib/types';
+import type {
+	LookCanisterArgType,
+	Node,
+	NodeSourceType,
+	VerificationType,
+	DataType,
+	OperandType,
+	OperatorType
+} from 'lib/types';
 import { dateFromNano } from './date.utils';
-import { FilterRule, InputNodeFormValues, LookupCanisterArg, LookupCanisterFormValues } from 'components/NodeDrawers';
+import {
+	FilterPinFormValues,
+	FilterRule,
+	InputNodeFormValues,
+	LookupCanisterArg,
+	LookupCanisterFormValues
+} from 'components/NodeDrawers';
 import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
@@ -31,6 +46,9 @@ export const mapToNode = (node: OldNode): Node => {
 	};
 };
 
+/**
+ * Get the form values for the input node. If no node is provided, return the default values.
+ */
 export const getInputCanisterFormValues = (node?: Node): InputNodeFormValues => {
 	if (!node || !('Canister' in node.nodeType)) {
 		return {
@@ -112,6 +130,9 @@ export const getNodeTitle = (node: Node): string => {
 	return '';
 };
 
+/**
+ * Get the form values for the lookup canister node. If no node is provided, return the default values.
+ */
 export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValues => {
 	if (!node || !('LookupCanister' in node.nodeType)) {
 		return {
@@ -164,6 +185,9 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 	};
 };
 
+/**
+ * Map the LookupCanister form values arguments to the Arg type. This will be passed to the backend.
+ */
 export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[]): Arg[] => {
 	return args.map((arg): Arg => {
 		if (arg.dataType === 'String') {
@@ -196,6 +220,9 @@ export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[]): Arg[] =
 	});
 };
 
+/**
+ * Map the LookupCanister form values arguments as an array of single values.
+ */
 export const getLookupCanisterValuesAsArray = (args: LookupCanisterArg[]) => {
 	return args.map(arg => {
 		if (arg.dataType === 'String') {
@@ -218,6 +245,9 @@ export const getLookupCanisterValuesAsArray = (args: LookupCanisterArg[]) => {
 	});
 };
 
+/**
+ * Get the argument type for the LookupCanister form values.
+ */
 export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
 	if ('String' in arg) {
 		return 'String';
@@ -299,9 +329,12 @@ export function getSampleDataFields<T extends object>(obj: T, path: string[] = [
 	}, []);
 }
 
+/**
+ * Map the FilterPin form values arguments to the Rule type. This will be passed to the backend.
+ */
 export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
 	return pins.map((pin): Rule => {
-		let dataType: DataType = { String: null };
+		let dataType: OldDataType = { String: null };
 		if (pin.dataType === 'BigInt') {
 			dataType = { BigInt: null };
 		} else if (pin.dataType === 'Boolean') {
@@ -312,12 +345,12 @@ export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
 			dataType = { Principal: null };
 		}
 
-		let operandType: OperandType = { Field: null };
+		let operandType: OldOperandType = { Field: null };
 		if (pin.operandType === 'Value') {
 			operandType = { Value: null };
 		}
 
-		let operator: Operator = { Equal: null };
+		let operator: OldOperator = { Equal: null };
 		if (pin.operator === 'NotEqual') {
 			operator = { NotEqual: null };
 		} else if (pin.operator === 'GreaterThan') {
@@ -342,6 +375,9 @@ export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
 	});
 };
 
+/**
+ * Get the icon for the node.
+ */
 export const getNodeIcon = (node: Node): Icons => {
 	if ('LookupCanister' in node.nodeType || 'Canister' in node.nodeType) {
 		return 'infinite';
@@ -352,4 +388,103 @@ export const getNodeIcon = (node: Node): Icons => {
 	}
 
 	return 'output-linear';
+};
+
+/**
+ * Get the form values for the filter pin.
+ */
+export const getFilterPinFormValues = (node: Node): FilterPinFormValues => {
+	const filterPin = node.pins.find(pin => 'FilterPin' in pin.pin_type);
+
+	if (!filterPin || !('FilterPin' in filterPin.pin_type)) {
+		return {
+			condition: 'Is',
+			conditionGroup: null,
+			rules: [
+				{
+					field: '',
+					operator: '',
+					value: '',
+					dataType: 'String',
+					operandType: 'Value'
+				}
+			]
+		};
+	}
+
+	return {
+		condition: 'Is' in filterPin.pin_type.FilterPin.condition ? 'Is' : 'Not',
+		conditionGroup: getConditionGroup(filterPin.pin_type.FilterPin),
+		rules: filterPin.pin_type.FilterPin.rules.map(rule => ({
+			dataType: getRuleDataType(rule),
+			operandType: getRuleOparandType(rule),
+			field: rule.field,
+			value: rule.value,
+			operator: getRuleOperator(rule)
+		}))
+	};
+};
+
+const getConditionGroup = (filterPin: FilterPin) => {
+	if (!filterPin.condition_group[0]) {
+		return null;
+	}
+
+	if ('Or' in filterPin.condition_group[0]) {
+		return 'Or';
+	}
+
+	return 'And';
+};
+
+const getRuleDataType = (rule: Rule): DataType => {
+	if ('BigInt' in rule.operand.data_type) {
+		return 'BigInt';
+	}
+
+	if ('Boolean' in rule.operand.data_type) {
+		return 'Boolean';
+	}
+
+	if ('Number' in rule.operand.data_type) {
+		return 'Number';
+	}
+
+	if ('Principal' in rule.operand.data_type) {
+		return 'Principal';
+	}
+
+	return 'String';
+};
+
+const getRuleOparandType = (rule: Rule): OperandType => {
+	if ('Field' in rule.operand.operand_type) {
+		return 'Field';
+	}
+
+	return 'Value';
+};
+
+const getRuleOperator = (rule: Rule): OperatorType => {
+	if ('NotEqual' in rule.operator) {
+		return 'NotEqual';
+	}
+
+	if ('GreaterThan' in rule.operator) {
+		return 'GreaterThan';
+	}
+
+	if ('GreaterThanOrEqual' in rule.operator) {
+		return 'GreaterThanOrEqual';
+	}
+
+	if ('LessThan' in rule.operator) {
+		return 'LessThan';
+	}
+
+	if ('LessThanOrEqual' in rule.operator) {
+		return 'LessThanOrEqual';
+	}
+
+	return 'Equal';
 };
