@@ -70,10 +70,10 @@ export interface Mapper {
 }
 export interface Node {
 	id: number;
-	pin: Array<Pin>;
 	updated_at: bigint;
 	node_type: NodeType;
 	order: number;
+	pins: Array<Pin>;
 	is_enabled: boolean;
 	created_at: bigint;
 	user_id: Principal;
@@ -147,10 +147,12 @@ export type Vec = Array<
 export type VerificationType = { None: null } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
+	add_pin: ActorMethod<[number, Pin], Result>;
 	delete_node: ActorMethod<[number], Result>;
 	disable_node: ActorMethod<[number], Result>;
 	edit_node: ActorMethod<[number, NodeType], Result>;
 	edit_order: ActorMethod<[number, number], Result>;
+	edit_pin: ActorMethod<[number, Pin], Result>;
 	enable_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
@@ -290,10 +292,10 @@ export const idlFactory = ({ IDL }: any) => {
 	const Pin = IDL.Record({ pin_type: PinType, order: IDL.Nat32 });
 	const Node = IDL.Record({
 		id: IDL.Nat32,
-		pin: IDL.Vec(Pin),
 		updated_at: IDL.Nat64,
 		node_type: NodeType,
 		order: IDL.Nat32,
+		pins: IDL.Vec(Pin),
 		is_enabled: IDL.Bool,
 		created_at: IDL.Nat64,
 		user_id: IDL.Principal,
@@ -325,10 +327,12 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	return IDL.Service({
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
+		add_pin: IDL.Func([IDL.Nat32, Pin], [Result], []),
 		delete_node: IDL.Func([IDL.Nat32], [Result], []),
 		disable_node: IDL.Func([IDL.Nat32], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		edit_order: IDL.Func([IDL.Nat32, IDL.Nat32], [Result], []),
+		edit_pin: IDL.Func([IDL.Nat32, Pin], [Result], []),
 		enable_node: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
 		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),

@@ -20,7 +20,7 @@ export const mapToNode = (node: OldNode): Node => {
 		id: node.id,
 		circuitId: node.circuit_id,
 		userId: node.user_id,
-		pin: node.pin,
+		pins: node.pins,
 		nodeType: node.node_type,
 		order: node.order,
 		isRunning: node.is_running,

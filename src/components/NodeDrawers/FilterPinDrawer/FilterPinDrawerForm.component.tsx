@@ -5,7 +5,7 @@ import { Field } from 'components/Form/Field';
 import { Select, Option } from 'components/Form/Select';
 import { H5 } from 'components/Typography';
 import { DataType, Node, OperandType, OperatorType } from 'lib/types';
-import { RefObject, useMemo, useState } from 'react';
+import { RefObject, useEffect, useMemo, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
@@ -16,6 +16,7 @@ import { Dialog } from 'components/Dialog';
 import { useGetSampleData } from 'lib/hooks';
 import { getFilterPinValuesAsArg, getSampleDataFields } from 'lib/utils';
 import { Pin } from 'declarations/nodes.declarations';
+import { filterPinSchema } from 'lib/schemas';
 
 const operators: Option<OperatorType>[] = [
 	{
@@ -88,13 +89,12 @@ export const FilterPinDrawerForm = ({
 	onProcessFilter
 }: {
 	formRef: RefObject<HTMLFormElement>;
-	node?: Node;
+	node: Node;
 	onProcessFilter: (data: Pin) => void;
 }) => {
-	const { data: sampleData, isLoading: isSampleDataLoading } = useGetSampleData(node?.id ?? 0, {
+	const { data: sampleData, isLoading: isSampleDataLoading } = useGetSampleData(node.id, {
 		isFilterPreview: true
 	});
-
 	const fields = useMemo((): Option[] => {
 		if (!sampleData) {
 			return [];
@@ -103,9 +103,9 @@ export const FilterPinDrawerForm = ({
 		return getSampleDataFields(sampleData);
 	}, [sampleData]);
 
-	const handleOnSubmit = async (data: FilterPinFormValues) => {
+	const handleOnSubmit = (data: FilterPinFormValues) => {
 		onProcessFilter({
-			order: node?.order ?? 0,
+			order: 0,
 			pin_type: {
 				FilterPin: {
 					condition: data.condition === 'Is' ? { Is: null } : { Not: null },
@@ -122,6 +122,8 @@ export const FilterPinDrawerForm = ({
 		<Form<FilterPinFormValues>
 			action={handleOnSubmit}
 			defaultValues={{
+				condition: 'Is',
+				conditionGroup: null,
 				rules: [
 					{
 						field: '',
@@ -132,6 +134,7 @@ export const FilterPinDrawerForm = ({
 					}
 				]
 			}}
+			schema={filterPinSchema}
 			myRef={formRef}
 			render={() => (
 				<Stack direction="row" spacing={4} height="100%">
@@ -176,10 +179,20 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 	const { watch, setValue } = useFormContext<FilterPinFormValues>();
 	const values = watch();
 
+	useEffect(() => {
+		if (formFields.length > 1) {
+			setValue('conditionGroup', 'And');
+		} else if (formFields.length === 1) {
+			setValue('conditionGroup', null);
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [formFields.length]);
+
 	return (
 		<>
 			<Stack spacing={1} padding={1}>
-				<Stack direction="row" columnGap={2} width="100%" alignItems="center">
+				<Stack direction="row" columnGap={2} width="100%" alignItems="flex-start">
 					<StandaloneCheckbox
 						name="condition"
 						label="Not"
@@ -209,7 +222,9 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 							append({
 								field: '',
 								operator: '',
-								value: ''
+								value: '',
+								dataType: 'String',
+								operandType: 'Value'
 							})
 						}
 					>

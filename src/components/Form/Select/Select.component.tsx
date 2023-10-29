@@ -30,7 +30,11 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 
 		return (
 			<FormControl disabled={disabled} fullWidth={fullWidth}>
-				{label && <InputLabel id={labelId}>{label}</InputLabel>}
+				{label && (
+					<InputLabel error={Boolean(error)} id={labelId}>
+						{label}
+					</InputLabel>
+				)}
 				<MuiSelect
 					required={required}
 					label={label}

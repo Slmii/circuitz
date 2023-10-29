@@ -19,45 +19,43 @@ const idlFactoryMapping: Record<Controller, IDL.InterfaceFactory> = {
 	traces: tracesIdl
 };
 
-export abstract class Actor {
-	/**
-	 * Get the auth client from Dfinity
-	 */
-	static async getAuthClient() {
-		return AuthClient.create({
-			storage: new LocalStorage(II_AUTH),
-			keyType: 'Ed25519',
-			idleOptions: {
-				disableDefaultIdleCallback: true,
-				disableIdle: true
-			}
-		});
-	}
+/**
+ * Get the auth client from Dfinity
+ */
+export async function getAuthClient() {
+	return AuthClient.create({
+		storage: new LocalStorage(II_AUTH),
+		keyType: 'Ed25519',
+		idleOptions: {
+			disableDefaultIdleCallback: true,
+			disableIdle: true
+		}
+	});
+}
 
-	/**
-	 * Create an actor
-	 */
-	static async createActor<T>(
-		canisterId: string,
-		controller: keyof typeof idlFactoryMapping,
-		config?: Pick<ActorConfig, 'callTransform' | 'queryTransform'>
-	): Promise<T> {
-		const identity = await getDelegation();
+/**
+ * Create an actor
+ */
+export async function createActor<T>(
+	canisterId: string,
+	controller: keyof typeof idlFactoryMapping,
+	config?: Pick<ActorConfig, 'callTransform' | 'queryTransform'>
+): Promise<T> {
+	const identity = await getDelegation();
 
-		// Actor for II
-		const agent = new HttpAgent({
-			host: HOST,
-			identity
-		});
+	// Actor for II
+	const agent = new HttpAgent({
+		host: HOST,
+		identity
+	});
 
-		return new Promise<T>((resolve: (value: T) => void) => {
-			resolve(
-				DfinityActor.createActor(idlFactoryMapping[controller], {
-					agent,
-					canisterId,
-					...config
-				})
-			);
-		});
-	}
+	return new Promise<T>((resolve: (value: T) => void) => {
+		resolve(
+			DfinityActor.createActor(idlFactoryMapping[controller], {
+				agent,
+				canisterId,
+				...config
+			})
+		);
+	});
 }

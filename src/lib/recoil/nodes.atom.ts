@@ -1,4 +1,4 @@
-import { PinSourceType } from 'lib/types';
+import { PinSourceType, Node } from 'lib/types';
 import { atom } from 'recoil';
 
 interface DeleteNodeState {

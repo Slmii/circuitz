@@ -17,7 +17,7 @@ export const RadioButton = ({ name, label, disabled, row, required, onChange, op
 				render={({ field, fieldState }) => (
 					<FormControl error={Boolean(fieldState.error)} variant="standard">
 						{label && (
-							<FormLabel component="legend" required={required}>
+							<FormLabel error={Boolean(fieldState.error)} component="legend" required={required}>
 								{label}
 							</FormLabel>
 						)}

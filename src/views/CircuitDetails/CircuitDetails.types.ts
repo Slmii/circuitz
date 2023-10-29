@@ -3,7 +3,6 @@ import { NodeSourceType, Node, Trace } from 'lib/types';
 export interface CircuitNodeProps {
 	node: Node;
 	index: number;
-	isFirst: boolean;
 	trace?: Trace;
 	onNodeSelect: (node: Node) => void;
 	onToggleNodeStatus: (node: Node) => void;

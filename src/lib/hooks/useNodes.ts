@@ -84,18 +84,70 @@ export const useEditNode = () => {
 	});
 };
 
+export const useAddPin = () => {
+	const { errorSnackbar } = useSnackbar();
+	const queryClient = useQueryClient();
+
+	return useMutation(api.Nodes.addPin, {
+		onSuccess: node => {
+			// Add the new pin to the nodes cache
+			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
+				if (!old) {
+					return [];
+				}
+
+				// Find the index of the node that was edited
+				const index = old.findIndex(n => n.id === node.id);
+				// Replace the old node with the new one
+				old[index] = node;
+
+				return old;
+			});
+		},
+		onError: () => {
+			errorSnackbar(MUTATE_ERROR);
+		}
+	});
+};
+
+export const useEditPin = () => {
+	const { errorSnackbar } = useSnackbar();
+	const queryClient = useQueryClient();
+
+	return useMutation(api.Nodes.editPin, {
+		onSuccess: node => {
+			// Add the new pin to the nodes cache
+			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
+				if (!old) {
+					return [];
+				}
+
+				// Find the index of the node that was edited
+				const index = old.findIndex(n => n.id === node.id);
+				// Replace the old node with the new one
+				old[index] = node;
+
+				return old;
+			});
+		},
+		onError: () => {
+			errorSnackbar(MUTATE_ERROR);
+		}
+	});
+};
+
 export const usePreview = () => {
 	return useMutation(api.Nodes.previewLookupCanister);
 };
 
-export const useGetSampleData = (currentNode: number, options?: SampleDataOptions) => {
+export const useGetSampleData = (nodeId: number, options?: SampleDataOptions) => {
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	return useQuery({
-		queryKey: [QUERY_KEYS.SAMPLE_DATA, Number(circuitId), currentNode],
+		queryKey: [QUERY_KEYS.SAMPLE_DATA, Number(circuitId), nodeId],
 		enabled: !!circuitNodes,
-		queryFn: () => api.Nodes.getSampleData(circuitNodes ?? [], currentNode, options)
+		queryFn: () => api.Nodes.getSampleData(circuitNodes ?? [], nodeId, options)
 	});
 };
 
@@ -111,7 +163,7 @@ export const useToggleNodeStatus = () => {
 			// Optimistic updates
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, circuitId], old => {
 				if (!old) {
-					return;
+					return [];
 				}
 
 				// Find the index of the node that was edited

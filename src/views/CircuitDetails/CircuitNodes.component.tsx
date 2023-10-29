@@ -20,7 +20,8 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 
 	const ref = useOnClickOutside(() => setIsAddNode(false));
 	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
-	const [{ open: isPinDrawerOpen, type: pinDrawerType }, setPrinDrawer] = useRecoilState(pinDrawerState);
+	const [{ open: isPinDrawerOpen, node: pinDrawerNode, type: pinDrawerType }, setPrinDrawer] =
+		useRecoilState(pinDrawerState);
 
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
@@ -69,7 +70,6 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 								key={node.id}
 								node={node}
 								trace={traces.find(trace => trace.nodeId === node.id)}
-								isFirst={index === 0}
 								index={index}
 								onToggleNodeStatus={node =>
 									toggleStatus({ circuitId: node.circuitId, nodeId: node.id, enabled: node.isEnabled })
@@ -126,6 +126,8 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 			/>
 			<FilterPinDrawer
 				open={isPinDrawerOpen && pinDrawerType === 'FilterPin'}
+				// Node will always be defined here
+				node={pinDrawerNode!}
 				onClose={() => setPrinDrawer(prevState => ({ ...prevState, open: false }))}
 			/>
 			<Dialog

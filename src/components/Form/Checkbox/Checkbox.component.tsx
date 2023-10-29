@@ -28,7 +28,7 @@ export const Checkbox = ({
 								disabled={disabled}
 								checked={field.value}
 								size="small"
-								color="primary"
+								color="secondary"
 								onChange={(e, checked) => {
 									field.onChange(e);
 									onChange?.(checked);
@@ -67,7 +67,7 @@ export const StandaloneCheckbox = ({
 						disabled={disabled}
 						checked={checked}
 						size="small"
-						color="primary"
+						color="secondary"
 						onChange={(_, checked) => {
 							onChange?.(checked);
 						}}

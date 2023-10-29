@@ -15,7 +15,7 @@ export interface Node {
 	id: number;
 	circuitId: number;
 	userId: Principal;
-	pin: Array<Pin>;
+	pins: Array<Pin>;
 	nodeType: NodeType;
 	order: number;
 	isRunning: boolean;

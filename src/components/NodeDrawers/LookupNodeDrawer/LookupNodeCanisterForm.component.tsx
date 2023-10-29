@@ -1,5 +1,5 @@
 import { Alert, Divider, Stack } from '@mui/material';
-import { PropsWithChildren, RefObject } from 'react';
+import { PropsWithChildren, RefObject, useMemo } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
@@ -10,9 +10,10 @@ import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.type
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
-import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg } from 'lib/utils';
+import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg, getSampleDataFields } from 'lib/utils';
 import { Button } from 'components/Button';
-import { Select } from 'components/Form/Select';
+import { Select, Option } from 'components/Form/Select';
+import { useGetSampleData } from 'lib/hooks';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -24,6 +25,15 @@ export const LookupNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => void;
 }>) => {
+	const { data: sampleData } = useGetSampleData(node?.id ?? 0);
+	const fields = useMemo((): Option[] => {
+		if (!sampleData) {
+			return [];
+		}
+
+		return getSampleDataFields(sampleData);
+	}, [sampleData]);
+
 	const handleOnSubmit = async (data: LookupCanisterFormValues) => {
 		onProcessNode({
 			LookupCanister: {
@@ -86,7 +96,7 @@ export const LookupNodeCanisterForm = ({
 								Argument order matters. The first argument corresponds to the method's first parameter, the second to
 								its second, and so forth.
 							</B2>
-							<LookupCanisterArgs />
+							<LookupCanisterArgs fields={fields} />
 						</Stack>
 					</Stack>
 					{children}
@@ -96,17 +106,22 @@ export const LookupNodeCanisterForm = ({
 	);
 };
 
-const LookupCanisterArgs = () => {
+const LookupCanisterArgs = ({ fields }: { fields: Option[] }) => {
 	const args = useWatch({
 		name: 'args'
 	}) as LookupCanisterArg[];
-	const { fields, append, remove } = useFieldArray<LookupCanisterFormValues>({
+
+	const {
+		fields: formFields,
+		append,
+		remove
+	} = useFieldArray<LookupCanisterFormValues>({
 		name: 'args'
 	});
 
 	return (
 		<>
-			{fields.map((config, index) => (
+			{formFields.map((config, index) => (
 				<Stack direction="row" spacing={1} key={config.id} alignItems="center">
 					<Select
 						fullWidth
@@ -151,18 +166,7 @@ const LookupCanisterArgs = () => {
 						placeholder="String"
 					/>
 					{args[index]?.dataType === 'Field' ? (
-						// TODO: apply all logic of previous nodes with the sampleData and get the fields in the options in the Select
-						<Select
-							options={[
-								{
-									id: 'test',
-									label: 'Test'
-								}
-							]}
-							fullWidth
-							name={`args.${index}.value`}
-							label="Value"
-						/>
+						<Select options={fields} fullWidth name={`args.${index}.value`} label="Value" />
 					) : (
 						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
 					)}
@@ -176,7 +180,7 @@ const LookupCanisterArgs = () => {
 				size="large"
 				onClick={() => append({ dataType: 'String', value: '' })}
 			>
-				{!fields.length ? 'Add first argument' : 'Add argument'}
+				{!formFields.length ? 'Add first argument' : 'Add argument'}
 			</Button>
 		</>
 	);

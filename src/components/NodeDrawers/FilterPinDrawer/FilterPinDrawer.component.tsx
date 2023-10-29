@@ -1,18 +1,27 @@
-import { useFormSubmit } from 'lib/hooks';
+import { useAddPin, useEditPin, useFormSubmit } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
 import { FilterPinDrawerForm } from './FilterPinDrawerForm.component';
-// import { Pin } from 'declarations/nodes.declarations';
 import { Node } from 'lib/types';
+import { Pin } from 'declarations/nodes.declarations';
 
-export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
+export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
+	const { mutateAsync: addPin, isLoading: isAddPinLoading } = useAddPin();
+	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
 
-	// TODO add pin calls add/edit
-	// const { mutateAsync: editNode, isLoading: isEditNodeLoading } = useEditNode();
+	const handleOnSubmit = async (pin: Pin) => {
+		const filterPin = node?.pins.find(pin => 'FilterPin' in pin.pin_type);
 
-	const handleOnSubmit = async () => {
-		if (!node) {
-			return;
+		if (!filterPin) {
+			await addPin({
+				nodeId: node.id,
+				data: pin
+			});
+		} else {
+			await editPin({
+				nodeId: node.id,
+				data: pin
+			});
 		}
 
 		onClose();
@@ -25,11 +34,11 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			}}
 			onSubmit={submitter}
 			isOpen={open}
-			isLoading={false}
+			isLoading={isAddPinLoading || isEditPinLoading}
 			title="Filter Pin"
 			fullWidth
 		>
-			<FilterPinDrawerForm formRef={formRef} onProcessFilter={handleOnSubmit} />
+			<FilterPinDrawerForm formRef={formRef} node={node} onProcessFilter={handleOnSubmit} />
 		</Drawer>
 	);
 };

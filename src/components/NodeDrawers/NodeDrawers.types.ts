@@ -44,7 +44,7 @@ export interface LookupCanisterArg {
 export interface FilterPinFormValues {
 	rules: FilterRule[];
 	condition: ConditionType;
-	conditionGroup: ConditionGroupType;
+	conditionGroup: ConditionGroupType | null;
 }
 
 export interface FilterRule {

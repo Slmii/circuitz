@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 	};
 
 	const signOut = async () => {
-		setUserInState(undefined);
+		setUser(undefined);
 		setLoadingSignOut(true);
 
 		try {
@@ -128,11 +128,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 			const user = await api.Users.getMe();
 			const unwrappedUser = await unwrapResult(user);
 
-			setUserInState(unwrappedUser);
+			setUser(unwrappedUser);
 		} catch (error) {
 			try {
 				const user = await api.Users.addUser();
-				setUserInState(user);
+				setUser(user);
 			} catch (error) {
 				console.error('Init user Error', { error });
 				errorSnackbar('Error creating user');
@@ -143,16 +143,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 		setLoadingSession(false);
 	};
 
-	const setUserInState = (user?: User) => {
-		setUser(user);
-		api.Auth.setUser(user);
-	};
-
 	return (
 		<>
 			<AuthContext.Provider
 				value={{
-					setUser: setUserInState,
+					setUser,
 					signInII,
 					signOut,
 					user,
