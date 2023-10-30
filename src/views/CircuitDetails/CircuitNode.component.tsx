@@ -1,7 +1,7 @@
 import { Stack, ButtonBase, Fade, Chip, Box } from '@mui/material';
 import { IconButton } from 'components/IconButton';
 import { B1, B2, Caption, H5 } from 'components/Typography';
-import { getNodeMetaData, getNodeIcon, stopPropagation } from 'lib/utils';
+import { getNodeMetaData, getNodeIcon, stopPropagation, getPin } from 'lib/utils';
 import { Node } from 'lib/types';
 import pluralize from 'pluralize';
 import { useMemo, useState } from 'react';
@@ -11,6 +11,7 @@ import { deleteNodeState, pinDrawerState } from 'lib/recoil';
 import { Icon } from 'components/Icon';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { CircularProgress } from 'components/Progress';
+import { FilterPin } from 'declarations/nodes.declarations';
 
 const absolutePosition = {
 	position: 'absolute',
@@ -28,8 +29,6 @@ export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStat
 		return getNodeMetaData(node);
 	}, [node]);
 
-	const isInputNode = type === 'Canister' || type === 'HttpRequest';
-
 	const handleMouseEnter = () => {
 		setDelayHandler(
 			setTimeout(() => {
@@ -46,6 +45,9 @@ export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStat
 			clearTimeout(delayHandler);
 		}
 	};
+
+	const isInputNode = type === 'Canister' || type === 'HttpRequest';
+	const pinsCount = node.pins.length;
 
 	return (
 		<Stack direction="row" alignItems="center" spacing={2}>
@@ -95,7 +97,7 @@ export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStat
 						)}
 					</Stack>
 				</ButtonBase>
-				<Stack direction="row" alignItems="center" spacing={1} p={2}>
+				<Stack direction="row" alignItems="center" gap={1} p={2}>
 					<Chip
 						label={node.isEnabled ? 'Active' : 'Inactive'}
 						size="small"
@@ -103,20 +105,24 @@ export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStat
 					/>
 					<StandaloneSwitch value={node.isEnabled} name="active" onChange={() => onToggleNodeStatus(node)} />
 					{node.isRunning && (
-						<Stack direction="row" alignItems="center" spacing={1} sx={{ ml: '24px !important' }}>
+						<Stack direction="row" alignItems="center" spacing={1} sx={{ ml: 3 }}>
 							<CircularProgress />
 							<B1>Running</B1>
 						</Stack>
 					)}
 				</Stack>
+				<ExistingPins node={node} isShowPins={isShowPins} />
 				<Fade in={isShowAdd && !isShowPins} unmountOnExit>
-					<Box sx={absolutePosition}>
+					<Box
+						sx={{
+							...absolutePosition,
+							ml: `${pinsCount * 48}px`
+						}}
+					>
 						<IconButton
 							icon="add-linear"
 							color="primary"
-							sx={{
-								border: theme => `1px solid ${theme.palette.primary.main}`
-							}}
+							tooltip="Add pin"
 							onClick={() => setIsShowPins(prevState => !prevState)}
 						/>
 					</Box>
@@ -127,13 +133,76 @@ export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStat
 							node={node}
 							isInputNode={isInputNode}
 							onClosePins={() => {
-								setIsShowAdd(false);
+								setIsShowAdd(true);
 								setIsShowPins(false);
 							}}
 						/>
 					</Stack>
 				</Fade>
 			</Stack>
+		</Stack>
+	);
+};
+
+const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean }) => {
+	const setPrinDrawer = useSetRecoilState(pinDrawerState);
+
+	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
+	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
+	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
+	const hasLookupTransformPin = !!getPin<FilterPin>(node, 'LookupTransformPin');
+
+	return (
+		<Stack
+			direction="row"
+			spacing={1}
+			sx={{
+				...absolutePosition,
+				display: isShowPins ? 'none' : 'flex',
+				transition: theme => theme.transitions.create(['display'], { duration: 250 })
+			}}
+		>
+			{hasFilterPin && (
+				// Show only if FilterPin is present
+				<IconButton
+					icon="filter"
+					tooltip="FilterPin"
+					color="primary"
+					{...stopPropagation({
+						onClick: () => setPrinDrawer({ open: true, type: 'FilterPin', node })
+					})}
+				/>
+			)}
+			{hasLookupFilterPin && (
+				// Show only if LookupFilterPin is present
+				<IconButton
+					icon="filter"
+					tooltip="LookupFilterPin"
+					{...stopPropagation({
+						onClick: () => setPrinDrawer({ open: true, type: 'LookupFilterPin', node })
+					})}
+				/>
+			)}
+			{hasLookupTransformPin && (
+				// Show only if LookupTransformPin is present
+				<IconButton
+					icon="transformer"
+					tooltip="LookupTransformPin"
+					{...stopPropagation({
+						onClick: () => setPrinDrawer({ open: true, type: 'LookupTransformPin', node })
+					})}
+				/>
+			)}
+			{hasMapperPin && (
+				// Show only if MapperPin is present
+				<IconButton
+					icon="mapper"
+					tooltip="MapperPin"
+					{...stopPropagation({
+						onClick: () => setPrinDrawer({ open: true, type: 'MapperPin', node })
+					})}
+				/>
+			)}
 		</Stack>
 	);
 };
@@ -150,6 +219,11 @@ const NodePins = ({
 	const setPrinDrawer = useSetRecoilState(pinDrawerState);
 	const setDeleteNode = useSetRecoilState(deleteNodeState);
 
+	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
+	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
+	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
+	const hasLookupTransformPin = !!getPin<FilterPin>(node, 'LookupTransformPin');
+
 	return (
 		<>
 			<IconButton
@@ -165,40 +239,62 @@ const NodePins = ({
 			/>
 			{!isInputNode && (
 				<>
-					<IconButton
-						icon="filter"
-						tooltip="FilterPin"
-						{...stopPropagation({
-							onClick: () => {
-								onClosePins();
-								setPrinDrawer({ open: true, node, type: 'FilterPin' });
-							}
-						})}
-					/>
+					{!hasFilterPin && (
+						// Show only if FilterPin is not present
+						<IconButton
+							icon="filter"
+							tooltip="FilterPin"
+							{...stopPropagation({
+								onClick: () => {
+									onClosePins();
+									setPrinDrawer({ open: true, node, type: 'FilterPin' });
+								}
+							})}
+						/>
+					)}
 					{('LookupCanister' in node.nodeType || 'LookupHttpRequest' in node.nodeType) && (
 						// Only for Lookups
 						<>
-							<IconButton
-								icon="filter"
-								tooltip="LookupFilterPin"
-								{...stopPropagation({
-									onClick: () => {
-										onClosePins();
-										setPrinDrawer({ open: true, type: 'LookupFilterPin' });
-									}
-								})}
-							/>
-							<IconButton
-								icon="transformer"
-								tooltip="LookupTransformPin"
-								{...stopPropagation({
-									onClick: () => {
-										onClosePins();
-										setPrinDrawer({ open: true, type: 'LookupTransformPin' });
-									}
-								})}
-							/>
+							{!hasLookupFilterPin && (
+								// Show only if LookupFilterPin is not present
+								<IconButton
+									icon="filter"
+									tooltip="LookupFilterPin"
+									{...stopPropagation({
+										onClick: () => {
+											onClosePins();
+											setPrinDrawer({ open: true, type: 'LookupFilterPin' });
+										}
+									})}
+								/>
+							)}
+							{!hasLookupTransformPin && (
+								// Show only if LookupTransformPin is not present
+								<IconButton
+									icon="transformer"
+									tooltip="LookupTransformPin"
+									{...stopPropagation({
+										onClick: () => {
+											onClosePins();
+											setPrinDrawer({ open: true, type: 'LookupTransformPin' });
+										}
+									})}
+								/>
+							)}
 						</>
+					)}
+					{!hasMapperPin && (
+						// Show only if MapperPin is not present
+						<IconButton
+							icon="mapper"
+							tooltip="MapperPin"
+							{...stopPropagation({
+								onClick: () => {
+									onClosePins();
+									setPrinDrawer({ open: true, node, type: 'MapperPin' });
+								}
+							})}
+						/>
 					)}
 					<IconButton icon="javascript" tooltip="PrePin (soon)" disabled />
 					<IconButton icon="javascript" tooltip="PostPin (soon)" disabled />

@@ -16,7 +16,8 @@ import type {
 	VerificationType,
 	DataType,
 	OperandType,
-	OperatorType
+	OperatorType,
+	PinSourceType
 } from 'lib/types';
 import { dateFromNano } from './date.utils';
 import {
@@ -394,9 +395,9 @@ export const getNodeIcon = (node: Node): Icons => {
  * Get the form values for the filter pin.
  */
 export const getFilterPinFormValues = (node: Node): FilterPinFormValues => {
-	const filterPin = node.pins.find(pin => 'FilterPin' in pin.pin_type);
+	const filterPin = getPin<FilterPin>(node, 'FilterPin');
 
-	if (!filterPin || !('FilterPin' in filterPin.pin_type)) {
+	if (!filterPin) {
 		return {
 			condition: 'Is',
 			conditionGroup: null,
@@ -413,9 +414,9 @@ export const getFilterPinFormValues = (node: Node): FilterPinFormValues => {
 	}
 
 	return {
-		condition: 'Is' in filterPin.pin_type.FilterPin.condition ? 'Is' : 'Not',
-		conditionGroup: getConditionGroup(filterPin.pin_type.FilterPin),
-		rules: filterPin.pin_type.FilterPin.rules.map(rule => ({
+		condition: 'Is' in filterPin.condition ? 'Is' : 'Not',
+		conditionGroup: getConditionGroup(filterPin),
+		rules: filterPin.rules.map(rule => ({
 			dataType: getRuleDataType(rule),
 			operandType: getRuleOparandType(rule),
 			field: rule.field,
@@ -488,3 +489,15 @@ const getRuleOperator = (rule: Rule): OperatorType => {
 
 	return 'Equal';
 };
+
+export function getPin<T>(node: Node, pinType: PinSourceType): T | undefined {
+	const pin = node.pins.find(pin => pinType in pin.pin_type);
+
+	if (!pin || !(pinType in pin.pin_type)) {
+		return;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return pin.pin_type[pinType] as T;
+}

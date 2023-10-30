@@ -38,15 +38,15 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 				circuitId: Number(circuitId),
 				data: formData
 			});
-
-			return;
+		} else {
+			// Edit call
+			await editNode({
+				nodeId: node.id,
+				data: formData
+			});
 		}
 
-		// Edit call
-		await editNode({
-			nodeId: node.id,
-			data: formData
-		});
+		onClose();
 	};
 
 	// TODO: use to seperate forms

@@ -17,6 +17,7 @@ import { useGetSampleData } from 'lib/hooks';
 import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues } from 'lib/utils';
 import { Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
+import { SkeletonRules } from 'components/Skeleton';
 
 const operators: Option<OperatorType>[] = [
 	{
@@ -137,7 +138,7 @@ export const FilterPinDrawerForm = ({
 								p: 2
 							}}
 						>
-							<Rules fields={fields} />
+							{isLoaded ? <Rules fields={fields} /> : <SkeletonRules />}
 						</Paper>
 					</Stack>
 					<Divider orientation="vertical" flexItem />

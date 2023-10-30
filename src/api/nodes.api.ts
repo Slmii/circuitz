@@ -168,7 +168,7 @@ export async function addPin({ nodeId, data }: { nodeId: number; data: Pin }): P
 export async function editPin({ nodeId, data }: { nodeId: number; data: Pin }): Promise<Node> {
 	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
 
-	const wrapped = await actor.add_pin(nodeId, data);
+	const wrapped = await actor.edit_pin(nodeId, data);
 	const unwrapped = await unwrapResult(wrapped);
 	return mapToNode(unwrapped);
 }
