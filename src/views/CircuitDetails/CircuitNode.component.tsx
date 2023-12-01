@@ -120,9 +120,9 @@ export const CircuitNode = ({ node, trace, onNodeSelect, onToggleNodeStatus }: C
 						}}
 					>
 						<IconButton
-							icon="add-linear"
+							icon={isInputNode ? 'settings' : 'add-linear'}
 							color="primary"
-							tooltip="Add pin"
+							tooltip={isInputNode ? 'Settings' : 'Add pin'}
 							onClick={() => setIsShowPins(prevState => !prevState)}
 						/>
 					</Box>

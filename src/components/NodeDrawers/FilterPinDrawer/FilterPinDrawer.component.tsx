@@ -10,7 +10,7 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node: 
 	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
 
 	const handleOnSubmit = async (pin: Pin) => {
-		const filterPin = node?.pins.find(pin => 'FilterPin' in pin.pin_type);
+		const filterPin = node.pins.find(pin => 'FilterPin' in pin.pin_type);
 
 		if (!filterPin) {
 			await addPin({

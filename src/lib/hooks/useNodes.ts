@@ -74,9 +74,6 @@ export const useEditNode = () => {
 
 				return nodes;
 			});
-
-			// Invalidate the sample data cache
-			queryClient.invalidateQueries([QUERY_KEYS.SAMPLE_DATA, node.circuitId]);
 		},
 		onError: () => {
 			errorSnackbar(MUTATE_ERROR);
@@ -149,7 +146,6 @@ export const useGetSampleData = (
 
 	return useQuery({
 		queryKey: [QUERY_KEYS.SAMPLE_DATA, Number(circuitId), nodeId],
-		enabled: !!circuitNodes,
 		queryFn: () => {
 			if (!circuitNodes) {
 				return {};
@@ -157,7 +153,8 @@ export const useGetSampleData = (
 
 			return api.Nodes.getSampleData(circuitNodes, nodeId, options?.options);
 		},
-		...options?.queryOptions
+		...options?.queryOptions,
+		enabled: !!circuitNodes && options?.queryOptions ? options.queryOptions.enabled : true
 	});
 };
 

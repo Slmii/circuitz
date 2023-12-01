@@ -94,30 +94,19 @@ export const FilterPinDrawerForm = ({
 	node: Node;
 	onProcessFilter: (data: Pin) => void;
 }) => {
-	const [isCollectInputData, setIsCollectInputData] = useState(false);
-
 	const {
 		data: inputData,
 		isLoading: isInputDataLoading,
 		isFetching: isInputDataRefetching,
-		isStale: isInputDataStale
+		refetch: refetchInputData
 	} = useGetSampleData(node.id, {
 		options: {
 			isFilterPreview: true
 		},
 		queryOptions: {
-			enabled: isCollectInputData,
-			cacheTime: 0
+			enabled: false
 		}
 	});
-
-	useEffect(() => {
-		if (inputData) {
-			setIsCollectInputData(false);
-		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [inputData]);
 
 	const fields = useMemo((): Option[] => {
 		if (!inputData) {
@@ -141,7 +130,6 @@ export const FilterPinDrawerForm = ({
 	};
 
 	const isSampleDataLoaded = !!inputData && !isInputDataLoading && !isInputDataRefetching;
-	const isLoaded = !isCollectInputData || (isCollectInputData && isSampleDataLoaded);
 
 	return (
 		<Form<FilterPinFormValues>
@@ -164,12 +152,12 @@ export const FilterPinDrawerForm = ({
 						>
 							{inputData ? (
 								<Rules fields={fields} />
-							) : isCollectInputData && isInputDataLoading ? (
+							) : inputData && isInputDataLoading ? (
 								<SkeletonRules />
 							) : (
 								<B1>
-									Please use the <TextButton onClick={() => setIsCollectInputData(true)}>Collect Input Data</TextButton>{' '}
-									button to collect input data
+									Please use the <TextButton onClick={() => refetchInputData()}>Collect Input Data</TextButton> button
+									to collect input data
 								</B1>
 							)}
 						</Paper>
@@ -182,12 +170,12 @@ export const FilterPinDrawerForm = ({
 								<Button
 									fullWidth
 									variant="outlined"
-									loading={!isLoaded}
+									loading={isInputDataRefetching}
 									size="large"
-									onClick={() => setIsCollectInputData(true)}
+									onClick={() => refetchInputData()}
 									tooltip="Collecting Input Data might consume cycles if there's a Lookup Node in the circuit."
 								>
-									{isInputDataStale ? 'Refresh Input Data' : 'Collect Input Data'}
+									Collect Input Data
 								</Button>
 								<Button
 									fullWidth
