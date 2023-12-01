@@ -104,6 +104,8 @@ export const FilterPinDrawerForm = ({
 			isFilterPreview: true
 		},
 		queryOptions: {
+			// Set to false to prevent the query from running on component mount
+			// This is to save unnecessary cycle waste
 			enabled: false
 		}
 	});
