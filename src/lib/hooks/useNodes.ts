@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api/index';
 import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
 import { Node, SampleDataOptions } from 'lib/types';
@@ -140,14 +140,24 @@ export const usePreview = () => {
 	return useMutation(api.Nodes.previewLookupCanister);
 };
 
-export const useGetSampleData = (nodeId: number, options?: SampleDataOptions) => {
+export const useGetSampleData = (
+	nodeId: number,
+	options?: { options?: SampleDataOptions; queryOptions?: UseQueryOptions<Record<string, unknown>> }
+) => {
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	return useQuery({
 		queryKey: [QUERY_KEYS.SAMPLE_DATA, Number(circuitId), nodeId],
 		enabled: !!circuitNodes,
-		queryFn: () => api.Nodes.getSampleData(circuitNodes ?? [], nodeId, options)
+		queryFn: () => {
+			if (!circuitNodes) {
+				return {};
+			}
+
+			return api.Nodes.getSampleData(circuitNodes, nodeId, options?.options);
+		},
+		...options?.queryOptions
 	});
 };
 

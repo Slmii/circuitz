@@ -112,11 +112,11 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 
 		if ('LookupCanister' in node.nodeType) {
 			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
-			sampleData['LookupCanister'] = lookupCanisterResponse;
+			sampleData[`Node:${node.id}`] = lookupCanisterResponse;
 		}
 
 		if ('LookupHttpRequest' in node.nodeType) {
-			sampleData['LookupHttpRequest'] = await httpRequest(node.nodeType.LookupHttpRequest);
+			sampleData[`Node:${node.id}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
 		// TODO: add pins logic

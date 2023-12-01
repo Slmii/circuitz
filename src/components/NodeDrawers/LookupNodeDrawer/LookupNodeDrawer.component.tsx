@@ -5,7 +5,7 @@ import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
 import { Alert, Divider, Stack } from '@mui/material';
-import { Button } from 'components/Button';
+import { Button, CopyTextButton } from 'components/Button';
 import { B2, H5 } from 'components/Typography';
 import { Editor } from 'components/Editor';
 import { useFormContext } from 'react-hook-form';
@@ -13,7 +13,6 @@ import { NodeSourceType } from 'lib/types';
 import { toPrincipal, getLookupCanisterValuesAsArg } from 'lib/utils';
 import { Dialog } from 'components/Dialog';
 import { useMemo, useState } from 'react';
-import { CopyText } from 'components/CopyText';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
 	const [formData, setFormData] = useState<NodeType | null>(null);
@@ -49,9 +48,6 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 		onClose();
 	};
 
-	// TODO: use to seperate forms
-	nodeType;
-
 	return (
 		<>
 			<Drawer
@@ -63,7 +59,7 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 				fullWidth
 			>
 				<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={setFormData}>
-					<PreviewRequest type="LookupCanister" />
+					{nodeType === 'LookupCanister' ? <PreviewRequest type="LookupCanister" /> : <>TODO</>}
 				</LookupNodeCanisterForm>
 			</Drawer>
 			<Dialog open={!!previewError} onClose={() => setPreviewError(null)} title="Error" onCancelText="Close">
@@ -143,7 +139,8 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 				</Button>
 				<B2>
 					Before querying the desired canister, ensure Canister ID{' '}
-					<CopyText textToCopy={nodeCanisterId.toString()}> {nodeCanisterId.toString()} </CopyText> is authorized.
+					<CopyTextButton textToCopy={nodeCanisterId.toString()}>{nodeCanisterId.toString()}</CopyTextButton> is
+					authorized.
 				</B2>
 				<Editor mode="javascript" value={response} isReadOnly height="100%" />
 			</Stack>

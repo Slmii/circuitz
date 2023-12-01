@@ -12,3 +12,8 @@ export const SPINNER_ANIMATION = {
 		}
 	}
 };
+
+export const OVERFLOW = {
+	maxHeight: 'calc(100vh - 205px)',
+	overflowY: 'auto'
+};

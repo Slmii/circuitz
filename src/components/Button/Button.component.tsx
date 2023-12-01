@@ -1,10 +1,12 @@
-import MuiButton from '@mui/material/Button';
+import MuiButton, { ButtonProps } from '@mui/material/Button';
 import { CircularProgress } from 'components/Progress';
 import { Tooltip } from 'components/Tooltip';
 import { Link as RouterLink } from 'react-router-dom';
 import { ButtonLinkProps, CustomButtonProps } from './Button.types';
 import { Icon } from 'components/Icon';
 import Box from '@mui/material/Box';
+import { useCopyToClipboard } from 'lib/hooks';
+import { PropsWithChildren } from 'react';
 
 export const Button = ({
 	tooltip,
@@ -60,4 +62,26 @@ export const Button = ({
 
 export const LinkButton = (props: ButtonLinkProps) => {
 	return <Button {...props} component={RouterLink} />;
+};
+
+export const TextButton = ({ children, ...props }: ButtonProps) => {
+	return (
+		<MuiButton
+			disableElevation
+			component="code"
+			size="small"
+			color="secondary"
+			variant="contained"
+			sx={{ minHeight: 'unset', px: 0.5 }}
+			{...props}
+		>
+			{children}
+		</MuiButton>
+	);
+};
+
+export const CopyTextButton = ({ textToCopy, children }: PropsWithChildren<{ textToCopy: string }>) => {
+	const { copy } = useCopyToClipboard();
+
+	return <TextButton onClick={() => copy(textToCopy)}>{children}</TextButton>;
 };

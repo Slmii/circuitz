@@ -3,14 +3,14 @@ import { Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select, Option } from 'components/Form/Select';
-import { H5 } from 'components/Typography';
+import { B1, H5 } from 'components/Typography';
 import { DataType, Node, OperandType, OperatorType } from 'lib/types';
 import { RefObject, useEffect, useMemo, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { RadioButton } from 'components/Form/RadioButton';
-import { Button } from 'components/Button';
+import { Button, TextButton } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetSampleData } from 'lib/hooks';
@@ -18,6 +18,7 @@ import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues } 
 import { Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
+import { OVERFLOW } from 'lib/constants';
 
 const operators: Option<OperatorType>[] = [
 	{
@@ -93,16 +94,38 @@ export const FilterPinDrawerForm = ({
 	node: Node;
 	onProcessFilter: (data: Pin) => void;
 }) => {
-	const { data: sampleData, isLoading: isSampleDataLoading } = useGetSampleData(node.id, {
-		isFilterPreview: true
+	const [isCollectInputData, setIsCollectInputData] = useState(false);
+
+	const {
+		data: inputData,
+		isLoading: isInputDataLoading,
+		isFetching: isInputDataRefetching,
+		isStale: isInputDataStale
+	} = useGetSampleData(node.id, {
+		options: {
+			isFilterPreview: true
+		},
+		queryOptions: {
+			enabled: isCollectInputData,
+			cacheTime: 0
+		}
 	});
+
+	useEffect(() => {
+		if (inputData) {
+			setIsCollectInputData(false);
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [inputData]);
+
 	const fields = useMemo((): Option[] => {
-		if (!sampleData) {
+		if (!inputData) {
 			return [];
 		}
 
-		return getSampleDataFields(sampleData);
-	}, [sampleData]);
+		return getSampleDataFields(inputData);
+	}, [inputData]);
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		onProcessFilter({
@@ -117,7 +140,8 @@ export const FilterPinDrawerForm = ({
 		});
 	};
 
-	const isLoaded = !!sampleData && !isSampleDataLoading;
+	const isSampleDataLoaded = !!inputData && !isInputDataLoading && !isInputDataRefetching;
+	const isLoaded = !isCollectInputData || (isCollectInputData && isSampleDataLoaded);
 
 	return (
 		<Form<FilterPinFormValues>
@@ -127,7 +151,7 @@ export const FilterPinDrawerForm = ({
 			myRef={formRef}
 			render={() => (
 				<Stack direction="row" spacing={4} height="100%">
-					<Stack direction="column" spacing={2} width="50%">
+					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
 							A Filter Pin node filters the node according to the specified rules below. If these rules are met, the
 							node's execution can be prevented.
@@ -138,17 +162,44 @@ export const FilterPinDrawerForm = ({
 								p: 2
 							}}
 						>
-							{isLoaded ? <Rules fields={fields} /> : <SkeletonRules />}
+							{inputData ? (
+								<Rules fields={fields} />
+							) : isCollectInputData && isInputDataLoading ? (
+								<SkeletonRules />
+							) : (
+								<B1>
+									Please use the <TextButton onClick={() => setIsCollectInputData(true)}>Collect Input Data</TextButton>{' '}
+									button to collect input data
+								</B1>
+							)}
 						</Paper>
 					</Stack>
 					<Divider orientation="vertical" flexItem />
 					<Stack direction="column" spacing={4} width="50%" height="100%">
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Input</H5>
-							<Button variant="contained" size="large" startIcon="filter-linear" loading={!isLoaded}>
-								Preview
-							</Button>
-							<Editor mode="javascript" isReadOnly value={JSON.stringify(sampleData, null, 4)} height={450} />
+							<Stack direction="row" spacing={1}>
+								<Button
+									fullWidth
+									variant="outlined"
+									loading={!isLoaded}
+									size="large"
+									onClick={() => setIsCollectInputData(true)}
+									tooltip="Collecting Input Data might consume cycles if there's a Lookup Node in the circuit."
+								>
+									{isInputDataStale ? 'Refresh Input Data' : 'Collect Input Data'}
+								</Button>
+								<Button
+									fullWidth
+									variant="contained"
+									size="large"
+									startIcon="filter-linear"
+									disabled={!isSampleDataLoaded}
+								>
+									Preview
+								</Button>
+							</Stack>
+							<Editor mode="javascript" isReadOnly value={JSON.stringify(inputData, null, 4)} height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
@@ -164,6 +215,7 @@ export const FilterPinDrawerForm = ({
 const Rules = ({ fields }: { fields: Option[] }) => {
 	const [fieldSettingsIndex, setFieldSettingsIndex] = useState<number | null>(null);
 	const [isFieldHover, setIsFieldHover] = useState<Record<number, boolean>>({});
+
 	const { fields: formFields, append, remove } = useFieldArray({ name: 'rules' });
 	const { watch, setValue } = useFormContext<FilterPinFormValues>();
 	const values = watch();

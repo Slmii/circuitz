@@ -14,6 +14,7 @@ import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg, getSampleDat
 import { Button } from 'components/Button';
 import { Select, Option } from 'components/Form/Select';
 import { useGetSampleData } from 'lib/hooks';
+import { OVERFLOW } from 'lib/constants';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -55,7 +56,7 @@ export const LookupNodeCanisterForm = ({
 			schema={lookupCanisterSchema}
 			render={() => (
 				<Stack direction="row" spacing={4}>
-					<Stack spacing={4} width="50%">
+					<Stack spacing={4} width="50%" sx={OVERFLOW}>
 						<Stack direction="column" spacing={2}>
 							<Alert severity="info">
 								A Lookup Canister Node queries data from an external Canister and forwards it to the subsequent Node in

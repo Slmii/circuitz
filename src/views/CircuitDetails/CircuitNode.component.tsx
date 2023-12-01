@@ -20,7 +20,7 @@ const absolutePosition = {
 	transform: 'translate(-50%, -50%)'
 };
 
-export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStatus }: CircuitNodeProps) => {
+export const CircuitNode = ({ node, trace, onNodeSelect, onToggleNodeStatus }: CircuitNodeProps) => {
 	const [isShowAdd, setIsShowAdd] = useState(false);
 	const [isShowPins, setIsShowPins] = useState(false);
 	const [delayHandler, setDelayHandler] = useState<NodeJS.Timeout | null>(null);
@@ -57,7 +57,7 @@ export const CircuitNode = ({ node, trace, index, onNodeSelect, onToggleNodeStat
 					width: 10
 				}}
 			>
-				{index + 1}
+				{node.id}
 			</B1>
 			<Stack
 				direction="row"
