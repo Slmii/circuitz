@@ -501,3 +501,107 @@ export function getPin<T>(node: Node, pinType: PinSourceType): T | undefined {
 	// @ts-ignore
 	return pin.pin_type[pinType] as T;
 }
+
+export const isFilterTrue = (rulesConfig: FilterPinFormValues, data: Record<string, unknown>): boolean => {
+	if (rulesConfig.rules.length === 0) {
+		return false;
+	}
+
+	if (rulesConfig.rules.length === 1 || rulesConfig.conditionGroup === null) {
+		return evaluateRule(rulesConfig.rules[0], data, rulesConfig.condition);
+	}
+
+	let result = rulesConfig.conditionGroup === 'And';
+	for (const rule of rulesConfig.rules) {
+		const isRuleSatisfied = evaluateRule(rule, data, rulesConfig.condition);
+
+		if (rulesConfig.conditionGroup === 'And') {
+			result = result && isRuleSatisfied;
+		} else {
+			// "Or" condition
+			result = result || isRuleSatisfied;
+		}
+	}
+
+	return result;
+};
+
+const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition: 'Is' | 'Not'): boolean => {
+	const fieldValue = getNestedValue(data, rule.field) as number | bigint | boolean | string;
+	let ruleValue: number | bigint | boolean | string;
+
+	// Fetch the operand value based on operandType
+	if (rule.operandType === 'Field') {
+		// Treat rule.value as a field path
+		ruleValue = getNestedValue(data, rule.value) as number | bigint | boolean | string;
+	} else {
+		// Treat rule.value as a literal value
+		ruleValue = rule.value;
+	}
+
+	// Convert to appropriate type
+	switch (rule.dataType) {
+		case 'Number':
+			ruleValue = Number(ruleValue);
+			break;
+		case 'BigInt':
+			ruleValue = BigInt(ruleValue);
+			break;
+		case 'Boolean':
+			ruleValue = ruleValue.toString().toLowerCase() === 'true';
+			break;
+		case 'String':
+		case 'Principal':
+			ruleValue = ruleValue.toString();
+			break;
+	}
+
+	let isRuleSatisfied: boolean;
+	switch (rule.operator) {
+		case 'Equal':
+			console.log('Equal', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue === ruleValue;
+			break;
+		case 'NotEqual':
+			console.log('NotEqual', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue !== ruleValue;
+			break;
+		case 'LessThan':
+			console.log('LessThan', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue < ruleValue;
+			break;
+		case 'GreaterThan':
+			console.log('GreaterThan', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue > ruleValue;
+			break;
+		case 'LessThanOrEqual':
+			console.log('LessThanOrEqual', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue <= ruleValue;
+			break;
+		case 'GreaterThanOrEqual':
+			console.log('GreaterThanOrEqual', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue >= ruleValue;
+			break;
+		case 'Contains':
+			console.log('Contains', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue.toString().includes(ruleValue.toString());
+			break;
+		default:
+			isRuleSatisfied = false;
+	}
+
+	if (condition === 'Not') {
+		isRuleSatisfied = !isRuleSatisfied;
+	}
+
+	return isRuleSatisfied;
+};
+
+const getNestedValue = (data: Record<string, unknown>, path: string): unknown => {
+	return path.split('.').reduce((acc, part) => {
+		if (acc && typeof acc === 'object' && part in acc) {
+			return (acc as Record<string, unknown>)[part];
+		}
+		return undefined;
+	}, data as unknown);
+};

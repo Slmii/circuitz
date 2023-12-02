@@ -6,7 +6,7 @@ import { Select, Option } from 'components/Form/Select';
 import { B1, H5 } from 'components/Typography';
 import { DataType, Node, OperandType, OperatorType } from 'lib/types';
 import { RefObject, useEffect, useMemo, useState } from 'react';
-import { FilterPinFormValues, FilterRule } from '../NodeDrawers.types';
+import { FilterPinFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { RadioButton } from 'components/Form/RadioButton';
@@ -14,7 +14,7 @@ import { Button, TextButton } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetSampleData } from 'lib/hooks';
-import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues } from 'lib/utils';
+import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues, isFilterTrue } from 'lib/utils';
 import { Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
@@ -164,7 +164,7 @@ export const FilterPinDrawerForm = ({
 		}
 
 		try {
-			const isTrue = evaluateRules(formValues, JSON.parse(inputSampleData));
+			const isTrue = isFilterTrue(formValues, JSON.parse(inputSampleData));
 
 			let outputString = 'The filter condition is ';
 			if (isTrue) {
@@ -179,6 +179,8 @@ export const FilterPinDrawerForm = ({
 		}
 	};
 
+	// Refetch the sample data
+	// This is to update the sample data when the user changes the circuit and the sample data is no longer valid
 	const handleOnRefetch = async () => {
 		setIsRefetch(true);
 		await refetchSampleData();
@@ -379,107 +381,3 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 		</>
 	);
 };
-
-function evaluateRules(rulesConfig: FilterPinFormValues, data: Record<string, unknown>): boolean {
-	if (rulesConfig.rules.length === 0) {
-		return false;
-	}
-
-	if (rulesConfig.rules.length === 1 || rulesConfig.conditionGroup === null) {
-		return evaluateRule(rulesConfig.rules[0], data, rulesConfig.condition);
-	}
-
-	let result = rulesConfig.conditionGroup === 'And';
-	for (const rule of rulesConfig.rules) {
-		const isRuleSatisfied = evaluateRule(rule, data, rulesConfig.condition);
-
-		if (rulesConfig.conditionGroup === 'And') {
-			result = result && isRuleSatisfied;
-		} else {
-			// "Or" condition
-			result = result || isRuleSatisfied;
-		}
-	}
-
-	return result;
-}
-
-function evaluateRule(rule: FilterRule, data: Record<string, unknown>, condition: 'Is' | 'Not'): boolean {
-	const fieldValue = getNestedValue(data, rule.field) as number | bigint | boolean | string;
-	let ruleValue: number | bigint | boolean | string;
-
-	// Fetch the operand value based on operandType
-	if (rule.operandType === 'Field') {
-		// Treat rule.value as a field path
-		ruleValue = getNestedValue(data, rule.value) as number | bigint | boolean | string;
-	} else {
-		// Treat rule.value as a literal value
-		ruleValue = rule.value;
-	}
-
-	// Convert to appropriate type
-	switch (rule.dataType) {
-		case 'Number':
-			ruleValue = Number(ruleValue);
-			break;
-		case 'BigInt':
-			ruleValue = BigInt(ruleValue);
-			break;
-		case 'Boolean':
-			ruleValue = ruleValue.toString().toLowerCase() === 'true';
-			break;
-		case 'String':
-		case 'Principal':
-			ruleValue = ruleValue.toString();
-			break;
-	}
-
-	let isRuleSatisfied: boolean;
-	switch (rule.operator) {
-		case 'Equal':
-			console.log('Equal', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue === ruleValue;
-			break;
-		case 'NotEqual':
-			console.log('NotEqual', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue !== ruleValue;
-			break;
-		case 'LessThan':
-			console.log('LessThan', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue < ruleValue;
-			break;
-		case 'GreaterThan':
-			console.log('GreaterThan', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue > ruleValue;
-			break;
-		case 'LessThanOrEqual':
-			console.log('LessThanOrEqual', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue <= ruleValue;
-			break;
-		case 'GreaterThanOrEqual':
-			console.log('GreaterThanOrEqual', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue >= ruleValue;
-			break;
-		case 'Contains':
-			console.log('Contains', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue.toString().includes(ruleValue.toString());
-			break;
-		default:
-			isRuleSatisfied = false;
-	}
-
-	if (condition === 'Not') {
-		isRuleSatisfied = !isRuleSatisfied;
-	}
-
-	return isRuleSatisfied;
-}
-
-function getNestedValue(data: Record<string, unknown>, path: string): unknown {
-	return path.split('.').reduce((acc, part) => {
-		if (acc && typeof acc === 'object' && part in acc) {
-			return (acc as Record<string, unknown>)[part];
-		}
-		return undefined;
-	}, data as unknown);
-}
