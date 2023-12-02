@@ -116,19 +116,34 @@ export const FilterPinDrawerForm = ({
 		}
 	});
 
-	const fields = useMemo((): Option[] => {
+	useEffect(() => {
 		if (!sampleData) {
-			return [];
+			return;
 		}
 
 		// Set the sample data as the input value for the editor
 		setInputSampleData(JSON.stringify(sampleData, null, 4));
-
-		// Get the fields from the sample data
-		return getSampleDataFields(sampleData);
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [sampleData, isRefetch]);
+
+	const fields = useMemo((): Option[] => {
+		if (!inputSampleData) {
+			return [];
+		}
+
+		try {
+			// Get the fields from the input sample data
+			return getSampleDataFields(JSON.parse(inputSampleData));
+		} catch (error) {
+			// If there's an error, return an error option
+			return [
+				{
+					id: 'error',
+					label: (error as Error).message,
+					disabled: true
+				}
+			];
+		}
+	}, [inputSampleData]);
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		onProcessFilter({
@@ -391,22 +406,31 @@ function evaluateRules(rulesConfig: FilterPinFormValues, data: Record<string, un
 
 function evaluateRule(rule: FilterRule, data: Record<string, unknown>, condition: 'Is' | 'Not'): boolean {
 	const fieldValue = getNestedValue(data, rule.field) as number | bigint | boolean | string;
+	let ruleValue: number | bigint | boolean | string;
+
+	// Fetch the operand value based on operandType
+	if (rule.operandType === 'Field') {
+		// Treat rule.value as a field path
+		ruleValue = getNestedValue(data, rule.value) as number | bigint | boolean | string;
+	} else {
+		// Treat rule.value as a literal value
+		ruleValue = rule.value;
+	}
 
 	// Convert to appropriate type
-	let ruleValue: number | bigint | boolean | string = rule.value;
 	switch (rule.dataType) {
 		case 'Number':
-			ruleValue = Number(rule.value);
+			ruleValue = Number(ruleValue);
 			break;
 		case 'BigInt':
-			ruleValue = BigInt(rule.value);
+			ruleValue = BigInt(ruleValue);
 			break;
 		case 'Boolean':
-			ruleValue = rule.value.toLowerCase() === 'true';
+			ruleValue = ruleValue.toString().toLowerCase() === 'true';
 			break;
 		case 'String':
 		case 'Principal':
-			ruleValue = rule.value.toString();
+			ruleValue = ruleValue.toString();
 			break;
 	}
 
