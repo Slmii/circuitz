@@ -16,13 +16,13 @@ export function Form<T extends FieldValues>({
 }: FormProps<T>) {
 	const methods = useForm<T>({
 		resolver: schema ? yupResolver(schema) : undefined,
-		defaultValues,
+		defaultValues: typeof defaultValues === 'function' ? defaultValues() : defaultValues,
 		mode
 	});
 
 	useEffect(() => {
 		if (typeof isDefaultValuesLoading !== 'undefined' && !isDefaultValuesLoading) {
-			methods.reset(defaultValues);
+			methods.reset(typeof defaultValues === 'function' ? defaultValues() : defaultValues);
 		}
 	}, [defaultValues, isDefaultValuesLoading, methods]);
 

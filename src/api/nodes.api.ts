@@ -1,7 +1,7 @@
-import type { LookupCanister, NodeType, Pin, _SERVICE } from 'declarations/nodes.declarations';
+import type { FilterPin, LookupCanister, NodeType, Pin, _SERVICE } from 'declarations/nodes.declarations';
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
-import { httpRequest, mapToNode, unwrapResult } from 'lib/utils';
+import { getFilterPinFormValues, getPin, httpRequest, isFilterTrue, mapToNode, unwrapResult } from 'lib/utils';
 import { Node, SampleDataOptions } from 'lib/types';
 import { createActor } from './actor.api';
 
@@ -88,7 +88,7 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 			continue;
 		}
 
-		// Input Nodes (Starting point )
+		// Input Nodes (Starting point)
 		if ('Canister' in node.nodeType) {
 			const sampleDataAsString = node.nodeType.Canister.sample_data[0] ? node.nodeType.Canister.sample_data[0] : '{}';
 			sampleData['data'] = JSON.parse(sampleDataAsString);
@@ -103,11 +103,24 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 
 		// Do not execute the node itself if
 		// - The preview is for the filter, and
-		// - The node is the current node, or
-		// - The current node is not defined (meaning the node is not saved yet)
+		// - The current node is not defined (meaning the node is not saved yet), or
+		// - The node is the current node
 		if (options?.isFilterPreview && (!nodeId || nodeId === node.id)) {
 			// Break out
 			break;
+		}
+
+		// TODO: add all pins logic
+
+		const filterPin = getPin<FilterPin>(node, 'FilterPin');
+		if (filterPin) {
+			const filterPinFormValues = getFilterPinFormValues(filterPin);
+
+			// If the filter is not true, skip the node
+			const isTrue = isFilterTrue(filterPinFormValues, sampleData);
+			if (!isTrue) {
+				continue;
+			}
 		}
 
 		if ('LookupCanister' in node.nodeType) {
@@ -118,8 +131,6 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 		if ('LookupHttpRequest' in node.nodeType) {
 			sampleData[`Node:${index + 1}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
-
-		// TODO: add pins logic
 	}
 
 	return sampleData;

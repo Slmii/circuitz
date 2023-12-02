@@ -14,8 +14,8 @@ import { Button, TextButton } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetSampleData } from 'lib/hooks';
-import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues, isFilterTrue } from 'lib/utils';
-import { Pin } from 'declarations/nodes.declarations';
+import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues, isFilterTrue, getPin } from 'lib/utils';
+import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
 import { OVERFLOW } from 'lib/constants';
@@ -192,7 +192,10 @@ export const FilterPinDrawerForm = ({
 	return (
 		<Form<FilterPinFormValues>
 			action={handleOnSubmit}
-			defaultValues={getFilterPinFormValues(node)}
+			defaultValues={() => {
+				const filterPin = getPin<FilterPin>(node, 'FilterPin');
+				return getFilterPinFormValues(filterPin);
+			}}
 			schema={filterPinSchema}
 			myRef={formRef}
 			render={({ getValues }) => (

@@ -14,7 +14,7 @@ export interface FormProps<T extends FieldValues> {
 	/**
 	 * Default values in a form
 	 */
-	defaultValues: DefaultValues<T>;
+	defaultValues: (() => DefaultValues<T>) | DefaultValues<T>;
 	/**
 	 * Option to configure the validation before onSubmit event
 	 */

@@ -394,9 +394,7 @@ export const getNodeIcon = (node: Node): Icons => {
 /**
  * Get the form values for the filter pin.
  */
-export const getFilterPinFormValues = (node: Node): FilterPinFormValues => {
-	const filterPin = getPin<FilterPin>(node, 'FilterPin');
-
+export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValues => {
 	if (!filterPin) {
 		return {
 			condition: 'Is',
