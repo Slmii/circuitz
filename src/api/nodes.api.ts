@@ -82,7 +82,7 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 	// Only executes nodes that are before the given node
 	const nodesToExecute = nodes.filter(node => node.id < nodeId);
 
-	for (const node of nodesToExecute) {
+	for (const [index, node] of nodesToExecute.entries()) {
 		// Skip disabled nodes
 		if (!node.isEnabled) {
 			continue;
@@ -112,11 +112,11 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 
 		if ('LookupCanister' in node.nodeType) {
 			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
-			sampleData[`Node:${node.id}`] = lookupCanisterResponse;
+			sampleData[`Node:${index + 1}`] = lookupCanisterResponse;
 		}
 
 		if ('LookupHttpRequest' in node.nodeType) {
-			sampleData[`Node:${node.id}`] = await httpRequest(node.nodeType.LookupHttpRequest);
+			sampleData[`Node:${index + 1}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
 		// TODO: add pins logic

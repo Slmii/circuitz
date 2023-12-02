@@ -65,10 +65,11 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 					</Stack>
 				) : (
 					<>
-						{nodes.map(node => (
+						{nodes.map((node, index) => (
 							<CircuitNode
 								key={node.id}
 								node={node}
+								index={index + 1}
 								trace={traces.find(trace => trace.nodeId === node.id)}
 								onToggleNodeStatus={node =>
 									toggleStatus({ circuitId: node.circuitId, nodeId: node.id, enabled: node.isEnabled })

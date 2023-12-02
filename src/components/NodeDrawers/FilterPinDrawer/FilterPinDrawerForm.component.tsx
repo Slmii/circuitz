@@ -233,7 +233,7 @@ export const FilterPinDrawerForm = ({
 									onClick={handleOnRefetch}
 									tooltip="Collecting Sample Data might consume cycles if there's a Lookup Node in the circuit."
 								>
-									Collect Saple Data
+									Collect Sample Data
 								</Button>
 								<Button
 									fullWidth
