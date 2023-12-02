@@ -95,10 +95,10 @@ export const FilterPinDrawerForm = ({
 	onProcessFilter: (data: Pin) => void;
 }) => {
 	const {
-		data: inputData,
-		isLoading: isInputDataLoading,
-		isFetching: isInputDataRefetching,
-		refetch: refetchInputData
+		data: sampleData,
+		isLoading: isSampleDataLoading,
+		isFetching: isSampleDataRefetching,
+		refetch: refetchSampleData
 	} = useGetSampleData(node.id, {
 		options: {
 			isFilterPreview: true
@@ -111,12 +111,12 @@ export const FilterPinDrawerForm = ({
 	});
 
 	const fields = useMemo((): Option[] => {
-		if (!inputData) {
+		if (!sampleData) {
 			return [];
 		}
 
-		return getSampleDataFields(inputData);
-	}, [inputData]);
+		return getSampleDataFields(sampleData);
+	}, [sampleData]);
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		onProcessFilter({
@@ -131,7 +131,11 @@ export const FilterPinDrawerForm = ({
 		});
 	};
 
-	const isSampleDataLoaded = !!inputData && !isInputDataLoading && !isInputDataRefetching;
+	const handleOnPreview = (formValues: FilterPinFormValues) => {
+		formValues;
+	};
+
+	const isSampleDataLoaded = !!sampleData && !isSampleDataLoading && !isSampleDataRefetching;
 
 	return (
 		<Form<FilterPinFormValues>
@@ -139,7 +143,7 @@ export const FilterPinDrawerForm = ({
 			defaultValues={getFilterPinFormValues(node)}
 			schema={filterPinSchema}
 			myRef={formRef}
-			render={() => (
+			render={({ getValues }) => (
 				<Stack direction="row" spacing={4} height="100%">
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
@@ -152,14 +156,14 @@ export const FilterPinDrawerForm = ({
 								p: 2
 							}}
 						>
-							{inputData ? (
+							{sampleData ? (
 								<Rules fields={fields} />
-							) : inputData && isInputDataLoading ? (
+							) : sampleData && isSampleDataLoading ? (
 								<SkeletonRules />
 							) : (
 								<B1>
-									Please use the <TextButton onClick={() => refetchInputData()}>Collect Input Data</TextButton> button
-									to collect input data
+									Please use the <TextButton onClick={() => refetchSampleData()}>Collect Sample Data</TextButton> button
+									to collect sample data
 								</B1>
 							)}
 						</Paper>
@@ -172,12 +176,12 @@ export const FilterPinDrawerForm = ({
 								<Button
 									fullWidth
 									variant="outlined"
-									loading={isInputDataRefetching}
+									loading={isSampleDataRefetching}
 									size="large"
-									onClick={() => refetchInputData()}
-									tooltip="Collecting Input Data might consume cycles if there's a Lookup Node in the circuit."
+									onClick={() => refetchSampleData()}
+									tooltip="Collecting Sample Data might consume cycles if there's a Lookup Node in the circuit."
 								>
-									Collect Input Data
+									Collect Saple Data
 								</Button>
 								<Button
 									fullWidth
@@ -185,11 +189,12 @@ export const FilterPinDrawerForm = ({
 									size="large"
 									startIcon="filter-linear"
 									disabled={!isSampleDataLoaded}
+									onClick={() => handleOnPreview(getValues())}
 								>
 									Preview
 								</Button>
 							</Stack>
-							<Editor mode="javascript" isReadOnly value={JSON.stringify(inputData, null, 4)} height={450} />
+							<Editor mode="javascript" isReadOnly value={JSON.stringify(sampleData, null, 4)} height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
