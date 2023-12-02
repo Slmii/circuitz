@@ -6,7 +6,7 @@ import { Select, Option } from 'components/Form/Select';
 import { B1, H5 } from 'components/Typography';
 import { DataType, Node, OperandType, OperatorType } from 'lib/types';
 import { RefObject, useEffect, useMemo, useState } from 'react';
-import { FilterPinFormValues } from '../NodeDrawers.types';
+import { FilterPinFormValues, FilterRule } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { RadioButton } from 'components/Form/RadioButton';
@@ -94,6 +94,12 @@ export const FilterPinDrawerForm = ({
 	node: Node;
 	onProcessFilter: (data: Pin) => void;
 }) => {
+	const [isRefetch, setIsRefetch] = useState(false);
+
+	// Store the sample data as a string in a seperate state for the editor in case the user wants to edit it
+	const [inputSampleData, setInputSampleData] = useState('');
+	const [outputSampleData, setOutputSampleData] = useState('');
+
 	const {
 		data: sampleData,
 		isLoading: isSampleDataLoading,
@@ -115,8 +121,14 @@ export const FilterPinDrawerForm = ({
 			return [];
 		}
 
+		// Set the sample data as the input value for the editor
+		setInputSampleData(JSON.stringify(sampleData, null, 4));
+
+		// Get the fields from the sample data
 		return getSampleDataFields(sampleData);
-	}, [sampleData]);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sampleData, isRefetch]);
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		onProcessFilter({
@@ -132,7 +144,30 @@ export const FilterPinDrawerForm = ({
 	};
 
 	const handleOnPreview = (formValues: FilterPinFormValues) => {
-		formValues;
+		if (!inputSampleData) {
+			return;
+		}
+
+		try {
+			const isTrue = evaluateRules(formValues, JSON.parse(inputSampleData));
+
+			let outputString = 'The filter condition is ';
+			if (isTrue) {
+				outputString += 'true. It will be executed.';
+			} else {
+				outputString += 'false. It will not be executed.';
+			}
+
+			setOutputSampleData(outputString);
+		} catch (error) {
+			setOutputSampleData((error as Error).message);
+		}
+	};
+
+	const handleOnRefetch = async () => {
+		setIsRefetch(true);
+		await refetchSampleData();
+		setIsRefetch(false);
 	};
 
 	const isSampleDataLoaded = !!sampleData && !isSampleDataLoading && !isSampleDataRefetching;
@@ -162,8 +197,8 @@ export const FilterPinDrawerForm = ({
 								<SkeletonRules />
 							) : (
 								<B1>
-									Please use the <TextButton onClick={() => refetchSampleData()}>Collect Sample Data</TextButton> button
-									to collect sample data
+									Please use the <TextButton onClick={handleOnRefetch}>Collect Sample Data</TextButton> button to
+									collect sample data
 								</B1>
 							)}
 						</Paper>
@@ -178,7 +213,7 @@ export const FilterPinDrawerForm = ({
 									variant="outlined"
 									loading={isSampleDataRefetching}
 									size="large"
-									onClick={() => refetchSampleData()}
+									onClick={handleOnRefetch}
 									tooltip="Collecting Sample Data might consume cycles if there's a Lookup Node in the circuit."
 								>
 									Collect Saple Data
@@ -194,11 +229,19 @@ export const FilterPinDrawerForm = ({
 									Preview
 								</Button>
 							</Stack>
-							<Editor mode="javascript" isReadOnly value={JSON.stringify(sampleData, null, 4)} height={450} />
+							<Editor
+								mode="javascript"
+								value={inputSampleData}
+								height={450}
+								onChange={value => {
+									// Set the input sample data as the value of the editor
+									setInputSampleData(value);
+								}}
+							/>
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
-							<Editor mode="javascript" isReadOnly value="" height={32} />
+							<Editor mode="javascript" isReadOnly value={outputSampleData} height={32} />
 						</Stack>
 					</Stack>
 				</Stack>
@@ -321,3 +364,98 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 		</>
 	);
 };
+
+function evaluateRules(rulesConfig: FilterPinFormValues, data: Record<string, unknown>): boolean {
+	if (rulesConfig.rules.length === 0) {
+		return false;
+	}
+
+	if (rulesConfig.rules.length === 1 || rulesConfig.conditionGroup === null) {
+		return evaluateRule(rulesConfig.rules[0], data, rulesConfig.condition);
+	}
+
+	let result = rulesConfig.conditionGroup === 'And';
+	for (const rule of rulesConfig.rules) {
+		const isRuleSatisfied = evaluateRule(rule, data, rulesConfig.condition);
+
+		if (rulesConfig.conditionGroup === 'And') {
+			result = result && isRuleSatisfied;
+		} else {
+			// "Or" condition
+			result = result || isRuleSatisfied;
+		}
+	}
+
+	return result;
+}
+
+function evaluateRule(rule: FilterRule, data: Record<string, unknown>, condition: 'Is' | 'Not'): boolean {
+	const fieldValue = getNestedValue(data, rule.field) as number | bigint | boolean | string;
+
+	// Convert to appropriate type
+	let ruleValue: number | bigint | boolean | string = rule.value;
+	switch (rule.dataType) {
+		case 'Number':
+			ruleValue = Number(rule.value);
+			break;
+		case 'BigInt':
+			ruleValue = BigInt(rule.value);
+			break;
+		case 'Boolean':
+			ruleValue = rule.value.toLowerCase() === 'true';
+			break;
+		case 'String':
+		case 'Principal':
+			ruleValue = rule.value.toString();
+			break;
+	}
+
+	let isRuleSatisfied: boolean;
+	switch (rule.operator) {
+		case 'Equal':
+			console.log('Equal', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue === ruleValue;
+			break;
+		case 'NotEqual':
+			console.log('NotEqual', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue !== ruleValue;
+			break;
+		case 'LessThan':
+			console.log('LessThan', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue < ruleValue;
+			break;
+		case 'GreaterThan':
+			console.log('GreaterThan', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue > ruleValue;
+			break;
+		case 'LessThanOrEqual':
+			console.log('LessThanOrEqual', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue <= ruleValue;
+			break;
+		case 'GreaterThanOrEqual':
+			console.log('GreaterThanOrEqual', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue >= ruleValue;
+			break;
+		case 'Contains':
+			console.log('Contains', { fieldValue, ruleValue });
+			isRuleSatisfied = fieldValue.toString().includes(ruleValue.toString());
+			break;
+		default:
+			isRuleSatisfied = false;
+	}
+
+	if (condition === 'Not') {
+		isRuleSatisfied = !isRuleSatisfied;
+	}
+
+	return isRuleSatisfied;
+}
+
+function getNestedValue(data: Record<string, unknown>, path: string): unknown {
+	return path.split('.').reduce((acc, part) => {
+		if (acc && typeof acc === 'object' && part in acc) {
+			return (acc as Record<string, unknown>)[part];
+		}
+		return undefined;
+	}, data as unknown);
+}
