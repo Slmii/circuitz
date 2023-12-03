@@ -225,6 +225,8 @@ const NodePins = ({
 	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
 	const hasLookupTransformPin = !!getPin<FilterPin>(node, 'LookupTransformPin');
 
+	const metadata = getNodeMetaData(node);
+
 	return (
 		<>
 			<IconButton
@@ -253,7 +255,7 @@ const NodePins = ({
 							})}
 						/>
 					)}
-					{('LookupCanister' in node.nodeType || 'LookupHttpRequest' in node.nodeType) && (
+					{(metadata.type === 'LookupCanister' || metadata.type === 'LookupHttpRequest') && (
 						// Only for Lookups
 						<>
 							{!hasLookupFilterPin && (
