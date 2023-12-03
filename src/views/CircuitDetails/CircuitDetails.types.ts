@@ -1,4 +1,4 @@
-import { NodeSourceType, Node, Trace } from 'lib/types';
+import { Node, Trace } from 'lib/types';
 
 export interface CircuitNodeProps {
 	node: Node;
@@ -6,10 +6,4 @@ export interface CircuitNodeProps {
 	trace?: Trace;
 	onNodeSelect: (node: Node) => void;
 	onToggleNodeStatus: (node: Node) => void;
-}
-
-export interface NodeDialogProps {
-	open: boolean;
-	type: NodeSourceType | 'Unknown';
-	node?: Node;
 }

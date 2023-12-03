@@ -7,7 +7,6 @@ import { AddNodeButton } from 'components/Button';
 import { LookupNodeDrawer, InputNodeDrawer, FilterPinDrawer } from 'components/NodeDrawers';
 import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
-import { NodeDialogProps } from './CircuitDetails.types';
 import { useRecoilState } from 'recoil';
 import { deleteNodeState } from 'lib/recoil';
 import { useDeleteNode, useGetCircuitTraces, useGetParam, useOnClickOutside, useToggleNodeStatus } from 'lib/hooks';
@@ -27,7 +26,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [isAddNode, setIsAddNode] = useState(false);
-	const [nodeDialogProps, setNodeDialogProps] = useState<NodeDialogProps>({ open: false, type: 'Unknown' });
 
 	const ref = useOnClickOutside(() => setIsAddNode(false));
 	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
@@ -38,7 +36,16 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const { mutate: toggleStatus } = useToggleNodeStatus();
 
 	const navigate = useNavigate();
-	const { nodeId, filterPinType } = useParams();
+	const { nodeId, filterPinType, nodeType } = useParams();
+
+	const node = useMemo(() => {
+		if (!nodeId) {
+			return;
+		}
+
+		return nodes.find(node => node.id === Number(nodeId));
+	}, [nodeId, nodes]);
+
 	const filterPin = useMemo(() => {
 		if (filterPinType !== 'FilterPin' || !nodeId) {
 			return;
@@ -71,7 +78,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 						}}
 					>
 						<ButtonBase
-							onClick={() => setNodeDialogProps({ type: 'Canister', open: true })}
+							onClick={() => navigate(`/circuits/${circuitId}/nodes/Canister`)}
 							sx={{
 								p: 2,
 								justifyContent: 'flex-start',
@@ -93,7 +100,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 								onToggleNodeStatus={node =>
 									toggleStatus({ circuitId: node.circuitId, nodeId: node.id, enabled: node.isEnabled })
 								}
-								onNodeSelect={node => setNodeDialogProps({ type: getNodeMetaData(node).type, node, open: true })}
+								onNodeSelect={node => navigate(`/circuits/${circuitId}/nodes/${node.id}/${getNodeMetaData(node).type}`)}
 							/>
 						))}
 						<Stack direction="column" spacing={1} mt={4} alignItems="flex-start">
@@ -107,7 +114,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 											label="Lookup Canister"
 											onClick={() => {
 												setIsAddNode(false);
-												setNodeDialogProps({ open: true, type: 'LookupCanister' });
+												navigate(`/circuits/${circuitId}/nodes/LookupCanister`);
 											}}
 										/>
 										<AddNodeButton
@@ -115,7 +122,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 											label="Lookup HTTP Request"
 											onClick={() => {
 												setIsAddNode(false);
-												setNodeDialogProps({ open: true, type: 'LookupHttpRequest' });
+												navigate(`/circuits/${circuitId}/nodes/LookupHttpRequest`);
 											}}
 										/>
 										<AddNodeButton icon="transformer" label="Transformer" onClick={() => {}} />
@@ -129,19 +136,16 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				)}
 			</Stack>
 			<InputNodeDrawer
-				nodeType={nodeDialogProps.type as NodeSourceType}
-				open={nodeDialogProps.open && (nodeDialogProps.type === 'Canister' || nodeDialogProps.type === 'HttpRequest')}
-				node={nodeDialogProps?.node}
-				onClose={() => setNodeDialogProps(prevState => ({ ...prevState, open: false }))}
+				nodeType={nodeType as NodeSourceType}
+				open={nodeType === 'Canister' || nodeType === 'HttpRequest'}
+				node={node}
+				onClose={() => navigate(`/circuits/${circuitId}`)}
 			/>
 			<LookupNodeDrawer
-				nodeType={nodeDialogProps.type as NodeSourceType}
-				open={
-					nodeDialogProps.open &&
-					(nodeDialogProps.type === 'LookupCanister' || nodeDialogProps.type === 'LookupHttpRequest')
-				}
-				node={nodeDialogProps?.node}
-				onClose={() => setNodeDialogProps(prevState => ({ ...prevState, open: false }))}
+				nodeType={nodeType as NodeSourceType}
+				open={nodeType === 'LookupCanister' || nodeType === 'LookupHttpRequest'}
+				node={node}
+				onClose={() => navigate(`/circuits/${circuitId}`)}
 			/>
 			<FilterPinDrawer open={!!filterPin} node={filterPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
 			<Dialog

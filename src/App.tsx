@@ -14,6 +14,8 @@ function App() {
 						<Route path="/circuits" element={<CircuitsPage />} />
 						<Route path="/circuits/:circuitId" element={<CircuitPage />} />
 						<Route path="/circuits/:circuitId/nodes/:nodeId/:filterPinType/:action" element={<CircuitPage />} />
+						<Route path="/circuits/:circuitId/nodes/:nodeId/:nodeType" element={<CircuitPage />} />
+						<Route path="/circuits/:circuitId/nodes/:nodeType" element={<CircuitPage />} />
 					</Route>
 				</Route>
 			</Routes>
