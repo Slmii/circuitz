@@ -264,7 +264,7 @@ const NodePins = ({
 									{...stopPropagation({
 										onClick: () => {
 											onClosePins();
-											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
+											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupFilterPin/add`);
 										}
 									})}
 								/>
@@ -277,7 +277,7 @@ const NodePins = ({
 									{...stopPropagation({
 										onClick: () => {
 											onClosePins();
-											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
+											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupTransformPin/add`);
 										}
 									})}
 								/>
@@ -292,7 +292,7 @@ const NodePins = ({
 							{...stopPropagation({
 								onClick: () => {
 									onClosePins();
-									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
+									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/MapperPin/add`);
 								}
 							})}
 						/>
