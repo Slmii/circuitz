@@ -9,8 +9,9 @@ import 'ace-builds/src-noconflict/mode-rust';
 import 'ace-builds/src-noconflict/theme-cloud9_night';
 import 'ace-builds/src-noconflict/theme-cloud9_day';
 import 'ace-builds/src-noconflict/ext-language_tools';
+import { Controller } from 'react-hook-form';
 
-export const Editor = ({
+export const StandaloneEditor = ({
 	value,
 	mode,
 	isReadOnly,
@@ -46,6 +47,34 @@ export const Editor = ({
 				enableLiveAutocompletion: true,
 				enableSnippets: true
 			}}
+		/>
+	);
+};
+
+export const Editor = (props: {
+	name: string;
+	required?: boolean;
+	mode: string;
+	isReadOnly?: boolean;
+	height?: number | string;
+	onChange?: (value: string) => void;
+}) => {
+	return (
+		<Controller
+			name={props.name}
+			rules={{
+				required: props.required
+			}}
+			render={({ field }) => (
+				<StandaloneEditor
+					{...props}
+					{...field}
+					onChange={value => {
+						field.onChange(value);
+						props.onChange?.(value);
+					}}
+				/>
+			)}
 		/>
 	);
 };

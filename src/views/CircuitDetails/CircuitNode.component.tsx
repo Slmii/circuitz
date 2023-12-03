@@ -7,11 +7,12 @@ import pluralize from 'pluralize';
 import { useMemo, useState } from 'react';
 import { CircuitNodeProps } from './CircuitDetails.types';
 import { useSetRecoilState } from 'recoil';
-import { deleteNodeState, pinDrawerState } from 'lib/recoil';
+import { deleteNodeState } from 'lib/recoil';
 import { Icon } from 'components/Icon';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { CircularProgress } from 'components/Progress';
 import { FilterPin } from 'declarations/nodes.declarations';
+import { useNavigate } from 'react-router-dom';
 
 const absolutePosition = {
 	position: 'absolute',
@@ -145,7 +146,7 @@ export const CircuitNode = ({ node, index, trace, onNodeSelect, onToggleNodeStat
 };
 
 const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean }) => {
-	const setPrinDrawer = useSetRecoilState(pinDrawerState);
+	const navigate = useNavigate();
 
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
 	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
@@ -169,7 +170,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 					tooltip="FilterPin"
 					color="primary"
 					{...stopPropagation({
-						onClick: () => setPrinDrawer({ open: true, type: 'FilterPin', node })
+						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/edit`)
 					})}
 				/>
 			)}
@@ -179,7 +180,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 					icon="filter"
 					tooltip="LookupFilterPin"
 					{...stopPropagation({
-						onClick: () => setPrinDrawer({ open: true, type: 'LookupFilterPin', node })
+						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupFilterPin/edit`)
 					})}
 				/>
 			)}
@@ -189,7 +190,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 					icon="transformer"
 					tooltip="LookupTransformPin"
 					{...stopPropagation({
-						onClick: () => setPrinDrawer({ open: true, type: 'LookupTransformPin', node })
+						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupTransformPin/edit`)
 					})}
 				/>
 			)}
@@ -199,7 +200,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 					icon="mapper"
 					tooltip="MapperPin"
 					{...stopPropagation({
-						onClick: () => setPrinDrawer({ open: true, type: 'MapperPin', node })
+						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/MapperPin/edit`)
 					})}
 				/>
 			)}
@@ -216,7 +217,7 @@ const NodePins = ({
 	isInputNode: boolean;
 	onClosePins: () => void;
 }) => {
-	const setPrinDrawer = useSetRecoilState(pinDrawerState);
+	const navigate = useNavigate();
 	const setDeleteNode = useSetRecoilState(deleteNodeState);
 
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
@@ -247,7 +248,7 @@ const NodePins = ({
 							{...stopPropagation({
 								onClick: () => {
 									onClosePins();
-									setPrinDrawer({ open: true, node, type: 'FilterPin' });
+									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
 								}
 							})}
 						/>
@@ -263,7 +264,7 @@ const NodePins = ({
 									{...stopPropagation({
 										onClick: () => {
 											onClosePins();
-											setPrinDrawer({ open: true, type: 'LookupFilterPin' });
+											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
 										}
 									})}
 								/>
@@ -276,7 +277,7 @@ const NodePins = ({
 									{...stopPropagation({
 										onClick: () => {
 											onClosePins();
-											setPrinDrawer({ open: true, type: 'LookupTransformPin' });
+											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
 										}
 									})}
 								/>
@@ -291,7 +292,7 @@ const NodePins = ({
 							{...stopPropagation({
 								onClick: () => {
 									onClosePins();
-									setPrinDrawer({ open: true, node, type: 'MapperPin' });
+									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/FilterPin/add`);
 								}
 							})}
 						/>

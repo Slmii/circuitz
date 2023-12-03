@@ -74,13 +74,11 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 			title={`Input Node${nodeSource ? ` - ${nodeSource.toUpperCase()}` : ''}`}
 		>
 			{nodeSource ? (
-				<Stack
-					alignItems="flex-start"
-					spacing={2}
-					className={isAddNodeLoading || isEditNodeLoading ? 'form-loading' : undefined}
-				>
+				<Stack alignItems="flex-start" spacing={2}>
 					{!node && <Back label="Select Node Source" onBack={() => setNodeSource(null)} />}
-					<InputNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+					{nodeSource === 'Canister' && (
+						<InputNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+					)}
 				</Stack>
 			) : (
 				<Stack spacing={2}>

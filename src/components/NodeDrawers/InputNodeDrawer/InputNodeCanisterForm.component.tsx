@@ -12,7 +12,7 @@ import { Node } from 'lib/types';
 import { NodeType, VerificationType } from 'declarations/nodes.declarations';
 import { toPrincipal, getInputCanisterFormValues } from 'lib/utils';
 import { inputCanisterSchema } from 'lib/schemas';
-import { Editor } from 'components/Editor';
+import { StandaloneEditor } from 'components/Editor';
 import { InputNodeFormValues } from '../NodeDrawers.types';
 
 export const InputNodeCanisterForm = ({
@@ -114,13 +114,17 @@ export const InputNodeCanisterForm = ({
 							Here's the sample data for the circuit. Enter your sample JSON data below. This data will serve as the
 							foundation and will undergo processing by the configured nodes.
 						</B2>
-						<Editor mode="javascript" onChange={value => setValue('sampleData', value)} value={watch('sampleData')} />
+						<StandaloneEditor
+							mode="javascript"
+							onChange={value => setValue('sampleData', value)}
+							value={watch('sampleData')}
+						/>
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>
 						<H5 fontWeight="bold">How do you transmit data to this Input Node?</H5>
 						<B2>Rust</B2>
-						<Editor
+						<StandaloneEditor
 							height={256}
 							mode="rust"
 							value={`
@@ -151,7 +155,7 @@ let response: Result<(Result<String, Error>,), _> = call::call(
 								don't mind others using your Circuit.
 							</Alert>
 						)}
-						<Editor
+						<StandaloneEditor
 							height={350}
 							mode="javascript"
 							value={`

@@ -7,7 +7,7 @@ import { Drawer } from 'components/Drawer';
 import { Alert, Divider, Stack } from '@mui/material';
 import { Button, CopyTextButton } from 'components/Button';
 import { B2, H5 } from 'components/Typography';
-import { Editor } from 'components/Editor';
+import { StandaloneEditor } from 'components/Editor';
 import { useFormContext } from 'react-hook-form';
 import { NodeSourceType } from 'lib/types';
 import { toPrincipal, getLookupCanisterValuesAsArg } from 'lib/utils';
@@ -142,7 +142,7 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 					<CopyTextButton textToCopy={nodeCanisterId.toString()}>{nodeCanisterId.toString()}</CopyTextButton> is
 					authorized.
 				</B2>
-				<Editor mode="javascript" value={response} isReadOnly height="100%" />
+				<StandaloneEditor mode="javascript" value={response} isReadOnly height="100%" />
 			</Stack>
 		</>
 	);

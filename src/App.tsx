@@ -13,6 +13,7 @@ function App() {
 					<Route element={<RequireAuthentication />}>
 						<Route path="/circuits" element={<CircuitsPage />} />
 						<Route path="/circuits/:circuitId" element={<CircuitPage />} />
+						<Route path="/circuits/:circuitId/nodes/:nodeId/:filterPinType/:action" element={<CircuitPage />} />
 					</Route>
 				</Route>
 			</Routes>

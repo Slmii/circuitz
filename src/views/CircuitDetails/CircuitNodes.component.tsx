@@ -9,10 +9,21 @@ import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
 import { NodeDialogProps } from './CircuitDetails.types';
 import { useRecoilState } from 'recoil';
-import { deleteNodeState, pinDrawerState } from 'lib/recoil';
+import { deleteNodeState } from 'lib/recoil';
 import { useDeleteNode, useGetCircuitTraces, useGetParam, useOnClickOutside, useToggleNodeStatus } from 'lib/hooks';
 import { Icon } from 'components/Icon';
 import { Dialog } from 'components/Dialog';
+import { useNavigate, useParams } from 'react-router-dom';
+
+// const navigate = useNavigate();
+// 	const circuitId = useGetParam('circuitId');
+
+// 	const { data: node, isLoading: isNodeLoading } = useGetCircuitNode(Number(nodeId));
+
+// 	const isLoaded = !!node && !isNodeLoading;
+// 	if (!isLoaded) {
+// 		return null;
+// 	}
 
 export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [isAddNode, setIsAddNode] = useState(false);
@@ -20,13 +31,21 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 
 	const ref = useOnClickOutside(() => setIsAddNode(false));
 	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
-	const [{ open: isPinDrawerOpen, node: pinDrawerNode, type: pinDrawerType }, setPrinDrawer] =
-		useRecoilState(pinDrawerState);
 
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
 	const { mutateAsync: deleteNode, isLoading: isDeleteNodeLoading } = useDeleteNode();
 	const { mutate: toggleStatus } = useToggleNodeStatus();
+
+	const navigate = useNavigate();
+	const { nodeId, filterPinType } = useParams();
+	const filterPin = useMemo(() => {
+		if (filterPinType !== 'FilterPin' || !nodeId) {
+			return;
+		}
+
+		return nodes.find(node => node.id === Number(nodeId));
+	}, [filterPinType, nodeId, nodes]);
 
 	const traces = useMemo(() => {
 		if (!circuitTraces) {
@@ -124,12 +143,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				node={nodeDialogProps?.node}
 				onClose={() => setNodeDialogProps(prevState => ({ ...prevState, open: false }))}
 			/>
-			<FilterPinDrawer
-				open={isPinDrawerOpen && pinDrawerType === 'FilterPin'}
-				// Node will always be defined here
-				node={pinDrawerNode!}
-				onClose={() => setPrinDrawer(prevState => ({ ...prevState, open: false }))}
-			/>
+			<FilterPinDrawer open={!!filterPin} node={filterPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
 			<Dialog
 				title="Delete node"
 				open={isDeleteNodeModalOpen}

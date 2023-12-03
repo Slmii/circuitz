@@ -7,6 +7,14 @@ import { Principal } from '@dfinity/principal';
 import { useSnackbar } from './useSnackbar';
 import { useGetParam } from './useGetParam';
 
+export const useGetCircuitNode = (nodeId: number) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.CIRCUIT_NODE, nodeId],
+		enabled: !!nodeId,
+		queryFn: () => api.Nodes.getNode(nodeId)
+	});
+};
+
 export const useGetCircuitNodes = (circuitId: number) => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.CIRCUIT_NODES, circuitId],
@@ -113,7 +121,7 @@ export const useEditPin = () => {
 
 	return useMutation(api.Nodes.editPin, {
 		onSuccess: node => {
-			// Add the new pin to the nodes cache
+			// Edit pin in the nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
 				if (!old) {
 					return [];

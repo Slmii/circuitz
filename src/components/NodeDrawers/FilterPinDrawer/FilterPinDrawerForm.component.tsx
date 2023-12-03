@@ -1,24 +1,25 @@
 import { Alert, Divider, Paper, Stack } from '@mui/material';
-import { Editor } from 'components/Editor';
+import { StandaloneEditor, Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select, Option } from 'components/Form/Select';
 import { B1, H5 } from 'components/Typography';
 import { DataType, Node, OperandType, OperatorType } from 'lib/types';
-import { RefObject, useEffect, useMemo, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { UseFormSetValue, useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { RadioButton } from 'components/Form/RadioButton';
 import { Button, TextButton } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
-import { useGetSampleData } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
 import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues, isFilterTrue, getPin } from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
 import { OVERFLOW } from 'lib/constants';
+import { api } from 'api/index';
 
 const operators: Option<OperatorType>[] = [
 	{
@@ -94,56 +95,26 @@ export const FilterPinDrawerForm = ({
 	node: Node;
 	onProcessFilter: (data: Pin) => void;
 }) => {
-	const [isRefetch, setIsRefetch] = useState(false);
+	const action = useGetParam('action');
+	const circuitId = useGetParam('circuitId');
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
-	// Store the sample data as a string in a seperate state for the editor in case the user wants to edit it
-	const [inputSampleData, setInputSampleData] = useState('');
+	const [isFetchingSampleData, setIsFetchingSampleData] = useState(false);
 	const [outputSampleData, setOutputSampleData] = useState('');
 
-	const {
-		data: sampleData,
-		isLoading: isSampleDataLoading,
-		isFetching: isSampleDataRefetching,
-		refetch: refetchSampleData
-	} = useGetSampleData(node.id, {
-		options: {
-			isFilterPreview: true
-		},
-		queryOptions: {
-			// Set to false to prevent the query from running on component mount
-			// This is to save unnecessary cycle waste
-			enabled: false
-		}
-	});
-
-	useEffect(() => {
-		if (!sampleData) {
-			return;
-		}
-
-		// Set the sample data as the input value for the editor
-		setInputSampleData(JSON.stringify(sampleData, null, 4));
-	}, [sampleData, isRefetch]);
-
-	const fields = useMemo((): Option[] => {
-		if (!inputSampleData) {
+	const getFields = (sampleData: string): Option[] => {
+		// If there's no sample data, return an empty array
+		if (!sampleData.length) {
 			return [];
 		}
 
 		try {
 			// Get the fields from the input sample data
-			return getSampleDataFields(JSON.parse(inputSampleData));
+			return getSampleDataFields(JSON.parse(sampleData));
 		} catch (error) {
-			// If there's an error, return an error option
-			return [
-				{
-					id: 'error',
-					label: (error as Error).message,
-					disabled: true
-				}
-			];
+			return [];
 		}
-	}, [inputSampleData]);
+	};
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		onProcessFilter({
@@ -152,19 +123,16 @@ export const FilterPinDrawerForm = ({
 				FilterPin: {
 					condition: data.condition === 'Is' ? { Is: null } : { Not: null },
 					condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
-					rules: getFilterPinValuesAsArg(data.rules)
+					rules: getFilterPinValuesAsArg(data.rules),
+					sample_data: [data.inputSampleData]
 				}
 			}
 		});
 	};
 
 	const handleOnPreview = (formValues: FilterPinFormValues) => {
-		if (!inputSampleData) {
-			return;
-		}
-
 		try {
-			const isTrue = isFilterTrue(formValues, JSON.parse(inputSampleData));
+			const isTrue = isFilterTrue(formValues);
 
 			let outputString = 'The filter condition is ';
 			if (isTrue) {
@@ -179,15 +147,21 @@ export const FilterPinDrawerForm = ({
 		}
 	};
 
-	// Refetch the sample data
-	// This is to update the sample data when the user changes the circuit and the sample data is no longer valid
-	const handleOnRefetch = async () => {
-		setIsRefetch(true);
-		await refetchSampleData();
-		setIsRefetch(false);
-	};
+	// Fetch sample data
+	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<FilterPinFormValues>) => {
+		if (!circuitNodes) {
+			return;
+		}
 
-	const isSampleDataLoaded = !!sampleData && !isSampleDataLoading && !isSampleDataRefetching;
+		setIsFetchingSampleData(true);
+
+		const sampleData = await api.Nodes.getSampleData(circuitNodes, node.id, {
+			isFilterPreview: true
+		});
+		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
+
+		setIsFetchingSampleData(false);
+	};
 
 	return (
 		<Form<FilterPinFormValues>
@@ -198,7 +172,7 @@ export const FilterPinDrawerForm = ({
 			}}
 			schema={filterPinSchema}
 			myRef={formRef}
-			render={({ getValues }) => (
+			render={({ getValues, setValue }) => (
 				<Stack direction="row" spacing={4} height="100%">
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
@@ -211,15 +185,16 @@ export const FilterPinDrawerForm = ({
 								p: 2
 							}}
 						>
-							{sampleData ? (
-								<Rules fields={fields} />
-							) : sampleData && isSampleDataLoading ? (
-								<SkeletonRules />
-							) : (
+							{action === 'edit' && !getValues().inputSampleData ? (
 								<B1>
-									Please use the <TextButton onClick={handleOnRefetch}>Collect Sample Data</TextButton> button to
-									collect sample data
+									Please use the{' '}
+									<TextButton onClick={() => handleOnFetchSampleData(setValue)}>Collect Sample Data</TextButton> button
+									to collect sample data
 								</B1>
+							) : (
+								<>
+									{isFetchingSampleData ? <SkeletonRules /> : <Rules fields={getFields(getValues().inputSampleData)} />}
+								</>
 							)}
 						</Paper>
 					</Stack>
@@ -231,9 +206,9 @@ export const FilterPinDrawerForm = ({
 								<Button
 									fullWidth
 									variant="outlined"
-									loading={isSampleDataRefetching}
+									loading={isFetchingSampleData}
 									size="large"
-									onClick={handleOnRefetch}
+									onClick={() => handleOnFetchSampleData(setValue)}
 									tooltip="Collecting Sample Data might consume cycles if there's a Lookup Node in the circuit."
 								>
 									Collect Sample Data
@@ -243,25 +218,17 @@ export const FilterPinDrawerForm = ({
 									variant="contained"
 									size="large"
 									startIcon="filter-linear"
-									disabled={!isSampleDataLoaded}
+									disabled={!isFetchingSampleData}
 									onClick={() => handleOnPreview(getValues())}
 								>
 									Preview
 								</Button>
 							</Stack>
-							<Editor
-								mode="javascript"
-								value={inputSampleData}
-								height={450}
-								onChange={value => {
-									// Set the input sample data as the value of the editor
-									setInputSampleData(value);
-								}}
-							/>
+							<Editor name="inputSampleData" mode="javascript" height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
-							<Editor mode="javascript" isReadOnly value={outputSampleData} height={32} />
+							<StandaloneEditor mode="javascript" isReadOnly value={outputSampleData} height={32} />
 						</Stack>
 					</Stack>
 				</Stack>

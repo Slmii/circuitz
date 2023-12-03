@@ -1,5 +1,5 @@
 import { Alert, Divider, Stack } from '@mui/material';
-import { PropsWithChildren, RefObject, useMemo } from 'react';
+import { PropsWithChildren, RefObject } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
@@ -10,10 +10,9 @@ import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.type
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
-import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg, getSampleDataFields } from 'lib/utils';
+import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg } from 'lib/utils';
 import { Button } from 'components/Button';
-import { Select, Option } from 'components/Form/Select';
-import { useGetSampleData } from 'lib/hooks';
+import { Select } from 'components/Form/Select';
 import { OVERFLOW } from 'lib/constants';
 
 export const LookupNodeCanisterForm = ({
@@ -26,15 +25,6 @@ export const LookupNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => void;
 }>) => {
-	const { data: sampleData } = useGetSampleData(node?.id ?? 0);
-	const fields = useMemo((): Option[] => {
-		if (!sampleData) {
-			return [];
-		}
-
-		return getSampleDataFields(sampleData);
-	}, [sampleData]);
-
 	const handleOnSubmit = async (data: LookupCanisterFormValues) => {
 		onProcessNode({
 			LookupCanister: {
@@ -97,7 +87,7 @@ export const LookupNodeCanisterForm = ({
 								Argument order matters. The first argument corresponds to the method's first parameter, the second to
 								its second, and so forth.
 							</B2>
-							<LookupCanisterArgs fields={fields} />
+							<LookupCanisterArgs />
 						</Stack>
 					</Stack>
 					{children}
@@ -107,7 +97,7 @@ export const LookupNodeCanisterForm = ({
 	);
 };
 
-const LookupCanisterArgs = ({ fields }: { fields: Option[] }) => {
+const LookupCanisterArgs = () => {
 	const args = useWatch({
 		name: 'args'
 	}) as LookupCanisterArg[];
@@ -150,7 +140,8 @@ const LookupCanisterArgs = ({ fields }: { fields: Option[] }) => {
 							},
 							{
 								id: 'Field',
-								label: 'Field'
+								label: 'Field (soon)',
+								disabled: true
 							},
 							{
 								id: 'Oject',
@@ -166,9 +157,7 @@ const LookupCanisterArgs = ({ fields }: { fields: Option[] }) => {
 						label="Data type"
 						placeholder="String"
 					/>
-					{args[index]?.dataType === 'Field' ? (
-						<Select options={fields} fullWidth name={`args.${index}.value`} label="Value" />
-					) : (
+					{args[index]?.dataType === 'Field' ? null : (
 						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
 					)}
 					<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />

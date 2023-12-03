@@ -399,6 +399,7 @@ export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValu
 		return {
 			condition: 'Is',
 			conditionGroup: null,
+			inputSampleData: '',
 			rules: [
 				{
 					field: '',
@@ -414,6 +415,7 @@ export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValu
 	return {
 		condition: 'Is' in filterPin.condition ? 'Is' : 'Not',
 		conditionGroup: getConditionGroup(filterPin),
+		inputSampleData: filterPin.sample_data[0] ?? '',
 		rules: filterPin.rules.map(rule => ({
 			dataType: getRuleDataType(rule),
 			operandType: getRuleOparandType(rule),
@@ -500,10 +502,12 @@ export function getPin<T>(node: Node, pinType: PinSourceType): T | undefined {
 	return pin.pin_type[pinType] as T;
 }
 
-export const isFilterTrue = (rulesConfig: FilterPinFormValues, data: Record<string, unknown>): boolean => {
+export const isFilterTrue = (rulesConfig: FilterPinFormValues): boolean => {
 	if (rulesConfig.rules.length === 0) {
 		return false;
 	}
+
+	const data = JSON.parse(rulesConfig.inputSampleData);
 
 	if (rulesConfig.rules.length === 1 || rulesConfig.conditionGroup === null) {
 		return evaluateRule(rulesConfig.rules[0], data, rulesConfig.condition);

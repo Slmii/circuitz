@@ -8,6 +8,17 @@ import { createActor } from './actor.api';
 // TODO: replace hardcoded canister id with a dynamic one
 
 /**
+ * Get Node by id
+ */
+export async function getNode(nodeId: number): Promise<Node> {
+	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const wrapped = await actor.get_circuit_node(nodeId);
+
+	const node = await unwrapResult(wrapped);
+	return mapToNode(node);
+}
+
+/**
  * Get the Nodes for a circuit
  */
 export async function getNodes(circuitId: number): Promise<Node[]> {
@@ -117,7 +128,7 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 			const filterPinFormValues = getFilterPinFormValues(filterPin);
 
 			// If the filter is not true, skip the node
-			const isTrue = isFilterTrue(filterPinFormValues, sampleData);
+			const isTrue = isFilterTrue(filterPinFormValues);
 			if (!isTrue) {
 				continue;
 			}

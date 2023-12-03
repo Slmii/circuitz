@@ -19,12 +19,3 @@ export const deleteNodeState = atom<DeleteNodeState>({
 		nodeId: undefined
 	}
 });
-
-export const pinDrawerState = atom<PinDrawerState>({
-	key: 'pinDrawerState',
-	default: {
-		open: false,
-		type: 'FilterPin',
-		node: undefined
-	}
-});

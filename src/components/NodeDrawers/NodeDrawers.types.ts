@@ -45,6 +45,7 @@ export interface FilterPinFormValues {
 	rules: FilterRule[];
 	condition: ConditionType;
 	conditionGroup: ConditionGroupType | null;
+	inputSampleData: string;
 }
 
 export interface FilterRule {

@@ -30,6 +30,7 @@ export interface CustomPinLogic {
 export type DataType = { BigInt: null } | { String: null } | { Boolean: null } | { Principal: null } | { Number: null };
 export interface FilterPin {
 	condition_group: [] | [ConditionGroup];
+	sample_data: [] | [string];
 	rules: Array<Rule>;
 	condition: Condition;
 }
@@ -154,6 +155,7 @@ export interface _SERVICE {
 	edit_order: ActorMethod<[number, number], Result>;
 	edit_pin: ActorMethod<[number, Pin], Result>;
 	enable_node: ActorMethod<[number], Result>;
+	get_circuit_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
@@ -269,6 +271,7 @@ export const idlFactory = ({ IDL }: any) => {
 	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
 	const FilterPin = IDL.Record({
 		condition_group: IDL.Opt(ConditionGroup),
+		sample_data: IDL.Opt(IDL.Text),
 		rules: IDL.Vec(Rule),
 		condition: Condition
 	});
@@ -334,6 +337,7 @@ export const idlFactory = ({ IDL }: any) => {
 		edit_order: IDL.Func([IDL.Nat32, IDL.Nat32], [Result], []),
 		edit_pin: IDL.Func([IDL.Nat32, Pin], [Result], []),
 		enable_node: IDL.Func([IDL.Nat32], [Result], []),
+		get_circuit_node: IDL.Func([IDL.Nat32], [Result], ['query']),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
 		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),
 		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
