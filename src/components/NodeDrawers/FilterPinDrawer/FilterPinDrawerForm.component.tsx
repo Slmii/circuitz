@@ -218,7 +218,7 @@ export const FilterPinDrawerForm = ({
 									variant="contained"
 									size="large"
 									startIcon="filter-linear"
-									disabled={!isFetchingSampleData}
+									disabled={isFetchingSampleData}
 									onClick={() => handleOnPreview(getValues())}
 								>
 									Preview

@@ -14,7 +14,7 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			throw new Error('Node is undefined');
 		}
 
-		const filterPin = node?.pins.find(pin => 'FilterPin' in pin.pin_type);
+		const filterPin = node.pins.find(pin => 'FilterPin' in pin.pin_type);
 
 		if (!filterPin) {
 			await addPin({
