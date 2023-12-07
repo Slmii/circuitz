@@ -5,7 +5,7 @@ import { getFilterPinFormValues, getPin, httpRequest, isFilterTrue, mapToNode, u
 import { Node, SampleDataOptions } from 'lib/types';
 import { createActor } from './actor.api';
 
-// TODO: replace hardcoded canister id with a dynamic one
+// TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
 
 /**
  * Get Node by id
