@@ -88,12 +88,10 @@ export async function editOrder({
 	return unwrapResult(unwrapped);
 }
 
-export async function getSampleData(nodes: Node[], nodeId: number) {
+export async function getSampleData(nodes: Node[]) {
 	const sampleData: Record<string, unknown> = {};
-	// Only executes nodes that are before the given node
-	const nodesToExecute = nodes.filter(node => node.id < nodeId);
 
-	for (const [index, node] of nodesToExecute.entries()) {
+	for (const [index, node] of nodes.entries()) {
 		// Skip disabled nodes
 		if (!node.isEnabled) {
 			continue;

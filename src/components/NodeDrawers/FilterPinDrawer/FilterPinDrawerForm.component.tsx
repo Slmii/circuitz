@@ -93,7 +93,8 @@ export const FilterPinDrawerForm = ({
 
 		setIsFetchingSampleData(true);
 
-		const sampleData = await api.Nodes.getSampleData(circuitNodes, node.id);
+		// Get the sample data from the nodes that are before and including the current node
+		const sampleData = await api.Nodes.getSampleData(circuitNodes.filter(({ id }) => id <= node.id));
 
 		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
 
