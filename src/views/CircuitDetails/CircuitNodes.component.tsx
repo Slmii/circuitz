@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Node, NodeSourceType } from 'lib/types';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
-import { LookupNodeDrawer, InputNodeDrawer, FilterPinDrawer } from 'components/NodeDrawers';
+import { LookupNodeDrawer, InputNodeDrawer, FilterPinDrawer, LookupFilterPinDrawer } from 'components/NodeDrawers';
 import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
 import { useRecoilState } from 'recoil';
@@ -48,6 +48,14 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 
 	const filterPin = useMemo(() => {
 		if (filterPinType !== 'FilterPin' || !nodeId) {
+			return;
+		}
+
+		return nodes.find(node => node.id === Number(nodeId));
+	}, [filterPinType, nodeId, nodes]);
+
+	const lookupFilterPin = useMemo(() => {
+		if (filterPinType !== 'LookupFilterPin' || !nodeId) {
 			return;
 		}
 
@@ -148,6 +156,11 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				onClose={() => navigate(`/circuits/${circuitId}`)}
 			/>
 			<FilterPinDrawer open={!!filterPin} node={filterPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
+			<LookupFilterPinDrawer
+				open={!!lookupFilterPin}
+				node={lookupFilterPin}
+				onClose={() => navigate(`/circuits/${circuitId}`)}
+			/>
 			<Dialog
 				title="Delete node"
 				open={isDeleteNodeModalOpen}

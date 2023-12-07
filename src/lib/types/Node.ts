@@ -55,4 +55,5 @@ export type DataType = DataTypeKey;
 
 export interface SampleDataOptions {
 	isFilterPreview?: boolean;
+	isLookupFilterPreview?: boolean;
 }

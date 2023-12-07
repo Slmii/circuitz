@@ -1,10 +1,10 @@
 import { useAddPin, useEditPin, useFormSubmit } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
-import { FilterPinDrawerForm } from './FilterPinDrawerForm.component';
 import { Node } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
+import { FilterPinDrawerForm } from '../FilterPinDrawer/FilterPinDrawerForm.component';
 
-export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
+export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
 	const { mutateAsync: addPin, isLoading: isAddPinLoading } = useAddPin();
 	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
@@ -14,7 +14,7 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			throw new Error('Node is undefined');
 		}
 
-		const filterPin = node.pins.find(pin => 'FilterPin' in pin.pin_type);
+		const filterPin = node.pins.find(pin => 'LookupFilterPin' in pin.pin_type);
 
 		if (!filterPin) {
 			await addPin({
@@ -43,7 +43,12 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			fullWidth
 		>
 			{node && (
-				<FilterPinDrawerForm filterType="FilterPin" formRef={formRef} node={node} onProcessFilter={handleOnSubmit} />
+				<FilterPinDrawerForm
+					filterType="LookupFilterPin"
+					formRef={formRef}
+					node={node}
+					onProcessFilter={handleOnSubmit}
+				/>
 			)}
 		</Drawer>
 	);

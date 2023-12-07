@@ -89,10 +89,12 @@ const dataTypes: Option<DataType>[] = [
 export const FilterPinDrawerForm = ({
 	formRef,
 	node,
+	filterType,
 	onProcessFilter
 }: {
 	formRef: RefObject<HTMLFormElement>;
 	node: Node;
+	filterType: 'FilterPin' | 'LookupFilterPin';
 	onProcessFilter: (data: Pin) => void;
 }) => {
 	const action = useGetParam('action');
@@ -155,9 +157,8 @@ export const FilterPinDrawerForm = ({
 
 		setIsFetchingSampleData(true);
 
-		const sampleData = await api.Nodes.getSampleData(circuitNodes, node.id, {
-			isFilterPreview: true
-		});
+		const sampleData = await api.Nodes.getSampleData(circuitNodes, node.id);
+
 		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
 
 		setIsFetchingSampleData(false);
@@ -167,7 +168,7 @@ export const FilterPinDrawerForm = ({
 		<Form<FilterPinFormValues>
 			action={handleOnSubmit}
 			defaultValues={() => {
-				const filterPin = getPin<FilterPin>(node, 'FilterPin');
+				const filterPin = getPin<FilterPin>(node, filterType);
 				return getFilterPinFormValues(filterPin);
 			}}
 			schema={filterPinSchema}
@@ -176,8 +177,9 @@ export const FilterPinDrawerForm = ({
 				<Stack direction="row" spacing={4} height="100%">
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
-							A Filter Pin node filters the node according to the specified rules below. If these rules are met, the
-							node's execution can be prevented.
+							{filterType === 'FilterPin'
+								? "A Filter Pin node filters the node according to the specified rules below. If these rules are met, the node's execution can be prevented."
+								: 'A Lookup Filter Pin node filters the node according to the specified rules below. If these rules are met, the Lookup values will not be merged into the next Node.'}
 						</Alert>
 						<H5 fontWeight="bold">Rules</H5>
 						<Paper
@@ -209,7 +211,7 @@ export const FilterPinDrawerForm = ({
 									loading={isFetchingSampleData}
 									size="large"
 									onClick={() => handleOnFetchSampleData(setValue)}
-									tooltip="Collecting Sample Data might consume cycles if there's a Lookup Node in the circuit."
+									tooltip="This action will activate every node within this circuit. Collecting Sample Data might consume cycles if there's a Lookup Node in the circuit."
 								>
 									Collect Sample Data
 								</Button>
@@ -218,7 +220,7 @@ export const FilterPinDrawerForm = ({
 									variant="contained"
 									size="large"
 									startIcon="filter-linear"
-									disabled={isFetchingSampleData}
+									disabled={isFetchingSampleData || !getValues().inputSampleData}
 									onClick={() => handleOnPreview(getValues())}
 								>
 									Preview

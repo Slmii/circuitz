@@ -2,7 +2,7 @@ import type { FilterPin, LookupCanister, NodeType, Pin, _SERVICE } from 'declara
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import { getFilterPinFormValues, getPin, httpRequest, isFilterTrue, mapToNode, unwrapResult } from 'lib/utils';
-import { Node, SampleDataOptions } from 'lib/types';
+import { Node } from 'lib/types';
 import { createActor } from './actor.api';
 
 // TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
@@ -88,7 +88,7 @@ export async function editOrder({
 	return unwrapResult(unwrapped);
 }
 
-export async function getSampleData(nodes: Node[], nodeId: number, options?: SampleDataOptions) {
+export async function getSampleData(nodes: Node[], nodeId: number) {
 	const sampleData: Record<string, unknown> = {};
 	// Only executes nodes that are before the given node
 	const nodesToExecute = nodes.filter(node => node.id < nodeId);
@@ -112,15 +112,6 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 
 		// ==========
 
-		// Do not execute the node itself if
-		// - The preview is for the filter, and
-		// - The current node is not defined (meaning the node is not saved yet), or
-		// - The node is the current node
-		if (options?.isFilterPreview && (!nodeId || nodeId === node.id)) {
-			// Break out
-			break;
-		}
-
 		// TODO: add all pins logic
 
 		const filterPin = getPin<FilterPin>(node, 'FilterPin');
@@ -137,6 +128,17 @@ export async function getSampleData(nodes: Node[], nodeId: number, options?: Sam
 		if ('LookupCanister' in node.nodeType) {
 			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
 			sampleData[`Node:${index + 1}`] = lookupCanisterResponse;
+		}
+
+		const lookupfilterPin = getPin<FilterPin>(node, 'LookupFilterPin');
+		if (lookupfilterPin) {
+			const filterPinFormValues = getFilterPinFormValues(lookupfilterPin);
+
+			// If the lookup filter is not true, skip the node
+			const isTrue = isFilterTrue(filterPinFormValues);
+			if (!isTrue) {
+				continue;
+			}
 		}
 
 		if ('LookupHttpRequest' in node.nodeType) {
