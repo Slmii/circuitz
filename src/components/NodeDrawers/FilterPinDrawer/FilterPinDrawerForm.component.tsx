@@ -4,7 +4,7 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select, Option } from 'components/Form/Select';
 import { B1, H5 } from 'components/Typography';
-import { DataType, Node, OperandType, OperatorType } from 'lib/types';
+import { Node } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
 import { UseFormSetValue, useFieldArray, useFormContext } from 'react-hook-form';
@@ -20,71 +20,7 @@ import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
 import { OVERFLOW } from 'lib/constants';
 import { api } from 'api/index';
-
-const operators: Option<OperatorType>[] = [
-	{
-		id: 'Equal',
-		label: 'Equal'
-	},
-	{
-		id: 'LessThanOrEqual',
-		label: 'Less Than Or Equal'
-	},
-	{
-		id: 'GreaterThan',
-		label: 'Greater Than'
-	},
-	{
-		id: 'LessThan',
-		label: 'Less Than'
-	},
-	{
-		id: 'GreaterThanOrEqual',
-		label: 'Greater Than Or Equal'
-	},
-	{
-		id: 'NotEqual',
-		label: 'Not Equal'
-	},
-	{
-		id: 'Contains',
-		label: 'Contains'
-	}
-];
-
-const operandTypes: Option<OperandType>[] = [
-	{
-		id: 'Value',
-		label: 'Value'
-	},
-	{
-		id: 'Field',
-		label: 'Field'
-	}
-];
-
-const dataTypes: Option<DataType>[] = [
-	{
-		id: 'String',
-		label: 'String'
-	},
-	{
-		id: 'Number',
-		label: 'Number'
-	},
-	{
-		id: 'Boolean',
-		label: 'Boolean'
-	},
-	{
-		id: 'Principal',
-		label: 'Principal'
-	},
-	{
-		id: 'BigInt',
-		label: 'BigInt'
-	}
-];
+import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 
 export const FilterPinDrawerForm = ({
 	formRef,
@@ -119,16 +55,16 @@ export const FilterPinDrawerForm = ({
 	};
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
+		const values: FilterPin = {
+			condition: data.condition === 'Is' ? { Is: null } : { Not: null },
+			condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
+			rules: getFilterPinValuesAsArg(data.rules),
+			sample_data: [data.inputSampleData]
+		};
+
 		onProcessFilter({
 			order: 0,
-			pin_type: {
-				FilterPin: {
-					condition: data.condition === 'Is' ? { Is: null } : { Not: null },
-					condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
-					rules: getFilterPinValuesAsArg(data.rules),
-					sample_data: [data.inputSampleData]
-				}
-			}
+			pin_type: filterType === 'FilterPin' ? { FilterPin: values } : { LookupFilterPin: values }
 		});
 	};
 
@@ -303,7 +239,7 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 					{formFields.map((field, index) => (
 						<Stack key={field.id} direction="row" spacing={1} alignItems="center">
 							<Select fullWidth name={`rules.${index}.field`} label="Field" options={fields} />
-							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={operators} />
+							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
 							<Stack
 								direction="row"
 								spacing={1}
@@ -345,9 +281,9 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 						fullWidth
 						name={`rules.${fieldSettingsIndex}.operandType`}
 						label="Operand type"
-						options={operandTypes}
+						options={OPERAND_TYPES}
 					/>
-					<Select fullWidth name={`rules.${fieldSettingsIndex}.dataType`} label="Data type" options={dataTypes} />
+					<Select fullWidth name={`rules.${fieldSettingsIndex}.dataType`} label="Data type" options={DATA_TYPES} />
 				</Stack>
 			</Dialog>
 		</>
