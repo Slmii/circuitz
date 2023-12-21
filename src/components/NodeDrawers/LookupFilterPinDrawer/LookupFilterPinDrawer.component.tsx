@@ -39,7 +39,7 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinLoading || isEditPinLoading}
-			title="Filter Pin"
+			title="Lookup Filter Pin"
 			fullWidth
 		>
 			{node && (
