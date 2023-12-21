@@ -1,20 +1,26 @@
-import { useAddPin, useEditPin, useFormSubmit } from 'lib/hooks';
+import { useAddPin, useDeletePin, useEditPin, useFormSubmit } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
 import { Node } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
 import { FilterPinDrawerForm } from '../FilterPinDrawer/FilterPinDrawerForm.component';
+import { useState } from 'react';
+import { Dialog } from 'components/Dialog';
+import { B1 } from 'components/Typography';
 
 export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
 	const { mutateAsync: addPin, isLoading: isAddPinLoading } = useAddPin();
 	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
+	const { mutateAsync: deletePin, isLoading: isDeletePinLoading } = useDeletePin();
+
+	const [isDeletePinModalOpen, setIsDeletePinModalOpen] = useState(false);
+
+	const filterPin = node?.pins.find(pin => 'FilterPin' in pin.pin_type);
 
 	const handleOnSubmit = async (pin: Pin) => {
 		if (!node) {
-			throw new Error('Node is undefined');
+			return;
 		}
-
-		const filterPin = node.pins.find(pin => 'LookupFilterPin' in pin.pin_type);
 
 		if (!filterPin) {
 			await addPin({
@@ -32,24 +38,49 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 	};
 
 	return (
-		<Drawer
-			onClose={() => {
-				onClose();
-			}}
-			onSubmit={submitter}
-			isOpen={open}
-			isLoading={isAddPinLoading || isEditPinLoading}
-			title="Lookup Filter Pin"
-			fullWidth
-		>
-			{node && (
-				<FilterPinDrawerForm
-					filterType="LookupFilterPin"
-					formRef={formRef}
-					node={node}
-					onProcessFilter={handleOnSubmit}
-				/>
-			)}
-		</Drawer>
+		<>
+			<Drawer
+				onClose={() => {
+					onClose();
+				}}
+				onSubmit={submitter}
+				isOpen={open}
+				isLoading={isAddPinLoading || isEditPinLoading}
+				title="Lookup Filter Pin"
+				fullWidth
+				onDeletePin={filterPin ? () => setIsDeletePinModalOpen(true) : undefined}
+			>
+				{node && (
+					<FilterPinDrawerForm
+						filterType="LookupFilterPin"
+						formRef={formRef}
+						node={node}
+						onProcessFilter={handleOnSubmit}
+					/>
+				)}
+			</Drawer>
+			<Dialog
+				title="Delete pin"
+				open={isDeletePinModalOpen}
+				onConfirm={async () => {
+					if (!node || !filterPin) {
+						return;
+					}
+
+					await deletePin({ nodeId: node.id, data: filterPin });
+
+					setIsDeletePinModalOpen(false);
+					onClose();
+				}}
+				onConfirmText="Delete"
+				onConfirmColor="error"
+				onConfirmLoading={isDeletePinLoading}
+				onClose={() => !isDeletePinLoading && setIsDeletePinModalOpen(false)}
+				onCancelText="Cancel"
+				onCancelDisabled={isDeletePinLoading}
+			>
+				<B1>Are you sure you want to delete this pin? This action cannot be undone.</B1>
+			</Dialog>
+		</>
 	);
 };

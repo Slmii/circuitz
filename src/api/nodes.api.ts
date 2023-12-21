@@ -190,12 +190,23 @@ export async function addPin({ nodeId, data }: { nodeId: number; data: Pin }): P
 }
 
 /**
- * Edit a pin
+ * Edit a pin on a node
  */
 export async function editPin({ nodeId, data }: { nodeId: number; data: Pin }): Promise<Node> {
 	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
 
 	const wrapped = await actor.edit_pin(nodeId, data);
+	const unwrapped = await unwrapResult(wrapped);
+	return mapToNode(unwrapped);
+}
+
+/**
+ * Delete a pin from a node
+ */
+export async function deletePin({ nodeId, data }: { nodeId: number; data: Pin }): Promise<Node> {
+	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+
+	const wrapped = await actor.delete_pin(nodeId, data);
 	const unwrapped = await unwrapResult(wrapped);
 	return mapToNode(unwrapped);
 }

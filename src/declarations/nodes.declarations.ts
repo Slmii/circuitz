@@ -150,6 +150,7 @@ export interface _SERVICE {
 	add_node: ActorMethod<[number, NodeType], Result>;
 	add_pin: ActorMethod<[number, Pin], Result>;
 	delete_node: ActorMethod<[number], Result>;
+	delete_pin: ActorMethod<[number, Pin], Result>;
 	disable_node: ActorMethod<[number], Result>;
 	edit_node: ActorMethod<[number, NodeType], Result>;
 	edit_order: ActorMethod<[number, number], Result>;
@@ -332,6 +333,7 @@ export const idlFactory = ({ IDL }: any) => {
 		add_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		add_pin: IDL.Func([IDL.Nat32, Pin], [Result], []),
 		delete_node: IDL.Func([IDL.Nat32], [Result], []),
+		delete_pin: IDL.Func([IDL.Nat32, Pin], [Result], []),
 		disable_node: IDL.Func([IDL.Nat32], [Result], []),
 		edit_node: IDL.Func([IDL.Nat32, NodeType], [Result], []),
 		edit_order: IDL.Func([IDL.Nat32, IDL.Nat32], [Result], []),

@@ -140,6 +140,32 @@ export const useEditPin = () => {
 	});
 };
 
+export const useDeletePin = () => {
+	const { errorSnackbar } = useSnackbar();
+	const queryClient = useQueryClient();
+
+	return useMutation(api.Nodes.deletePin, {
+		onSuccess: node => {
+			// Add the new pin to the nodes cache
+			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
+				if (!old) {
+					return [];
+				}
+
+				// Find the index of the node that was deleted
+				const index = old.findIndex(n => n.id === node.id);
+				// Replace the old node with the new one
+				old[index] = node;
+
+				return old;
+			});
+		},
+		onError: () => {
+			errorSnackbar(MUTATE_ERROR);
+		}
+	});
+};
+
 export const usePreview = () => {
 	return useMutation(api.Nodes.previewLookupCanister);
 };
