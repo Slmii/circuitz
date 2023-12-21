@@ -568,31 +568,31 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 	let isRuleSatisfied: boolean;
 	switch (rule.operator) {
 		case 'Equal':
-			console.log('Equal', { fieldValue, ruleValue });
+			// console.log('Equal', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue === ruleValue;
 			break;
 		case 'NotEqual':
-			console.log('NotEqual', { fieldValue, ruleValue });
+			// console.log('NotEqual', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue !== ruleValue;
 			break;
 		case 'LessThan':
-			console.log('LessThan', { fieldValue, ruleValue });
+			// console.log('LessThan', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue < ruleValue;
 			break;
 		case 'GreaterThan':
-			console.log('GreaterThan', { fieldValue, ruleValue });
+			// console.log('GreaterThan', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue > ruleValue;
 			break;
 		case 'LessThanOrEqual':
-			console.log('LessThanOrEqual', { fieldValue, ruleValue });
+			// console.log('LessThanOrEqual', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue <= ruleValue;
 			break;
 		case 'GreaterThanOrEqual':
-			console.log('GreaterThanOrEqual', { fieldValue, ruleValue });
+			// console.log('GreaterThanOrEqual', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue >= ruleValue;
 			break;
 		case 'Contains':
-			console.log('Contains', { fieldValue, ruleValue });
+			// console.log('Contains', { fieldValue, ruleValue });
 			isRuleSatisfied = fieldValue.toString().includes(ruleValue.toString());
 			break;
 		default:

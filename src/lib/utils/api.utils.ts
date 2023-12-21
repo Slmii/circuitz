@@ -17,8 +17,7 @@ export const httpRequest = async (request: HttpRequest) => {
 			body: JSON.parse(requestBodyAsString),
 			headers
 		});
-		const data = await response.json();
-		return data;
+		return response.json();
 	} catch (error) {
 		return error;
 	}

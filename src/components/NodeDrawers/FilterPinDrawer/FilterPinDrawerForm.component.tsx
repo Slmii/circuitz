@@ -116,7 +116,7 @@ export const FilterPinDrawerForm = ({
 						<Alert severity="info">
 							{filterType === 'FilterPin'
 								? "A Filter Pin node filters the node according to the specified rules below. If these rules are met, the node's execution can be triggered."
-								: 'A Lookup Filter Pin node filters the node according to the specified rules below. If these rules are met, the Lookup values will not be merged into the next Node.'}
+								: 'A Lookup Filter Pin node filters the node according to the specified rules below. If these rules are met, the Lookup values will be merged into the next Node.'}
 						</Alert>
 						<H5 fontWeight="bold">Rules</H5>
 						<Paper

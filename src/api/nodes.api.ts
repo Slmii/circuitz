@@ -116,26 +116,21 @@ export async function getSampleData(nodes: Node[]) {
 
 		// TODO: add all pins logic
 
-		if ('LookupCanister' in node.nodeType) {
-			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
-			sampleData.data[`Node:${nodeIndex}`] = lookupCanisterResponse;
-		}
-
 		const filterPin = getPin<FilterPin>(node, 'FilterPin');
 		if (filterPin) {
 			const filterPinFormValues = getFilterPinFormValues(filterPin);
 
 			// If the filter is not true, skip the node
-			const isTrue = isFilterTrue(filterPinFormValues, sampleData.data[`Node:${nodeIndex}`] as SampleData);
+			const isTrue = isFilterTrue(filterPinFormValues);
 			if (!isTrue) {
-				// Remove the sample data for this node
-				delete sampleData.data[`Node:${nodeIndex}`];
-
 				continue;
 			}
 		}
 
-		if ('LookupHttpRequest' in node.nodeType) {
+		if ('LookupCanister' in node.nodeType) {
+			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
+			sampleData.data[`Node:${nodeIndex}`] = lookupCanisterResponse;
+		} else if ('LookupHttpRequest' in node.nodeType) {
 			sampleData.data[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
@@ -144,9 +139,9 @@ export async function getSampleData(nodes: Node[]) {
 			const filterPinFormValues = getFilterPinFormValues(lookupfilterPin);
 
 			// If the lookup filter is not true, skip the merge data node
-			const isTrue = isFilterTrue(filterPinFormValues, sampleData.data);
+			const isTrue = isFilterTrue(filterPinFormValues);
 			if (!isTrue) {
-				// Remove the sample data for this node
+				// Remove the lookup data from the sample data
 				delete sampleData.data[`Node:${nodeIndex}`];
 
 				continue;
