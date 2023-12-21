@@ -17,7 +17,8 @@ import type {
 	DataType,
 	OperandType,
 	OperatorType,
-	PinSourceType
+	PinSourceType,
+	SampleData
 } from 'lib/types';
 import { dateFromNano } from './date.utils';
 import {
@@ -502,20 +503,26 @@ export function getPin<T>(node: Node, pinType: PinSourceType): T | undefined {
 	return pin.pin_type[pinType] as T;
 }
 
-export const isFilterTrue = (rulesConfig: FilterPinFormValues): boolean => {
+/**
+ * Check if the filter is true for the given data.
+ *
+ * @param rulesConfig The filter pin form values
+ * @param data The data to validate against the filter. If not provided, the input sample data will be used.
+ */
+export const isFilterTrue = (rulesConfig: FilterPinFormValues, data?: SampleData): boolean => {
 	if (rulesConfig.rules.length === 0) {
 		return false;
 	}
 
-	const data = JSON.parse(rulesConfig.inputSampleData);
+	const dataToValidate = data ? data : JSON.parse(rulesConfig.inputSampleData);
 
 	if (rulesConfig.rules.length === 1 || rulesConfig.conditionGroup === null) {
-		return evaluateRule(rulesConfig.rules[0], data, rulesConfig.condition);
+		return evaluateRule(rulesConfig.rules[0], dataToValidate, rulesConfig.condition);
 	}
 
 	let result = rulesConfig.conditionGroup === 'And';
 	for (const rule of rulesConfig.rules) {
-		const isRuleSatisfied = evaluateRule(rule, data, rulesConfig.condition);
+		const isRuleSatisfied = evaluateRule(rule, dataToValidate, rulesConfig.condition);
 
 		if (rulesConfig.conditionGroup === 'And') {
 			result = result && isRuleSatisfied;
@@ -599,10 +606,10 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 	return isRuleSatisfied;
 };
 
-const getNestedValue = (data: Record<string, unknown>, path: string): unknown => {
+const getNestedValue = (data: SampleData, path: string): unknown => {
 	return path.split('.').reduce((acc, part) => {
 		if (acc && typeof acc === 'object' && part in acc) {
-			return (acc as Record<string, unknown>)[part];
+			return (acc as SampleData)[part];
 		}
 		return undefined;
 	}, data as unknown);

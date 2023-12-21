@@ -53,7 +53,4 @@ export type ConditionType = ConditionTypeKey;
 export type OperandType = OperandTypeKey;
 export type DataType = DataTypeKey;
 
-export interface SampleDataOptions {
-	isFilterPreview?: boolean;
-	isLookupFilterPreview?: boolean;
-}
+export type SampleData = Record<string, unknown>;

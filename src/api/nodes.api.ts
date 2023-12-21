@@ -2,7 +2,7 @@ import type { FilterPin, LookupCanister, NodeType, Pin, _SERVICE } from 'declara
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import { getFilterPinFormValues, getPin, httpRequest, isFilterTrue, mapToNode, unwrapResult } from 'lib/utils';
-import { Node } from 'lib/types';
+import { Node, SampleData } from 'lib/types';
 import { createActor } from './actor.api';
 
 // TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
@@ -89,9 +89,13 @@ export async function editOrder({
 }
 
 export async function getSampleData(nodes: Node[]) {
-	const sampleData: Record<string, unknown> = {};
+	const sampleData: Record<'data', SampleData> = {
+		data: {}
+	};
 
 	for (const [index, node] of nodes.entries()) {
+		const nodeIndex = index + 1;
+
 		// Skip disabled nodes
 		if (!node.isEnabled) {
 			continue;
@@ -100,11 +104,11 @@ export async function getSampleData(nodes: Node[]) {
 		// Input Nodes (Starting point)
 		if ('Canister' in node.nodeType) {
 			const sampleDataAsString = node.nodeType.Canister.sample_data[0] ? node.nodeType.Canister.sample_data[0] : '{}';
-			sampleData['data'] = JSON.parse(sampleDataAsString);
+			sampleData.data = JSON.parse(sampleDataAsString);
 		}
 
 		if ('HttpRequest' in node.nodeType) {
-			sampleData['data'] = await httpRequest(node.nodeType.HttpRequest);
+			sampleData.data = await httpRequest(node.nodeType.HttpRequest);
 		}
 		// End Input Nodes
 
@@ -112,35 +116,41 @@ export async function getSampleData(nodes: Node[]) {
 
 		// TODO: add all pins logic
 
+		if ('LookupCanister' in node.nodeType) {
+			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
+			sampleData.data[`Node:${nodeIndex}`] = lookupCanisterResponse;
+		}
+
 		const filterPin = getPin<FilterPin>(node, 'FilterPin');
 		if (filterPin) {
 			const filterPinFormValues = getFilterPinFormValues(filterPin);
 
 			// If the filter is not true, skip the node
-			const isTrue = isFilterTrue(filterPinFormValues);
+			const isTrue = isFilterTrue(filterPinFormValues, sampleData.data[`Node:${nodeIndex}`] as SampleData);
 			if (!isTrue) {
+				// Remove the sample data for this node
+				delete sampleData.data[`Node:${nodeIndex}`];
+
 				continue;
 			}
 		}
 
-		if ('LookupCanister' in node.nodeType) {
-			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
-			sampleData[`Node:${index + 1}`] = lookupCanisterResponse;
+		if ('LookupHttpRequest' in node.nodeType) {
+			sampleData.data[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
 		const lookupfilterPin = getPin<FilterPin>(node, 'LookupFilterPin');
 		if (lookupfilterPin) {
 			const filterPinFormValues = getFilterPinFormValues(lookupfilterPin);
 
-			// If the lookup filter is not true, skip the node
-			const isTrue = isFilterTrue(filterPinFormValues);
+			// If the lookup filter is not true, skip the merge data node
+			const isTrue = isFilterTrue(filterPinFormValues, sampleData.data);
 			if (!isTrue) {
+				// Remove the sample data for this node
+				delete sampleData.data[`Node:${nodeIndex}`];
+
 				continue;
 			}
-		}
-
-		if ('LookupHttpRequest' in node.nodeType) {
-			sampleData[`Node:${index + 1}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 	}
 

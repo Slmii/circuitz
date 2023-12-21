@@ -179,6 +179,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 				<IconButton
 					icon="filter"
 					tooltip="LookupFilterPin"
+					color="primary"
 					{...stopPropagation({
 						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupFilterPin/edit`)
 					})}
@@ -189,6 +190,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 				<IconButton
 					icon="transformer"
 					tooltip="LookupTransformPin"
+					color="primary"
 					{...stopPropagation({
 						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupTransformPin/edit`)
 					})}
@@ -199,6 +201,7 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 				<IconButton
 					icon="mapper"
 					tooltip="MapperPin"
+					color="primary"
 					{...stopPropagation({
 						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/MapperPin/edit`)
 					})}

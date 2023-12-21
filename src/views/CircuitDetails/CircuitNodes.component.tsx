@@ -133,8 +133,6 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 												navigate(`/circuits/${circuitId}/nodes/LookupHttpRequest`);
 											}}
 										/>
-										<AddNodeButton icon="transformer" label="Transformer" onClick={() => {}} />
-										<AddNodeButton icon="mapper" label="Mapper" onClick={() => {}} />
 										<AddNodeButton icon="output-linear" label="Output" onClick={() => {}} />
 									</Stack>
 								</Stack>

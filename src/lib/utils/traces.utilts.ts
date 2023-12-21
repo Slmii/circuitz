@@ -3,7 +3,7 @@ import type {
 	TraceError as OldTraceError,
 	TraceStatus as OldTraceStatus
 } from 'declarations/traces.declarations';
-import type { Trace, TraceError, TraceStatus } from 'lib/types';
+import type { SampleData, Trace, TraceError, TraceStatus } from 'lib/types';
 import { dateFromNano } from './date.utils';
 
 export const mapToTrace = (trace: OldTrace): Trace => {
@@ -14,7 +14,7 @@ export const mapToTrace = (trace: OldTrace): Trace => {
 		duration: trace.duration,
 		errors: trace.errors.map(mapToTraceErrors),
 		nodeId: trace.node_id,
-		data: JSON.parse(trace.data) as Record<string, unknown>,
+		data: JSON.parse(trace.data) as SampleData,
 		status: mapToTraceStatus(trace.status),
 		startedAt: dateFromNano(trace.started_at),
 		completedAt: dateFromNano(trace.completed_at),

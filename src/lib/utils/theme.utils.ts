@@ -29,6 +29,16 @@ export const DARK_THEME: Readonly<PaletteOptions> = {
 	divider: 'rgba(230, 230, 230, 0.3)' // A soft white divider with some transparency
 };
 
+// text: {
+// 	primary: '#FFFFFF', // A soft white for better readability
+// 	secondary: '#6b7280'
+// },
+// background: {
+// 	default: '#101827', // A slightly lighter black for the background
+// 	paper: '#1f2937' // A semi-transparent version of the background color
+// },
+// divider: '#FFFFFF' // A soft white divider with some transparency
+
 export const LIGHT_THEME: Readonly<PaletteOptions> = {
 	primary: {
 		main: '#D4AF37'
