@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api/index';
 import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
-import { Node } from 'lib/types';
+import { Node, SampleData } from 'lib/types';
 import { useGetCircuit } from './useCircuits';
 import { Principal } from '@dfinity/principal';
 import { useSnackbar } from './useSnackbar';
@@ -19,6 +19,23 @@ export const useGetCircuitNodes = (circuitId: number) => {
 		queryKey: [QUERY_KEYS.CIRCUIT_NODES, circuitId],
 		enabled: !!circuitId,
 		queryFn: () => api.Nodes.getNodes(circuitId)
+	});
+};
+
+export const useGetSampleData = (
+	{
+		circuitId,
+		nodes
+	}: {
+		circuitId: number;
+		nodes: Node[];
+	},
+	options?: UseQueryOptions<Record<'data', SampleData>>
+) => {
+	return useQuery({
+		queryKey: [QUERY_KEYS.SAMPLE_DATA, circuitId, nodes.map(node => node.id)],
+		queryFn: () => api.Nodes.getSampleData(nodes),
+		...options
 	});
 };
 

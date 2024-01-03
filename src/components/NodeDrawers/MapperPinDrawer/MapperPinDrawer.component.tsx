@@ -2,23 +2,23 @@ import { useAddPin, useEditPin, useFormSubmit, useModal } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
 import { DeletePinModalProps, Node } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
-import { FilterPinDrawerForm } from '../FilterPinDrawer/FilterPinDrawerForm.component';
+import { MapperPinDrawerForm } from './MapperPinDrawerForm.component';
 
-export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
+export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
 	const { openModal } = useModal<DeletePinModalProps>('DELETE_PIN');
 
 	const { mutateAsync: addPin, isLoading: isAddPinLoading } = useAddPin();
 	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
 
-	const lookupFilterPin = node?.pins.find(pin => 'LookupFilterPin' in pin.pin_type);
+	const mapperPin = node?.pins.find(pin => 'MapperPin' in pin.pin_type);
 
 	const handleOnSubmit = async (pin: Pin) => {
 		if (!node) {
 			return;
 		}
 
-		if (!lookupFilterPin) {
+		if (!mapperPin) {
 			await addPin({
 				nodeId: node.id,
 				data: pin
@@ -41,10 +41,10 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinLoading || isEditPinLoading}
-			title="Lookup Filter Pin"
+			title="Mapper Pin"
 			fullWidth
 			onDeletePin={
-				lookupFilterPin
+				mapperPin
 					? () => {
 							if (!node) {
 								return;
@@ -53,7 +53,7 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 							openModal(
 								{
 									nodeId: node.id,
-									pin: lookupFilterPin
+									pin: mapperPin
 								},
 								{
 									onSuccess: () => onClose()
@@ -63,14 +63,7 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 					: undefined
 			}
 		>
-			{node && (
-				<FilterPinDrawerForm
-					filterType="LookupFilterPin"
-					formRef={formRef}
-					node={node}
-					onProcessFilter={handleOnSubmit}
-				/>
-			)}
+			{node && <MapperPinDrawerForm formRef={formRef} node={node} />}
 		</Drawer>
 	);
 };

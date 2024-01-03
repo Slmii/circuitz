@@ -13,6 +13,7 @@ import { useDeleteNode, useGetCircuitTraces, useGetParam, useOnClickOutside, use
 import { Icon } from 'components/Icon';
 import { Dialog } from 'components/Dialog';
 import { useNavigate, useParams } from 'react-router-dom';
+import { MapperPinDrawer } from 'components/NodeDrawers/MapperPinDrawer/MapperPinDrawer.component';
 
 // const navigate = useNavigate();
 // 	const circuitId = useGetParam('circuitId');
@@ -56,6 +57,14 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 
 	const lookupFilterPin = useMemo(() => {
 		if (filterPinType !== 'LookupFilterPin' || !nodeId) {
+			return;
+		}
+
+		return nodes.find(node => node.id === Number(nodeId));
+	}, [filterPinType, nodeId, nodes]);
+
+	const mapperPin = useMemo(() => {
+		if (filterPinType !== 'MapperPin' || !nodeId) {
 			return;
 		}
 
@@ -159,6 +168,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				node={lookupFilterPin}
 				onClose={() => navigate(`/circuits/${circuitId}`)}
 			/>
+			<MapperPinDrawer open={!!mapperPin} node={mapperPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
 			<Dialog
 				title="Delete node"
 				open={isDeleteNodeModalOpen}
