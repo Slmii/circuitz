@@ -64,10 +64,10 @@ export interface LookupTransformPin {
 	output: string;
 	input: string;
 }
-export interface Mapper {
-	output: string;
+export interface MapperPin {
 	interface: string;
-	input: string;
+	sample_data: [] | [string];
+	fields: Array<[string, string]>;
 }
 export interface Node {
 	id: number;
@@ -114,7 +114,7 @@ export interface Pin {
 export type PinType =
 	| { LookupTransformPin: LookupTransformPin }
 	| { FilterPin: FilterPin }
-	| { MapperPin: Mapper }
+	| { MapperPin: MapperPin }
 	| { PrePin: CustomPinLogic }
 	| { PostPin: CustomPinLogic }
 	| { LookupFilterPin: FilterPin };
@@ -162,7 +162,6 @@ export interface _SERVICE {
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
 	const Arg = IDL.Rec();
 	const Vec = IDL.Rec();
@@ -276,10 +275,10 @@ export const idlFactory = ({ IDL }: any) => {
 		rules: IDL.Vec(Rule),
 		condition: Condition
 	});
-	const Mapper = IDL.Record({
-		output: IDL.Text,
+	const MapperPin = IDL.Record({
 		interface: IDL.Text,
-		input: IDL.Text
+		sample_data: IDL.Opt(IDL.Text),
+		fields: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
 	});
 	const CustomPinLogic = IDL.Record({
 		function: IDL.Opt(IDL.Text),
@@ -288,7 +287,7 @@ export const idlFactory = ({ IDL }: any) => {
 	const PinType = IDL.Variant({
 		LookupTransformPin: LookupTransformPin,
 		FilterPin: FilterPin,
-		MapperPin: Mapper,
+		MapperPin: MapperPin,
 		PrePin: CustomPinLogic,
 		PostPin: CustomPinLogic,
 		LookupFilterPin: FilterPin

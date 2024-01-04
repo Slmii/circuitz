@@ -55,3 +55,11 @@ export interface FilterRule {
 	operandType: OperandType;
 	dataType: DataType;
 }
+
+export interface MapperPinFormValues {
+	inputSampleData: string;
+	fields: {
+		input: string;
+		output: string;
+	}[];
+}
