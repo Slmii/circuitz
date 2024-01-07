@@ -4,7 +4,7 @@ import { Option } from 'components/Form/Select';
 import { Node } from 'lib/types';
 import { RefObject, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
-import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
 import { getSampleDataFields, getPin } from 'lib/utils';
 import { MapperPin } from 'declarations/nodes.declarations';
 import { OVERFLOW } from 'lib/constants';
@@ -19,10 +19,14 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 	const action = useGetParam('action');
 	const circuitId = useGetParam('circuitId');
 
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+	const { isFetching: isSampleDataFetching, refetch: refetchSampleData } = useGetSampleData(
+		{ circuitId: Number(circuitId), nodes: circuitNodes ?? [] },
+		{ enabled: false }
+	);
+
 	const [isFetchingSampleData, setIsFetchingSampleData] = useState(false);
 	const [outputSampleData, setOutputSampleData] = useState('');
-
-	const { data: circuitNodes, isLoading: isCircuitNodesLoading } = useGetCircuitNodes(Number(circuitId));
 
 	const getFields = (sampleData: string): Option[] => {
 		// If there's no sample data, return an empty array
@@ -40,18 +44,8 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 
 	// Fetch sample data
 	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<MapperPinFormValues>) => {
-		if (!circuitNodes) {
-			return;
-		}
-
-		setIsFetchingSampleData(true);
-
-		// Get the sample data from the nodes
-		const sampleData = await api.Nodes.getSampleData(circuitNodes.filter(node => node.id));
-
+		const { data: sampleData } = await refetchSampleData();
 		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
-
-		setIsFetchingSampleData(false);
 	};
 
 	return (

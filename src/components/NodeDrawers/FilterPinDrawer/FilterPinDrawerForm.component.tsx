@@ -13,7 +13,7 @@ import { RadioButton } from 'components/Form/RadioButton';
 import { Button, TextButton } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
-import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
 import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues, isFilterTrue, getPin } from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
@@ -35,9 +35,14 @@ export const FilterPinDrawerForm = ({
 }) => {
 	const action = useGetParam('action');
 	const circuitId = useGetParam('circuitId');
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+	const circuitIdNumber = Number(circuitId);
 
-	const [isFetchingSampleData, setIsFetchingSampleData] = useState(false);
+	const { data: circuitNodes } = useGetCircuitNodes(circuitIdNumber);
+	const { isFetching: isSampleDataFetching, refetch: refetchSampleData } = useGetSampleData(
+		{ circuitId: circuitIdNumber, nodes: circuitNodes ?? [] },
+		{ enabled: false }
+	);
+
 	const [outputSampleData, setOutputSampleData] = useState('');
 
 	const getFields = (sampleData: string): Option[] => {
@@ -87,28 +92,8 @@ export const FilterPinDrawerForm = ({
 
 	// Fetch sample data
 	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<FilterPinFormValues>) => {
-		if (!circuitNodes) {
-			return;
-		}
-
-		setIsFetchingSampleData(true);
-
-		// Get the sample data from the nodes
-		const sampleData = await api.Nodes.getSampleData(
-			circuitNodes.filter(({ id }) => {
-				// In case of a FilterPin get the ones before the current node (exluding the current node)
-				if (filterType === 'FilterPin') {
-					return id < node.id;
-				}
-
-				// In case of a LookupFilterPin get the ones before AND the current node
-				return id <= node.id;
-			})
-		);
-
+		const { data: sampleData } = await refetchSampleData();
 		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
-
-		setIsFetchingSampleData(false);
 	};
 
 	return (
@@ -142,7 +127,7 @@ export const FilterPinDrawerForm = ({
 								</B1>
 							) : (
 								<>
-									{isFetchingSampleData ? <SkeletonRules /> : <Rules fields={getFields(getValues().inputSampleData)} />}
+									{isSampleDataFetching ? <SkeletonRules /> : <Rules fields={getFields(getValues().inputSampleData)} />}
 								</>
 							)}
 						</Paper>
@@ -155,7 +140,7 @@ export const FilterPinDrawerForm = ({
 								<Button
 									fullWidth
 									variant="outlined"
-									loading={isFetchingSampleData}
+									loading={isSampleDataFetching}
 									size="large"
 									onClick={() => handleOnFetchSampleData(setValue)}
 									tooltip="This action will activate every node within this circuit. Collecting Sample Data might consume cycles if there's one or more Lookup Nodes in the circuit."
@@ -167,7 +152,7 @@ export const FilterPinDrawerForm = ({
 									variant="contained"
 									size="large"
 									startIcon="filter-linear"
-									disabled={isFetchingSampleData || !getValues().inputSampleData}
+									disabled={isSampleDataFetching || !getValues().inputSampleData}
 									onClick={() => handleOnPreview(getValues())}
 								>
 									Preview

@@ -1,5 +1,4 @@
 import { HttpRequest } from 'declarations/nodes.declarations';
-import { ICC_URL } from 'lib/constants';
 
 export const httpRequest = async (request: HttpRequest) => {
 	const requestBodyAsString = request.request_body[0] ? request.request_body[0] : '{}';
