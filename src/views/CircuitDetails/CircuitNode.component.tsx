@@ -289,6 +289,7 @@ const NodePins = ({
 							)}
 						</>
 					)}
+					{/* TODO: move to output node */}
 					{!hasMapperPin && (
 						// Show only if MapperPin is not present
 						<IconButton
