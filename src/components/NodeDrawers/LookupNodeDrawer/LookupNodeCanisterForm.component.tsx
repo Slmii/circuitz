@@ -1,4 +1,4 @@
-import { Alert, Divider, Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { PropsWithChildren, RefObject } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
@@ -14,6 +14,7 @@ import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg } from 'lib/u
 import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { OVERFLOW } from 'lib/constants';
+import { Alert } from 'components/Alert';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -45,7 +46,14 @@ export const LookupNodeCanisterForm = ({
 			myRef={formRef}
 			schema={lookupCanisterSchema}
 			render={() => (
-				<Stack direction="row" spacing={4}>
+				<Stack
+					direction="row"
+					spacing={4}
+					sx={{
+						overflowY: 'auto',
+						minHeight: 'calc(100vh - 205px)'
+					}}
+				>
 					<Stack spacing={4} width="50%" sx={OVERFLOW}>
 						<Stack direction="column" spacing={2}>
 							<Alert severity="info">

@@ -35,9 +35,7 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 
 	return (
 		<Drawer
-			onClose={() => {
-				onClose();
-			}}
+			onClose={onClose}
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinLoading || isEditPinLoading}

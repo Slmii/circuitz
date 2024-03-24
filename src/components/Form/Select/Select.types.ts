@@ -1,4 +1,5 @@
 import { SelectChangeEvent } from '@mui/material/Select';
+import { ReactNode } from 'react';
 
 export interface SelectProps {
 	options: Option[];
@@ -8,7 +9,7 @@ export interface SelectProps {
 	onChange?: (value: string) => void;
 	required?: boolean;
 	disabled?: boolean;
-	helperText?: string;
+	helperText?: string | ReactNode;
 	placeholder?: string;
 	customLabel?: (option: Option) => JSX.Element | string;
 }

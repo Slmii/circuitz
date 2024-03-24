@@ -4,15 +4,16 @@ import { NodeType } from 'declarations/nodes.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
-import { Alert, Divider, Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { Button, CopyTextButton } from 'components/Button';
 import { B2, H5 } from 'components/Typography';
 import { StandaloneEditor } from 'components/Editor';
 import { useFormContext } from 'react-hook-form';
 import { NodeSourceType } from 'lib/types';
-import { toPrincipal, getLookupCanisterValuesAsArg } from 'lib/utils';
+import { toPrincipal, getLookupCanisterValuesAsArg, stringifyJson } from 'lib/utils';
 import { Dialog } from 'components/Dialog';
 import { useMemo, useState } from 'react';
+import { Alert, TipAlert } from 'components/Alert';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
 	const [formData, setFormData] = useState<NodeType | null>(null);
@@ -92,7 +93,7 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 
 	const response = useMemo(() => {
 		if (error) {
-			return JSON.stringify(error, null, 4);
+			return stringifyJson(error);
 		}
 
 		if (!data) {
@@ -100,10 +101,10 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 		}
 
 		if ('Ok' in data) {
-			return JSON.stringify(JSON.parse(data.Ok), null, 4);
+			return stringifyJson(JSON.parse(data.Ok));
 		}
 
-		return JSON.stringify(data, null, 4);
+		return stringifyJson(data);
 	}, [data, error]);
 
 	return (
@@ -142,7 +143,8 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 					<CopyTextButton textToCopy={nodeCanisterId.toString()}>{nodeCanisterId.toString()}</CopyTextButton> is
 					authorized.
 				</B2>
-				<StandaloneEditor mode="javascript" value={response} isReadOnly height="100%" />
+				<TipAlert>You can also insert the preview data yourself to save Cycles.</TipAlert>
+				<StandaloneEditor mode="javascript" value={response} height="100%" />
 			</Stack>
 		</>
 	);

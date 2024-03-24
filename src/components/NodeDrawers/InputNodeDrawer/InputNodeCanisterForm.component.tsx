@@ -1,4 +1,4 @@
-import { Alert, Divider, Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { RefObject } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
@@ -14,6 +14,7 @@ import { toPrincipal, getInputCanisterFormValues } from 'lib/utils';
 import { inputCanisterSchema } from 'lib/schemas';
 import { StandaloneEditor } from 'components/Editor';
 import { InputNodeFormValues } from '../NodeDrawers.types';
+import { Alert } from 'components/Alert';
 
 export const InputNodeCanisterForm = ({
 	formRef,
@@ -88,16 +89,16 @@ export const InputNodeCanisterForm = ({
 							name="verificationType"
 							options={[
 								{
-									id: 'none',
-									label: 'None'
+									id: 'whitelist',
+									label: 'Whitelist (recommended)'
 								},
 								{
 									id: 'token',
 									label: 'Token'
 								},
 								{
-									id: 'whitelist',
-									label: 'Whitelist (recommended)'
+									id: 'none',
+									label: 'None'
 								}
 							]}
 						/>

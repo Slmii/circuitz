@@ -1,4 +1,4 @@
-import { Alert, Divider, Paper, Stack } from '@mui/material';
+import { Divider, Paper, Stack } from '@mui/material';
 import { StandaloneEditor, Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
@@ -14,13 +14,21 @@ import { Button, TextButton } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
-import { getFilterPinValuesAsArg, getSampleDataFields, getFilterPinFormValues, isFilterTrue, getPin } from 'lib/utils';
+import {
+	getFilterPinValuesAsArg,
+	getSampleDataFields,
+	getFilterPinFormValues,
+	isFilterTrue,
+	getPin,
+	stringifyJson
+} from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
 import { OVERFLOW } from 'lib/constants';
 import { api } from 'api/index';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
+import { Alert, TipAlert } from 'components/Alert';
 
 export const FilterPinDrawerForm = ({
 	formRef,
@@ -93,7 +101,7 @@ export const FilterPinDrawerForm = ({
 	// Fetch sample data
 	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<FilterPinFormValues>) => {
 		const { data: sampleData } = await refetchSampleData();
-		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
+		setValueInForm('inputSampleData', stringifyJson(sampleData));
 	};
 
 	return (
@@ -106,7 +114,14 @@ export const FilterPinDrawerForm = ({
 			schema={filterPinSchema}
 			myRef={formRef}
 			render={({ getValues, setValue }) => (
-				<Stack direction="row" spacing={4} height="100%">
+				<Stack
+					direction="row"
+					spacing={4}
+					sx={{
+						overflowY: 'auto',
+						minHeight: 'calc(100vh - 205px)'
+					}}
+				>
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
 							{filterType === 'FilterPin'
@@ -158,6 +173,7 @@ export const FilterPinDrawerForm = ({
 									Preview
 								</Button>
 							</Stack>
+							<TipAlert>You can also insert the sample data yourself to save Cycles.</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
@@ -233,28 +249,26 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 				</Stack>
 				<Stack spacing={2}>
 					{formFields.map((field, index) => (
-						<Stack key={field.id} direction="row" spacing={1} alignItems="center">
+						<Stack
+							key={field.id}
+							direction="row"
+							spacing={1}
+							alignItems="flex-start"
+							onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
+							onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
+						>
 							<Select fullWidth name={`rules.${index}.field`} label="Field" options={fields} />
 							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
-							<Stack
-								direction="row"
-								spacing={1}
-								alignItems="center"
-								width="100%"
-								onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
-								onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
-							>
-								{values.rules[index].operandType === 'Field' ? (
-									<Select fullWidth name={`rules.${index}.value`} label="Value" options={fields} />
-								) : (
-									<Field fullWidth name={`rules.${index}.value`} label="Value" />
-								)}
-								<IconButton
-									icon="settings"
-									onClick={() => setFieldSettingsIndex(index)}
-									disabled={!isFieldHover[index]}
-								/>
-							</Stack>
+							{values.rules[index].operandType === 'Field' ? (
+								<Select fullWidth name={`rules.${index}.value`} label="Value" options={fields} />
+							) : (
+								<Field fullWidth name={`rules.${index}.value`} label="Value" />
+							)}
+							<IconButton
+								icon="settings"
+								onClick={() => setFieldSettingsIndex(index)}
+								disabled={!isFieldHover[index]}
+							/>
 							<IconButton
 								disabled={formFields.length === 1}
 								icon="close-linear"
@@ -274,12 +288,19 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 			>
 				<Stack spacing={4} mt={2}>
 					<Select
+						helperText="Operand type 'Field' will allow you to compare the field with another field."
 						fullWidth
 						name={`rules.${fieldSettingsIndex}.operandType`}
 						label="Operand type"
 						options={OPERAND_TYPES}
 					/>
-					<Select fullWidth name={`rules.${fieldSettingsIndex}.dataType`} label="Data type" options={DATA_TYPES} />
+					<Select
+						helperText="Data type will allow you to specify the type of the value."
+						fullWidth
+						name={`rules.${fieldSettingsIndex}.dataType`}
+						label="Data type"
+						options={DATA_TYPES}
+					/>
 				</Stack>
 			</Dialog>
 		</>

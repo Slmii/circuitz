@@ -1,19 +1,21 @@
-import { Alert, Divider, Paper, Stack } from '@mui/material';
+import { Divider, Paper, Stack } from '@mui/material';
 import { Form } from 'components/Form';
-import { Option } from 'components/Form/Select';
+import { Option, Select } from 'components/Form/Select';
 import { Node } from 'lib/types';
-import { RefObject, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
 import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
-import { getSampleDataFields, getPin } from 'lib/utils';
+import { getSampleDataFields, getPin, stringifyJson } from 'lib/utils';
 import { MapperPin } from 'declarations/nodes.declarations';
 import { OVERFLOW } from 'lib/constants';
 import { B1, H5 } from 'components/Typography';
 import { Button, TextButton } from 'components/Button';
 import { Editor, StandaloneEditor } from 'components/Editor';
-import { UseFormSetValue } from 'react-hook-form';
-import { api } from 'api/index';
+import { UseFormSetValue, useFieldArray, useFormContext } from 'react-hook-form';
 import { SkeletonMapperPinField } from 'components/Skeleton';
+import { Alert, TipAlert } from 'components/Alert';
+import { IconButton } from 'components/IconButton';
+import { Field } from 'components/Form/Field';
 
 export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTMLFormElement>; node: Node }) => {
 	const action = useGetParam('action');
@@ -25,7 +27,6 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 		{ enabled: false }
 	);
 
-	const [isFetchingSampleData, setIsFetchingSampleData] = useState(false);
 	const [outputSampleData, setOutputSampleData] = useState('');
 
 	const getFields = (sampleData: string): Option[] => {
@@ -42,10 +43,20 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 		}
 	};
 
+	const handleOnPreview = (formValues: MapperPinFormValues) => {
+		try {
+			let outputString = 'The filter condition is ';
+
+			setOutputSampleData(stringifyJson(formValues));
+		} catch (error) {
+			setOutputSampleData((error as Error).message);
+		}
+	};
+
 	// Fetch sample data
 	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<MapperPinFormValues>) => {
 		const { data: sampleData } = await refetchSampleData();
-		setValueInForm('inputSampleData', JSON.stringify(sampleData, null, 4));
+		setValueInForm('inputSampleData', stringifyJson(sampleData));
 	};
 
 	return (
@@ -71,7 +82,14 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 			}}
 			myRef={formRef}
 			render={({ getValues, setValue }) => (
-				<Stack direction="row" spacing={4} height="100%">
+				<Stack
+					direction="row"
+					spacing={4}
+					sx={{
+						overflowY: 'auto',
+						minHeight: 'calc(100vh - 205px)'
+					}}
+				>
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
 							A Mapper Pin allows you to map a value from the input to a value in the output.
@@ -89,7 +107,13 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 									to collect sample data
 								</B1>
 							) : (
-								<>{isFetchingSampleData ? <SkeletonMapperPinField /> : 'Fields'}</>
+								<>
+									{isSampleDataFetching ? (
+										<SkeletonMapperPinField />
+									) : (
+										<Fields fields={getFields(getValues('inputSampleData'))} />
+									)}
+								</>
 							)}
 						</Paper>
 					</Stack>
@@ -102,7 +126,7 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 									fullWidth
 									variant="outlined"
 									size="large"
-									loading={isFetchingSampleData}
+									loading={isSampleDataFetching}
 									onClick={() => handleOnFetchSampleData(setValue)}
 									tooltip="This action will activate every node within this circuit. Collecting Sample Data might consume cycles if there's one or more Lookup Nodes in the circuit."
 								>
@@ -113,12 +137,13 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 									variant="contained"
 									size="large"
 									startIcon="filter-linear"
-									disabled={isFetchingSampleData || !getValues().inputSampleData}
-									onClick={() => {}}
+									disabled={isSampleDataFetching || !getValues().inputSampleData}
+									onClick={() => handleOnPreview(getValues())}
 								>
 									Preview
 								</Button>
 							</Stack>
+							<TipAlert>You can also insert the sample data yourself to save Cycles.</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={250} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
@@ -129,5 +154,37 @@ export const MapperPinDrawerForm = ({ formRef, node }: { formRef: RefObject<HTML
 				</Stack>
 			)}
 		/>
+	);
+};
+
+const Fields = ({ fields }: { fields: Option[] }) => {
+	const { fields: formFields, append, remove } = useFieldArray<MapperPinFormValues>({ name: 'fields' });
+
+	return (
+		<Stack spacing={1} padding={1}>
+			<Stack spacing={2}>
+				{formFields.map((field, index) => (
+					<Stack key={field.id} direction="row" spacing={1} alignItems="center">
+						<Select fullWidth name={`field.${index}.input`} label="Input" options={fields} />
+						<Field fullWidth name={`field.${index}.ouput`} label="Ouput" />
+						<IconButton
+							disabled={formFields.length === 1}
+							icon="close-linear"
+							color="error"
+							onClick={() => remove(index)}
+						/>
+					</Stack>
+				))}
+				<Button
+					startIcon="add-linear"
+					sx={{ width: 'fit-content' }}
+					variant="outlined"
+					size="large"
+					onClick={() => append({ input: '', output: '' })}
+				>
+					{!formFields.length ? 'Add first mapper' : 'Add mapper'}
+				</Button>
+			</Stack>
+		</Stack>
 	);
 };

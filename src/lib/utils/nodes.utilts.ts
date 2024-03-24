@@ -57,7 +57,7 @@ export const getInputCanisterFormValues = (node?: Node): InputNodeFormValues => 
 			description: '',
 			name: '',
 			sampleData: '',
-			verificationType: 'none',
+			verificationType: 'whitelist',
 			verificationTypeToken: '',
 			verificationTypeTokenField: '',
 			verificationTypeWhitelist: [{ principal: '' }]
