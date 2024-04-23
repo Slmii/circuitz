@@ -2,7 +2,7 @@ import type {
 	Trace as OldTrace,
 	TraceError as OldTraceError,
 	TraceStatus as OldTraceStatus
-} from 'declarations/traces.declarations';
+} from 'declarations/canister.declarations';
 import type { SampleData, Trace, TraceError, TraceStatus } from 'lib/types';
 import { dateFromNano } from './date.utils';
 

@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material';
+import { FormHelperText, Stack, useTheme } from '@mui/material';
 import { useMemo } from 'react';
 import AceEditor from 'react-ace';
 import { config } from 'ace-builds';
@@ -16,12 +16,14 @@ export const StandaloneEditor = ({
 	mode,
 	isReadOnly,
 	height = 500,
+	errorMessage,
 	onChange
 }: {
 	value: string;
 	mode: string;
 	isReadOnly?: boolean;
 	height?: number | string;
+	errorMessage?: string;
 	onChange?: (value: string) => void;
 }) => {
 	const theme = useTheme();
@@ -31,23 +33,26 @@ export const StandaloneEditor = ({
 	}, [theme.palette.mode]);
 
 	return (
-		<AceEditor
-			mode={mode}
-			theme={aceEditorTheme}
-			name="UNIQUE_ID_OF_DIV"
-			editorProps={{ $blockScrolling: true }}
-			height={typeof height === 'number' ? `${height}px` : height}
-			width="100%"
-			value={value}
-			readOnly={isReadOnly}
-			onChange={onChange}
-			wrapEnabled
-			setOptions={{
-				enableBasicAutocompletion: true,
-				enableLiveAutocompletion: true,
-				enableSnippets: true
-			}}
-		/>
+		<Stack direction="column" spacing={0.25}>
+			<AceEditor
+				mode={mode}
+				theme={aceEditorTheme}
+				name="UNIQUE_ID_OF_DIV"
+				editorProps={{ $blockScrolling: true }}
+				height={typeof height === 'number' ? `${height}px` : height}
+				width="100%"
+				value={value}
+				readOnly={isReadOnly}
+				onChange={onChange}
+				wrapEnabled
+				setOptions={{
+					enableBasicAutocompletion: true,
+					enableLiveAutocompletion: true,
+					enableSnippets: true
+				}}
+			/>
+			{errorMessage ? <FormHelperText error>{errorMessage}</FormHelperText> : null}
+		</Stack>
 	);
 };
 
@@ -65,10 +70,11 @@ export const Editor = (props: {
 			rules={{
 				required: props.required
 			}}
-			render={({ field }) => (
+			render={({ field, fieldState }) => (
 				<StandaloneEditor
 					{...props}
 					{...field}
+					errorMessage={fieldState.error?.message}
 					onChange={value => {
 						field.onChange(value);
 						props.onChange?.(value);

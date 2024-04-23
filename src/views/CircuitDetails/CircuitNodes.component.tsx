@@ -154,21 +154,25 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				nodeType={nodeType as NodeSourceType}
 				open={nodeType === 'Canister' || nodeType === 'HttpRequest'}
 				node={node}
-				onClose={() => navigate(`/circuits/${circuitId}`)}
+				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<LookupNodeDrawer
 				nodeType={nodeType as NodeSourceType}
 				open={nodeType === 'LookupCanister' || nodeType === 'LookupHttpRequest'}
 				node={node}
-				onClose={() => navigate(`/circuits/${circuitId}`)}
+				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<FilterPinDrawer open={!!filterPin} node={filterPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
 			<LookupFilterPinDrawer
 				open={!!lookupFilterPin}
 				node={lookupFilterPin}
-				onClose={() => navigate(`/circuits/${circuitId}`)}
+				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
-			<MapperPinDrawer open={!!mapperPin} node={mapperPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
+			<MapperPinDrawer
+				open={!!mapperPin}
+				node={mapperPin}
+				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
+			/>
 			<Dialog
 				title="Delete node"
 				open={isDeleteNodeModalOpen}

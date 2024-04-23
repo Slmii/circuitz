@@ -11,7 +11,7 @@ import { deleteNodeState } from 'lib/recoil';
 import { Icon } from 'components/Icon';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { CircularProgress } from 'components/Progress';
-import { FilterPin } from 'declarations/nodes.declarations';
+import { FilterPin } from 'declarations/canister.declarations';
 import { useNavigate } from 'react-router-dom';
 
 const absolutePosition = {

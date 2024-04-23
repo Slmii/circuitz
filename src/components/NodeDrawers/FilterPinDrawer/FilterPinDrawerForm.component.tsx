@@ -3,14 +3,14 @@ import { StandaloneEditor, Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select, Option } from 'components/Form/Select';
-import { B1, H5 } from 'components/Typography';
+import { H5 } from 'components/Typography';
 import { Node } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
 import { UseFormSetValue, useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { RadioButton } from 'components/Form/RadioButton';
-import { Button, TextButton } from 'components/Button';
+import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
@@ -22,11 +22,10 @@ import {
 	getPin,
 	stringifyJson
 } from 'lib/utils';
-import { FilterPin, Pin } from 'declarations/nodes.declarations';
+import { FilterPin, Pin } from 'declarations/canister.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
-import { OVERFLOW } from 'lib/constants';
-import { api } from 'api/index';
+import { OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
 
@@ -41,7 +40,6 @@ export const FilterPinDrawerForm = ({
 	filterType: 'FilterPin' | 'LookupFilterPin';
 	onProcessFilter: (data: Pin) => void;
 }) => {
-	const action = useGetParam('action');
 	const circuitId = useGetParam('circuitId');
 	const circuitIdNumber = Number(circuitId);
 
@@ -52,20 +50,6 @@ export const FilterPinDrawerForm = ({
 	);
 
 	const [outputSampleData, setOutputSampleData] = useState('');
-
-	const getFields = (sampleData: string): Option[] => {
-		// If there's no sample data, return an empty array
-		if (!sampleData.length) {
-			return [];
-		}
-
-		try {
-			// Get the fields from the input sample data
-			return getSampleDataFields(JSON.parse(sampleData));
-		} catch (error) {
-			return [];
-		}
-	};
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		const values: FilterPin = {
@@ -114,14 +98,7 @@ export const FilterPinDrawerForm = ({
 			schema={filterPinSchema}
 			myRef={formRef}
 			render={({ getValues, setValue }) => (
-				<Stack
-					direction="row"
-					spacing={4}
-					sx={{
-						overflowY: 'auto',
-						minHeight: 'calc(100vh - 205px)'
-					}}
-				>
+				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
 							{filterType === 'FilterPin'
@@ -134,17 +111,7 @@ export const FilterPinDrawerForm = ({
 								p: 2
 							}}
 						>
-							{action === 'edit' && !getValues().inputSampleData ? (
-								<B1>
-									Please use the{' '}
-									<TextButton onClick={() => handleOnFetchSampleData(setValue)}>Collect Sample Data</TextButton> button
-									to collect sample data
-								</B1>
-							) : (
-								<>
-									{isSampleDataFetching ? <SkeletonRules /> : <Rules fields={getFields(getValues().inputSampleData)} />}
-								</>
-							)}
+							{isSampleDataFetching ? <SkeletonRules /> : <Rules />}
 						</Paper>
 					</Stack>
 					<Divider orientation="vertical" flexItem />
@@ -173,7 +140,7 @@ export const FilterPinDrawerForm = ({
 									Preview
 								</Button>
 							</Stack>
-							<TipAlert>You can also insert the sample data yourself to save Cycles.</TipAlert>
+							<TipAlert>You can also populate the sample data yourself to save Cycles.</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
@@ -187,7 +154,7 @@ export const FilterPinDrawerForm = ({
 	);
 };
 
-const Rules = ({ fields }: { fields: Option[] }) => {
+const Rules = () => {
 	const [fieldSettingsIndex, setFieldSettingsIndex] = useState<number | null>(null);
 	const [isFieldHover, setIsFieldHover] = useState<Record<number, boolean>>({});
 
@@ -204,6 +171,23 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formFields.length]);
+
+	const getFields = (sampleData: string): Option[] => {
+		// If there's no sample data, return an empty array
+		if (!sampleData.length) {
+			return [];
+		}
+
+		try {
+			// Get the fields from the input sample data
+			return getSampleDataFields(JSON.parse(sampleData));
+		} catch (error) {
+			return [];
+		}
+	};
+
+	const inputSampleData = watch('inputSampleData');
+	const options = getFields(inputSampleData);
 
 	return (
 		<>
@@ -257,10 +241,10 @@ const Rules = ({ fields }: { fields: Option[] }) => {
 							onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
 							onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
 						>
-							<Select fullWidth name={`rules.${index}.field`} label="Field" options={fields} />
+							<Select fullWidth name={`rules.${index}.field`} label="Field" options={options} />
 							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
 							{values.rules[index].operandType === 'Field' ? (
-								<Select fullWidth name={`rules.${index}.value`} label="Value" options={fields} />
+								<Select fullWidth name={`rules.${index}.value`} label="Value" options={options} />
 							) : (
 								<Field fullWidth name={`rules.${index}.value`} label="Value" />
 							)}

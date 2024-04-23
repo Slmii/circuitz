@@ -17,3 +17,8 @@ export const OVERFLOW = {
 	maxHeight: 'calc(100vh - 205px)',
 	overflowY: 'auto'
 };
+
+export const OVERFLOW_FIELDS = {
+	overflowY: 'auto',
+	minHeight: 'calc(100vh - 205px)'
+};

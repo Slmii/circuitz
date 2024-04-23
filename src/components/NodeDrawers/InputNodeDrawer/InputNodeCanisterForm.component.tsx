@@ -7,14 +7,15 @@ import { H5, B2 } from 'components/Typography';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { v4 as uuidv4 } from 'uuid';
-import { useGetNodeCanisterId, useGetParam } from 'lib/hooks';
 import { Node } from 'lib/types';
-import { NodeType, VerificationType } from 'declarations/nodes.declarations';
+import { NodeType, VerificationType } from 'declarations/canister.declarations';
 import { toPrincipal, getInputCanisterFormValues } from 'lib/utils';
 import { inputCanisterSchema } from 'lib/schemas';
 import { StandaloneEditor } from 'components/Editor';
 import { InputNodeFormValues } from '../NodeDrawers.types';
 import { Alert } from 'components/Alert';
+import { ENV } from 'lib/constants';
+import { canisterId } from 'api/canisterIds';
 
 export const InputNodeCanisterForm = ({
 	formRef,
@@ -25,10 +26,7 @@ export const InputNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => Promise<void>;
 }) => {
-	const circuitId = useGetParam('circuitId');
-	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
-
-	const handleOnSubmit = async (data: InputNodeFormValues) => {
+	const handleOnSubmit = (data: InputNodeFormValues) => {
 		let verificationType: VerificationType = { None: null };
 		if (data.verificationType === 'token') {
 			verificationType = {
@@ -142,7 +140,7 @@ let address = Address {
 };
 
 let response: Result<(Result<String, Error>,), _> = call::call(
-	"${nodeCanisterId.toString()}".to_string(),
+	"${canisterId[ENV]}".to_string(),
 	"input_node",
 	(serde_json::to_string($address)),
 ).await;
@@ -177,7 +175,7 @@ const agent = new HttpAgent({
 
 const actor = Actor.createActor(idlFactory, {
 	agent,
-	canisterId: "${nodeCanisterId.toString()}"
+	canisterId: "${canisterId[ENV]}"
 });
 
 const response = await actor.input_node(JSON.stingify(address));

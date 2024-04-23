@@ -3,20 +3,14 @@ import { AuthClient, LocalStorage } from '@dfinity/auth-client';
 import { IDL } from '@dfinity/candid';
 import { HOST, II_AUTH } from 'lib/constants';
 import { getDelegation } from 'lib/utils';
-import { idlFactory as circuitsIdl } from 'declarations/circuits.declarations';
-import { idlFactory as nodesIdl } from 'declarations/nodes.declarations';
-import { idlFactory as usersIdl } from 'declarations/users.declarations';
 import { idlFactory as icIdl } from 'declarations/ic.declarations';
-import { idlFactory as tracesIdl } from 'declarations/traces.declarations';
+import { idlFactory as canisterIdl } from 'declarations/canister.declarations';
 
-export type Controller = 'circuits' | 'nodes' | 'users' | 'ic' | 'traces';
+export type Controller = 'canister' | 'ic';
 
 const idlFactoryMapping: Record<Controller, IDL.InterfaceFactory> = {
-	circuits: circuitsIdl,
-	nodes: nodesIdl,
-	users: usersIdl,
-	ic: icIdl,
-	traces: tracesIdl
+	canister: canisterIdl,
+	ic: icIdl
 };
 
 /**

@@ -9,7 +9,7 @@ import {
 	Operator,
 	Pin,
 	PinType
-} from 'declarations/nodes.declarations';
+} from 'declarations/canister.declarations';
 
 export interface Node {
 	id: number;

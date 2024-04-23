@@ -1,7 +1,7 @@
 import { useAddPin, useEditPin, useFormSubmit, useModal } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
 import { DeletePinModalProps, Node } from 'lib/types';
-import { Pin } from 'declarations/nodes.declarations';
+import { Pin } from 'declarations/canister.declarations';
 import { MapperPinDrawerForm } from './MapperPinDrawerForm.component';
 
 export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
@@ -61,7 +61,7 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 					: undefined
 			}
 		>
-			{node && <MapperPinDrawerForm formRef={formRef} node={node} />}
+			{node && <MapperPinDrawerForm formRef={formRef} node={node} onProcessMapper={handleOnSubmit} />}
 		</Drawer>
 	);
 };

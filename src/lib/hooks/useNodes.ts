@@ -2,8 +2,6 @@ import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstac
 import { api } from 'api/index';
 import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
 import { Node, SampleData } from 'lib/types';
-import { useGetCircuit } from './useCircuits';
-import { Principal } from '@dfinity/principal';
 import { useSnackbar } from './useSnackbar';
 
 export const useGetCircuitNode = (nodeId: number) => {
@@ -37,11 +35,6 @@ export const useGetSampleData = (
 		queryFn: () => api.Nodes.getSampleData(nodes),
 		...options
 	});
-};
-
-export const useGetNodeCanisterId = (circuitId: number) => {
-	const { data: circuit } = useGetCircuit(circuitId);
-	return circuit?.nodeCanisterId ?? Principal.anonymous();
 };
 
 export const useDeleteNode = () => {

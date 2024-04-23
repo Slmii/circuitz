@@ -4,6 +4,7 @@ import { OperandType } from 'lib/types';
 import * as yup from 'yup';
 
 export const filterPinSchema = yup.object().shape({
+	inputSampleData: yup.string().required(FORM_ERRORS.required),
 	condition: yup.string().oneOf(['Is', 'Not']).required(FORM_ERRORS.required),
 	conditionGroup: yup.string().when('rules', {
 		is: (rules: FilterRule[]) => rules.length > 1,

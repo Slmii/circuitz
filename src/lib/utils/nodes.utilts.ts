@@ -8,7 +8,7 @@ import type {
 	Operator as OldOperator,
 	Rule,
 	Token
-} from 'declarations/nodes.declarations';
+} from 'declarations/canister.declarations';
 import type {
 	LookCanisterArgType,
 	Node,
@@ -314,21 +314,45 @@ export const getNodeMetaData = (node: Node): { name: string; description: string
  * Get all the nested fields from the sample data object, seperated by a dot.
  */
 export function getSampleDataFields<T extends object>(obj: T, path: string[] = []): Option[] {
-	return Object.entries(obj).reduce<Option[]>((acc, [key, value]) => {
-		const newPath = [...path, key];
+	// To track unique paths
+	const fieldsSet = new Set<string>();
 
-		if (Array.isArray(value)) {
-			return acc;
-		}
+	const addField = (fieldPath: string[]): void => {
+		// Replace numeric indices with [*]
+		const label = fieldPath.join('.').replace(/\.(\d+)\./g, '[*]');
 
-		// Check if object, so not array, and not null, and not undefined
-		if (typeof value === 'object') {
-			return [...acc, ...getSampleDataFields(value, newPath)];
-		} else {
-			const path = newPath.join('.');
-			return [...acc, { id: path, label: path }];
-		}
-	}, []);
+		// Add to Set to ensure uniqueness
+		fieldsSet.add(label);
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const traverse = (currentObj: any, currentPath: string[]): void => {
+		Object.entries(currentObj).forEach(([key, value]) => {
+			const newPath = [...currentPath, key]; // Construct the new path
+
+			if (Array.isArray(value)) {
+				// TODO: Handle arrays
+				// if (value.length > 0 && typeof value[0] === 'object') {
+				// 	// Use '*' to denote array index placeholder
+				// 	traverse(value[0], [...newPath, '[*]']);
+				// } else {
+				// 	// If array is empty or not of objects, add the path
+				// 	addField(newPath);
+				// }
+			} else if (value && typeof value === 'object') {
+				// Recursively traverse objects
+				traverse(value, newPath);
+			} else {
+				// It's a leaf node, add the path
+				addField(newPath);
+			}
+		});
+	};
+
+	traverse(obj, path);
+
+	// Convert the unique paths in the Set to an array of Options
+	return Array.from(fieldsSet, label => ({ id: label, label }));
 }
 
 /**

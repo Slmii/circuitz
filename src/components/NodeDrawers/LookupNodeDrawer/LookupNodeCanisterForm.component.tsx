@@ -4,7 +4,7 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
 import { Node } from 'lib/types';
-import { NodeType } from 'declarations/nodes.declarations';
+import { NodeType } from 'declarations/canister.declarations';
 import { lookupCanisterSchema } from 'lib/schemas';
 import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -13,7 +13,7 @@ import { Principal } from '@dfinity/principal';
 import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg } from 'lib/utils';
 import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
-import { OVERFLOW } from 'lib/constants';
+import { OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';
 import { Alert } from 'components/Alert';
 
 export const LookupNodeCanisterForm = ({
@@ -26,7 +26,7 @@ export const LookupNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => void;
 }>) => {
-	const handleOnSubmit = async (data: LookupCanisterFormValues) => {
+	const handleOnSubmit = (data: LookupCanisterFormValues) => {
 		onProcessNode({
 			LookupCanister: {
 				name: data.name,
@@ -46,14 +46,7 @@ export const LookupNodeCanisterForm = ({
 			myRef={formRef}
 			schema={lookupCanisterSchema}
 			render={() => (
-				<Stack
-					direction="row"
-					spacing={4}
-					sx={{
-						overflowY: 'auto',
-						minHeight: 'calc(100vh - 205px)'
-					}}
-				>
+				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
 					<Stack spacing={4} width="50%" sx={OVERFLOW}>
 						<Stack direction="column" spacing={2}>
 							<Alert severity="info">

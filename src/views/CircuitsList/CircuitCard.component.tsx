@@ -8,6 +8,9 @@ import { Circuit as ICircuit } from 'lib/types';
 import { PropsWithChildren, useMemo } from 'react';
 import { CircuitStatus } from '../CircuitStatus';
 import pluralize from 'pluralize';
+import { toPrincipal } from 'lib/utils';
+import { canisterId } from 'api/canisterIds';
+import { ENV } from 'lib/constants';
 
 export const CircuitCard = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: () => void }) => {
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(circuit.id);
@@ -70,7 +73,7 @@ export const CircuitCard = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: ()
 						) : (
 							<Skeleton width="50%" variant="text" />
 						)}
-						<CircuitStatus nodesCanisterId={circuit.nodeCanisterId} />
+						<CircuitStatus nodesCanisterId={toPrincipal(canisterId[ENV])} />
 					</Stack>
 				</Stack>
 			</CircuitCardPaper>

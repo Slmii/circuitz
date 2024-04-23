@@ -1,17 +1,15 @@
-import type { FilterPin, LookupCanister, NodeType, Pin, _SERVICE } from 'declarations/nodes.declarations';
+import type { FilterPin, LookupCanister, NodeType, Pin, _SERVICE } from 'declarations/canister.declarations';
 import { ENV } from 'lib/constants';
-import { nodesCanisterId } from './canisterIds';
+import { canisterId } from './canisterIds';
 import { getFilterPinFormValues, getPin, httpRequest, isFilterTrue, mapToNode, unwrapResult } from 'lib/utils';
 import { Node, SampleData } from 'lib/types';
 import { createActor } from './actor.api';
-
-// TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
 
 /**
  * Get Node by id
  */
 export async function getNode(nodeId: number): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 	const wrapped = await actor.get_circuit_node(nodeId);
 
 	const node = await unwrapResult(wrapped);
@@ -22,7 +20,7 @@ export async function getNode(nodeId: number): Promise<Node> {
  * Get the Nodes for a circuit
  */
 export async function getNodes(circuitId: number): Promise<Node[]> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 	const wrapped = await actor.get_circuit_nodes(circuitId);
 
 	const unwrapped = await unwrapResult(wrapped);
@@ -33,7 +31,7 @@ export async function getNodes(circuitId: number): Promise<Node[]> {
  * Delete a node from a circuit
  */
 export async function deleteNode(nodeId: number): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const wrapped = await actor.delete_node(nodeId);
 	const unwrapped = await unwrapResult(wrapped);
@@ -44,7 +42,7 @@ export async function deleteNode(nodeId: number): Promise<Node> {
  * Add a node to a circuit
  */
 export async function addNode({ circuitId, data }: { circuitId: number; data: NodeType }): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const wrapped = await actor.add_node(circuitId, data);
 	const unwrapped = await unwrapResult(wrapped);
@@ -55,7 +53,7 @@ export async function addNode({ circuitId, data }: { circuitId: number; data: No
  * Edit a node
  */
 export async function editNode({ nodeId, data }: { nodeId: number; data: NodeType }): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const wrapped = await actor.edit_node(nodeId, data);
 	const unwrapped = await unwrapResult(wrapped);
@@ -66,7 +64,7 @@ export async function editNode({ nodeId, data }: { nodeId: number; data: NodeTyp
  * Preview Lookup Canister request
  */
 export async function previewLookupCanister(data: LookupCanister) {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 	return actor.preview_lookup_request(data);
 }
 
@@ -82,7 +80,7 @@ export async function editOrder({
 	dragIndex: number;
 	hoverIndex: number;
 }) {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const unwrapped = await actor.edit_order(nodeId, order);
 	return unwrapResult(unwrapped);
@@ -163,7 +161,7 @@ export async function toggleStatus({
 	circuitId: number;
 	enabled: boolean;
 }): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	if (enabled) {
 		const wrapped = await actor.disable_node(nodeId);
@@ -182,7 +180,7 @@ export async function toggleStatus({
  * Add a pin to a node
  */
 export async function addPin({ nodeId, data }: { nodeId: number; data: Pin }): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const wrapped = await actor.add_pin(nodeId, data);
 	const unwrapped = await unwrapResult(wrapped);
@@ -193,7 +191,7 @@ export async function addPin({ nodeId, data }: { nodeId: number; data: Pin }): P
  * Edit a pin on a node
  */
 export async function editPin({ nodeId, data }: { nodeId: number; data: Pin }): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const wrapped = await actor.edit_pin(nodeId, data);
 	const unwrapped = await unwrapResult(wrapped);
@@ -204,7 +202,7 @@ export async function editPin({ nodeId, data }: { nodeId: number; data: Pin }): 
  * Delete a pin from a node
  */
 export async function deletePin({ nodeId, data }: { nodeId: number; data: Pin }): Promise<Node> {
-	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
 
 	const wrapped = await actor.delete_pin(nodeId, data);
 	const unwrapped = await unwrapResult(wrapped);

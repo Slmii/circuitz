@@ -5,7 +5,7 @@ import { getDelegation, unwrapResult, validateIdentity } from 'lib/utils';
 import { createContext } from 'react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSnackbar } from 'lib/hooks';
-import { User } from 'declarations/users.declarations';
+import { User } from 'declarations/canister.declarations';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorage } from '@dfinity/auth-client';
 

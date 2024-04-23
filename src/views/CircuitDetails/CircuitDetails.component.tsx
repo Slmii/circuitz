@@ -1,8 +1,11 @@
 import { Box, Stack, Tab, Tabs } from '@mui/material';
-import { useGetCircuit, useGetCircuitNodes, useGetNodeCanisterId, useGetParam } from 'lib/hooks';
+import { useGetCircuit, useGetCircuitNodes, useGetParam } from 'lib/hooks';
 import { useState } from 'react';
 import { CircuitSideBar } from './CircuitSideBar.component';
 import { CircuitNodes } from './CircuitNodes.component';
+import { canisterId } from 'api/canisterIds';
+import { ENV } from 'lib/constants';
+import { toPrincipal } from 'lib/utils';
 
 function a11yProps(index: number) {
 	return {
@@ -37,7 +40,6 @@ export const CircuitDetails = () => {
 	const [tab, setTab] = useState(0);
 
 	const circuitId = useGetParam('circuitId');
-	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
 	const { data: nodes, isLoading: isNodesLoading } = useGetCircuitNodes(Number(circuitId));
 	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
 
@@ -52,11 +54,7 @@ export const CircuitDetails = () => {
 			height="calc(100vh - 64px)"
 			sx={{ borderTop: theme => `1px solid ${theme.palette.divider}` }}
 		>
-			<Stack
-				direction="column"
-				gap={1}
-				sx={{ flex: '1 1 80%', padding: 4, borderRight: theme => `1px solid ${theme.palette.divider}` }}
-			>
+			<Stack direction="column" gap={1} sx={{ flex: '1 1 80%', padding: 4 }}>
 				<Tabs value={tab} onChange={(_e, tab) => setTab(tab)} aria-label="basic tabs example">
 					<Tab label="Nodes" {...a11yProps(0)} />
 					<Tab label="Settings" {...a11yProps(1)} />
@@ -74,7 +72,7 @@ export const CircuitDetails = () => {
 					</CustomTabPanel>
 				</Box>
 			</Stack>
-			<CircuitSideBar circuit={circuit} nodeCanisterId={nodeCanisterId} />
+			<CircuitSideBar circuit={circuit} nodeCanisterId={toPrincipal(canisterId[ENV])} />
 		</Stack>
 	);
 };

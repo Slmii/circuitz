@@ -1,7 +1,7 @@
 import { useAddPin, useEditPin, useFormSubmit, useModal } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
 import { DeletePinModalProps, Node } from 'lib/types';
-import { Pin } from 'declarations/nodes.declarations';
+import { Pin } from 'declarations/canister.declarations';
 import { FilterPinDrawerForm } from '../FilterPinDrawer/FilterPinDrawerForm.component';
 
 export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {

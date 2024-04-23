@@ -2,7 +2,7 @@ import { Identity } from '@dfinity/agent';
 import { LocalStorage } from '@dfinity/auth-client';
 import { dateFromNano } from './date.utils';
 import { getLocalStorageIdentity } from './identity.utils';
-import { ApiError } from 'declarations/circuits.declarations';
+import { ApiError } from 'declarations/canister.declarations';
 import { ACTOR, PROVIDER } from 'lib/constants';
 
 export const actorLocalStorage = new LocalStorage(`${ACTOR}-`);

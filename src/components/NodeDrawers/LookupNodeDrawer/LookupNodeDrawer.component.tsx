@@ -1,6 +1,6 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useEditNode, useGetNodeCanisterId, useGetParam, usePreview } from 'lib/hooks';
-import { NodeType } from 'declarations/nodes.declarations';
+import { useAddNode, useEditNode, useGetParam, usePreview } from 'lib/hooks';
+import { NodeType } from 'declarations/canister.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { InputNodeDrawerProps, InputNodeFormValues, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
@@ -14,6 +14,8 @@ import { toPrincipal, getLookupCanisterValuesAsArg, stringifyJson } from 'lib/ut
 import { Dialog } from 'components/Dialog';
 import { useMemo, useState } from 'react';
 import { Alert, TipAlert } from 'components/Alert';
+import { ENV } from 'lib/constants';
+import { canisterId } from 'api/canisterIds';
 
 export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDrawerProps) => {
 	const [formData, setFormData] = useState<NodeType | null>(null);
@@ -74,7 +76,7 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 				onCancelText="Close"
 				onClose={() => setFormData(null)}
 			>
-				<Alert severity="error">
+				<Alert severity="warning">
 					Ensure the correct number of cycles is set. If unsure, use the <b>Preview request</b> to verify. Insufficient
 					cycles will cause the call to fail.
 				</Alert>
@@ -86,9 +88,6 @@ export const LookupNodeDrawer = ({ node, nodeType, open, onClose }: InputNodeDra
 type FormData<T extends NodeSourceType> = T extends 'LookupCanister' ? LookupCanisterFormValues : InputNodeFormValues;
 const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 	const { getValues, trigger } = useFormContext<FormData<typeof type>>();
-
-	const circuitId = useGetParam('circuitId');
-	const nodeCanisterId = useGetNodeCanisterId(Number(circuitId));
 	const { mutate: preview, data, error, isLoading: isPreviewLoading } = usePreview();
 
 	const response = useMemo(() => {
@@ -140,10 +139,9 @@ const PreviewRequest = ({ type }: { type: NodeSourceType }) => {
 				</Button>
 				<B2>
 					Before querying the desired canister, ensure Canister ID{' '}
-					<CopyTextButton textToCopy={nodeCanisterId.toString()}>{nodeCanisterId.toString()}</CopyTextButton> is
-					authorized.
+					<CopyTextButton textToCopy={canisterId[ENV]}>{canisterId[ENV]}</CopyTextButton> is authorized.
 				</B2>
-				<TipAlert>You can also insert the preview data yourself to save Cycles.</TipAlert>
+				<TipAlert>You can also populate the preview data yourself to save Cycles.</TipAlert>
 				<StandaloneEditor mode="javascript" value={response} height="100%" />
 			</Stack>
 		</>

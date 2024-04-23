@@ -4,23 +4,30 @@ import { _SERVICE } from 'declarations/ic.declarations';
 import { toStatus, transform, toPrincipal } from 'lib/utils';
 import { MANAGEMENT_CANISTER_ID } from './canisterIds';
 import { ic } from 'ic0';
+import { memo } from 'react';
 
 /**
  * Get the status of a canister
  */
 export async function getCanisterStatus(canisterId: Principal) {
-	const actor = await createActor<_SERVICE>(MANAGEMENT_CANISTER_ID, 'ic', {
-		callTransform: transform,
-		queryTransform: transform
-	});
+	// const actor = await createActor<_SERVICE>(MANAGEMENT_CANISTER_ID, 'ic', {
+	// 	callTransform: transform,
+	// 	queryTransform: transform
+	// });
 
-	const { status, ...rest } = await actor.canister_status({
-		canister_id: canisterId
-	});
+	// const { status, ...rest } = await actor.canister_status({
+	// 	canister_id: canisterId
+	// });
 
 	return {
-		status: toStatus(status),
-		...rest
+		// TODO
+		// status: toStatus(status),
+		// ...rest
+		status: 'running',
+		cycles: 0n,
+		idle_cycles_burned_per_day: 0n,
+		memory_size: 0n,
+		module_hash: []
 	};
 }
 

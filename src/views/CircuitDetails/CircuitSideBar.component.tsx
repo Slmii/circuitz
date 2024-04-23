@@ -16,6 +16,9 @@ export const CircuitSideBar = ({ circuit, nodeCanisterId }: { circuit: Circuit; 
 			spacing={4}
 			sx={{
 				flex: '1 1 20%',
+				height: 'calc(100vh - 65px)',
+				overflowY: 'auto',
+				borderLeft: theme => `1px solid ${theme.palette.divider}`,
 				padding: 4,
 				backgroundColor: 'background.paper'
 			}}

@@ -14,6 +14,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Chip from '@mui/material/Chip';
 import { Icon } from 'components/Icon';
 import Skeleton from '@mui/material/Skeleton';
+import { Popper } from '@mui/material';
 
 export const StandaloneAutocomplete = ({
 	name,
@@ -157,6 +158,18 @@ export const SelectAutocomplete = ({
 					getOptionLabel={option => option.label}
 					isOptionEqualToValue={(option, value) => option.id === value.id}
 					fullWidth={fullWidth}
+					PopperComponent={props => <Popper {...props} placement="bottom-start" />}
+					slotProps={
+						fullWidth
+							? {
+									popper: {
+										style: {
+											width: 'fit-content'
+										}
+									}
+							  }
+							: undefined
+					}
 					popupIcon={<Icon icon="search" fontSize="small" />}
 					renderOption={(props, option) => {
 						return (

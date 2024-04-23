@@ -1,4 +1,4 @@
-import { Pin } from 'declarations/nodes.declarations';
+import { Pin } from 'declarations/canister.declarations';
 
 export interface DeletePinModalProps {
 	nodeId: number;
