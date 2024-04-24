@@ -12,6 +12,7 @@ import 'ace-builds/src-noconflict/ext-language_tools';
 import { Controller } from 'react-hook-form';
 
 export const StandaloneEditor = ({
+	id,
 	value,
 	mode,
 	isReadOnly,
@@ -19,6 +20,7 @@ export const StandaloneEditor = ({
 	errorMessage,
 	onChange
 }: {
+	id: string;
 	value: string;
 	mode: string;
 	isReadOnly?: boolean;
@@ -33,13 +35,13 @@ export const StandaloneEditor = ({
 	}, [theme.palette.mode]);
 
 	return (
-		<Stack direction="column" spacing={0.25}>
+		<Stack direction="column" spacing={0.25} height={typeof height === 'number' ? `${height}px` : height}>
 			<AceEditor
 				mode={mode}
 				theme={aceEditorTheme}
-				name="UNIQUE_ID_OF_DIV"
+				name={id}
 				editorProps={{ $blockScrolling: true }}
-				height={typeof height === 'number' ? `${height}px` : height}
+				height="100%"
 				width="100%"
 				value={value}
 				readOnly={isReadOnly}
@@ -74,6 +76,7 @@ export const Editor = (props: {
 				<StandaloneEditor
 					{...props}
 					{...field}
+					id={props.name}
 					errorMessage={fieldState.error?.message}
 					onChange={value => {
 						field.onChange(value);

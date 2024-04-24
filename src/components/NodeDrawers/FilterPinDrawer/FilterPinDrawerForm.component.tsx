@@ -145,7 +145,13 @@ export const FilterPinDrawerForm = ({
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
-							<StandaloneEditor mode="javascript" isReadOnly value={outputSampleData} height={32} />
+							<StandaloneEditor
+								id="filter-pin-output-sample-data"
+								mode="javascript"
+								isReadOnly
+								value={outputSampleData}
+								height={32}
+							/>
 						</Stack>
 					</Stack>
 				</Stack>

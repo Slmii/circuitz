@@ -17,6 +17,7 @@ export const lookupCanisterSchema = yup.object().shape({
 			return false;
 		}
 	}),
+	inputSampleData: yup.string().required(FORM_ERRORS.required),
 	cycles: yup.string().matches(/^[0-9.,]+$/, FORM_ERRORS.numeric),
 	methodName: yup.string().required(FORM_ERRORS.required),
 	args: yup.array().of(
@@ -25,7 +26,7 @@ export const lookupCanisterSchema = yup.object().shape({
 			value: yup.string().when('dataType', {
 				is: (type: LookCanisterArgType) => type === 'Principal',
 				then: schema =>
-					schema.test('is-principal', FORM_ERRORS.canister, value => {
+					schema.test('is-principal', FORM_ERRORS.principal, value => {
 						try {
 							if (!value) {
 								return false;

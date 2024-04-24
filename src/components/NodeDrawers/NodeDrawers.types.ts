@@ -17,6 +17,12 @@ export interface InputNodeDrawerProps {
 	onClose: () => void;
 }
 
+export interface LookupNodeDrawerProps {
+	open: boolean;
+	node?: Node;
+	onClose: () => void;
+}
+
 export interface InputNodeFormValues {
 	name: string;
 	description: string;
@@ -34,6 +40,7 @@ export interface LookupCanisterFormValues {
 	methodName: string;
 	cycles: string;
 	args: LookupCanisterArg[];
+	inputSampleData: string;
 }
 
 export interface LookupCanisterArg {

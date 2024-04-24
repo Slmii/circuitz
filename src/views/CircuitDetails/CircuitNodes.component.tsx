@@ -157,7 +157,6 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<LookupNodeDrawer
-				nodeType={nodeType as NodeSourceType}
 				open={nodeType === 'LookupCanister' || nodeType === 'LookupHttpRequest'}
 				node={node}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}

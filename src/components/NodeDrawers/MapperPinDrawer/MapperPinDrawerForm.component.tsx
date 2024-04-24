@@ -146,7 +146,13 @@ export const MapperPinDrawerForm = ({
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
-							<StandaloneEditor mode="javascript" isReadOnly value={outputSampleData} height={500} />
+							<StandaloneEditor
+								id="mapper-pin-output-sample-data"
+								mode="javascript"
+								isReadOnly
+								value={outputSampleData}
+								height={500}
+							/>
 						</Stack>
 					</Stack>
 				</Stack>

@@ -29,7 +29,7 @@ export const HomePage = () => {
 						variant="contained"
 						onClick={() => {
 							if (user) {
-								return navigate('/dashboard');
+								return navigate('/circuits');
 							}
 
 							signInII();
@@ -108,7 +108,7 @@ export const HomePage = () => {
 						variant="contained"
 						onClick={() => {
 							if (user) {
-								return navigate('/dashboard');
+								return navigate('/circuits');
 							}
 
 							signInII();

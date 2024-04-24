@@ -11,7 +11,6 @@ export type Arg =
 	| { String: string }
 	| { Object: Array<[string, Arg]> }
 	| { Boolean: boolean }
-	| { Field: string }
 	| { Principal: Principal }
 	| { Array: Vec }
 	| { Number: number };
@@ -69,6 +68,7 @@ export interface LookupCanister {
 	args: Array<Arg>;
 	name: string;
 	description: [] | [string];
+	sample_data: [] | [string];
 	cycles: bigint;
 	canister: Principal;
 }
@@ -189,7 +189,6 @@ export type Vec = Array<
 	| { String: string }
 	| { Object: Array<[string, Arg]> }
 	| { Boolean: boolean }
-	| { Field: string }
 	| { Principal: Principal }
 	| { Array: Vec }
 	| { Number: number }
@@ -256,7 +255,6 @@ export const idlFactory = ({ IDL }: any) => {
 				String: IDL.Text,
 				Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
 				Boolean: IDL.Bool,
-				Field: IDL.Text,
 				Principal: IDL.Principal,
 				Array: Vec,
 				Number: IDL.Nat32
@@ -269,7 +267,6 @@ export const idlFactory = ({ IDL }: any) => {
 			String: IDL.Text,
 			Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
 			Boolean: IDL.Bool,
-			Field: IDL.Text,
 			Principal: IDL.Principal,
 			Array: Vec,
 			Number: IDL.Nat32
@@ -280,6 +277,7 @@ export const idlFactory = ({ IDL }: any) => {
 		args: IDL.Vec(Arg),
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
+		sample_data: IDL.Opt(IDL.Text),
 		cycles: IDL.Nat,
 		canister: IDL.Principal
 	});

@@ -114,6 +114,7 @@ export const InputNodeCanisterForm = ({
 							foundation and will undergo processing by the configured nodes.
 						</B2>
 						<StandaloneEditor
+							id="input-node-canister-sample-data"
 							mode="javascript"
 							onChange={value => setValue('sampleData', value)}
 							value={watch('sampleData')}
@@ -124,6 +125,7 @@ export const InputNodeCanisterForm = ({
 						<H5 fontWeight="bold">How do you transmit data to this Input Node?</H5>
 						<B2>Rust</B2>
 						<StandaloneEditor
+							id="input-node-canister-transmit-data-rust"
 							height={256}
 							mode="rust"
 							value={`
@@ -155,6 +157,7 @@ let response: Result<(Result<String, Error>,), _> = call::call(
 							</Alert>
 						)}
 						<StandaloneEditor
+							id="input-node-canister-transmit-data-js"
 							height={350}
 							mode="javascript"
 							value={`
@@ -209,7 +212,7 @@ const InputNodeVerficationType = () => {
 						endElement={
 							<IconButton
 								tooltip="Generate token"
-								icon="refresh-outline"
+								icon="refresh-linear"
 								onClick={() => setValue('verificationTypeToken', uuidv4())}
 							/>
 						}

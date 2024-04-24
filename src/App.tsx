@@ -9,7 +9,6 @@ function App() {
 			<Routes>
 				<Route element={<Layout />}>
 					<Route path="/" element={<HomePage />} />
-					<Route path="/dashboard" element={<RequireAuthentication>Dashboard</RequireAuthentication>} />
 					<Route element={<RequireAuthentication />}>
 						<Route path="/circuits" element={<CircuitsPage />} />
 						<Route path="/circuits/:circuitId" element={<CircuitPage />} />

@@ -143,7 +143,8 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 			description: '',
 			methodName: '',
 			name: '',
-			cycles: ''
+			cycles: '',
+			inputSampleData: ''
 		};
 	}
 
@@ -183,7 +184,8 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 		description: lookup.description[0] ?? '',
 		methodName: lookup.method,
 		name: lookup.name,
-		cycles: Number(lookup.cycles).toString()
+		cycles: Number(lookup.cycles).toString(),
+		inputSampleData: lookup.sample_data[0] ?? ''
 	};
 };
 
