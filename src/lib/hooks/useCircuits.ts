@@ -21,7 +21,8 @@ export const useAddCircuit = () => {
 				return [circuit, ...old];
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -58,7 +59,8 @@ export const useEditCircuit = () => {
 				};
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -103,7 +105,8 @@ export const useToggleCircuitStatus = () => {
 				previousCircuits
 			};
 		},
-		onError: (_error, variables, context) => {
+		onError: (error, variables, context) => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 
 			// Rollback

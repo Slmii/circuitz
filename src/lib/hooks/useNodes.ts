@@ -59,7 +59,8 @@ export const useDeleteNode = () => {
 				return nodes.filter(n => n.id !== node.id);
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -75,7 +76,8 @@ export const useAddNode = () => {
 			// Add the new node to the circuit nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], nodes => [...(nodes ?? []), node]);
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -102,7 +104,8 @@ export const useEditNode = () => {
 				return nodes;
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -129,7 +132,8 @@ export const useAddPin = () => {
 				return old;
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -156,7 +160,8 @@ export const useEditPin = () => {
 				return old;
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -183,7 +188,8 @@ export const useDeletePin = () => {
 				return old;
 			});
 		},
-		onError: () => {
+		onError: error => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 		}
 	});
@@ -224,7 +230,8 @@ export const useToggleNodeStatus = () => {
 				previousCircuitNodes
 			};
 		},
-		onError: (_error, variables, context) => {
+		onError: (error, variables, context) => {
+			console.error(error);
 			errorSnackbar(MUTATE_ERROR);
 
 			// Rollback
