@@ -199,7 +199,7 @@ const LookupCanisterArgs = () => {
 
 const Preview = ({ nodesLength }: { nodesLength: number }) => {
 	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
-	const { mutate: preview, data, error, isLoading: isPreviewLoading } = usePreview();
+	const { mutate: preview, data, error, isPending: isPreviewPending } = usePreview();
 
 	useEffect(() => {
 		if (!data) {
@@ -227,7 +227,7 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 			<H5 fontWeight="bold">Preview data</H5>
 			<Button
 				variant="contained"
-				loading={isPreviewLoading}
+				loading={isPreviewPending}
 				size="large"
 				startIcon="infinite"
 				onClick={async () => {

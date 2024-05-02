@@ -9,7 +9,8 @@ export const useAddCircuit = () => {
 	const queryClient = useQueryClient();
 	const { errorSnackbar } = useSnackbar();
 
-	return useMutation(api.Circuits.addCircuit, {
+	return useMutation({
+		mutationFn: api.Circuits.addCircuit,
 		onSuccess: circuit => {
 			queryClient.setQueryData<Circuit[]>([QUERY_KEYS.CIRCUITS], old => {
 				if (!old) {
@@ -30,7 +31,8 @@ export const useEditCircuit = () => {
 	const queryClient = useQueryClient();
 	const { errorSnackbar } = useSnackbar();
 
-	return useMutation(api.Circuits.editCircuit, {
+	return useMutation({
+		mutationFn: api.Circuits.editCircuit,
 		onSuccess: circuit => {
 			queryClient.setQueryData<Circuit[]>([QUERY_KEYS.CIRCUITS], old => {
 				if (!old) {
@@ -66,7 +68,8 @@ export const useToggleCircuitStatus = () => {
 	const queryClient = useQueryClient();
 	const { errorSnackbar } = useSnackbar();
 
-	return useMutation(api.Circuits.toggleStatus, {
+	return useMutation({
+		mutationFn: api.Circuits.toggleStatus,
 		onMutate: ({ circuitId, enabled }) => {
 			// Snapshot
 			const previousCircuit = queryClient.getQueryData([QUERY_KEYS.CIRCUIT, circuitId]);

@@ -4,3 +4,4 @@ export * from './Node';
 export * from './Trace';
 export * from './Draggable';
 export * from './Modal';
+export * from './ReactQuery';

@@ -8,8 +8,8 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 	const { formRef, submitter } = useFormSubmit();
 	const { openModal } = useModal<DeletePinModalProps>('DELETE_PIN');
 
-	const { mutateAsync: addPin, isLoading: isAddPinLoading } = useAddPin();
-	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
+	const { mutateAsync: addPin, isPending: isAddPinPending } = useAddPin();
+	const { mutateAsync: editPin, isPending: isEditPinPending } = useEditPin();
 
 	const mapperPin = node?.pins.find(pin => 'MapperPin' in pin.pin_type);
 
@@ -38,7 +38,7 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			onClose={onClose}
 			onSubmit={submitter}
 			isOpen={open}
-			isLoading={isAddPinLoading || isEditPinLoading}
+			isLoading={isAddPinPending || isEditPinPending}
 			title="Mapper Pin"
 			fullWidth
 			onDeletePin={

@@ -8,8 +8,8 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 	const { formRef, submitter } = useFormSubmit();
 	const { openModal } = useModal<DeletePinModalProps>('DELETE_PIN');
 
-	const { mutateAsync: addPin, isLoading: isAddPinLoading } = useAddPin();
-	const { mutateAsync: editPin, isLoading: isEditPinLoading } = useEditPin();
+	const { mutateAsync: addPin, isPending: isAddPinPending } = useAddPin();
+	const { mutateAsync: editPin, isPending: isEditPinPending } = useEditPin();
 
 	const lookupFilterPin = node?.pins.find(pin => 'LookupFilterPin' in pin.pin_type);
 
@@ -40,7 +40,7 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 			}}
 			onSubmit={submitter}
 			isOpen={open}
-			isLoading={isAddPinLoading || isEditPinLoading}
+			isLoading={isAddPinPending || isEditPinPending}
 			title="Lookup Filter Pin"
 			fullWidth
 			onDeletePin={

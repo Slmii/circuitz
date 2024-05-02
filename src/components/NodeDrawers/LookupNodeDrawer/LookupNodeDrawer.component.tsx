@@ -13,8 +13,8 @@ export const LookupNodeDrawer = ({ node, open, onClose }: LookupNodeDrawerProps)
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
 
-	const { mutateAsync: addNode, isLoading: isAddNodeLoading } = useAddNode();
-	const { mutateAsync: editNode, isLoading: isEditNodeLoading } = useEditNode();
+	const { mutateAsync: addNode, isPending: isAddNodePending } = useAddNode();
+	const { mutateAsync: editNode, isPending: isEditNodePending } = useEditNode();
 
 	const handleOnConfirmCycles = async () => {
 		if (!formData) {
@@ -47,7 +47,7 @@ export const LookupNodeDrawer = ({ node, open, onClose }: LookupNodeDrawerProps)
 				onClose={onClose}
 				onSubmit={submitter}
 				isOpen={open}
-				isLoading={isAddNodeLoading || isEditNodeLoading}
+				isLoading={isAddNodePending || isEditNodePending}
 				title="Lookup Canister"
 				fullWidth
 			>

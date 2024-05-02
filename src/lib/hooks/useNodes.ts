@@ -1,7 +1,7 @@
-import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api/index';
 import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
-import { Node, SampleData } from 'lib/types';
+import { CustomUseQueryOptions, Node, SampleData } from 'lib/types';
 import { useSnackbar } from './useSnackbar';
 import { useGetCircuit } from './useCircuits';
 import { Principal } from '@dfinity/principal';
@@ -30,7 +30,7 @@ export const useGetSampleData = (
 		circuitId: number;
 		nodes: Node[];
 	},
-	options?: UseQueryOptions<Record<'data', SampleData>>
+	options?: CustomUseQueryOptions<Record<'data', SampleData>>
 ) => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.SAMPLE_DATA, circuitId, nodes.map(node => node.id)],
@@ -48,7 +48,8 @@ export const useDeleteNode = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();
 
-	return useMutation(api.Nodes.deleteNode, {
+	return useMutation({
+		mutationFn: api.Nodes.deleteNode,
 		onSuccess: node => {
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], nodes => {
 				if (!nodes) {
@@ -68,7 +69,8 @@ export const useAddNode = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();
 
-	return useMutation(api.Nodes.addNode, {
+	return useMutation({
+		mutationFn: api.Nodes.addNode,
 		onSuccess: node => {
 			// Add the new node to the circuit nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], nodes => [...(nodes ?? []), node]);
@@ -83,7 +85,8 @@ export const useEditNode = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();
 
-	return useMutation(api.Nodes.editNode, {
+	return useMutation({
+		mutationFn: api.Nodes.editNode,
 		onSuccess: node => {
 			// Update the node to the circuit nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], nodes => {
@@ -109,7 +112,8 @@ export const useAddPin = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();
 
-	return useMutation(api.Nodes.addPin, {
+	return useMutation({
+		mutationFn: api.Nodes.addPin,
 		onSuccess: node => {
 			// Add the new pin to the nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
@@ -135,7 +139,8 @@ export const useEditPin = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();
 
-	return useMutation(api.Nodes.editPin, {
+	return useMutation({
+		mutationFn: api.Nodes.editPin,
 		onSuccess: node => {
 			// Edit pin in the nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
@@ -161,7 +166,8 @@ export const useDeletePin = () => {
 	const { errorSnackbar } = useSnackbar();
 	const queryClient = useQueryClient();
 
-	return useMutation(api.Nodes.deletePin, {
+	return useMutation({
+		mutationFn: api.Nodes.deletePin,
 		onSuccess: node => {
 			// Add the new pin to the nodes cache
 			queryClient.setQueryData<Node[]>([QUERY_KEYS.CIRCUIT_NODES, node.circuitId], old => {
@@ -184,14 +190,17 @@ export const useDeletePin = () => {
 };
 
 export const usePreview = () => {
-	return useMutation(api.Nodes.previewLookupCanister);
+	return useMutation({
+		mutationFn: api.Nodes.previewLookupCanister
+	});
 };
 
 export const useToggleNodeStatus = () => {
 	const queryClient = useQueryClient();
 	const { errorSnackbar } = useSnackbar();
 
-	return useMutation(api.Nodes.toggleStatus, {
+	return useMutation({
+		mutationFn: api.Nodes.toggleStatus,
 		onMutate: ({ nodeId, circuitId, enabled }) => {
 			// Snapshot
 			const previousCircuitNodes = queryClient.getQueryData([QUERY_KEYS.CIRCUIT_NODES, circuitId]);

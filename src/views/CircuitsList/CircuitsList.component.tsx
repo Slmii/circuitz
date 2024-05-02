@@ -23,8 +23,8 @@ export const Circuits = () => {
 	const [circuit, setCircuit] = useState<ICircuit | null>(null);
 
 	const { formRef, submitter } = useFormSubmit();
-	const { mutateAsync: add, isLoading: isAddLoading } = useAddCircuit();
-	const { mutateAsync: edit, isLoading: isEditLoading } = useEditCircuit();
+	const { mutateAsync: add, isPending: isAddPending } = useAddCircuit();
+	const { mutateAsync: edit, isPending: isEditPending } = useEditCircuit();
 	const { data: circuits, isLoading: isCircuitsLoading } = useGetCircuits();
 
 	const handleOnSubmit = async (data: CircuitFormValues) => {
@@ -47,7 +47,7 @@ export const Circuits = () => {
 	};
 
 	const isLoaded = !!circuits && !isCircuitsLoading;
-	const isLoading = isAddLoading || isEditLoading;
+	const isLoading = isAddPending || isEditPending;
 
 	return (
 		<>

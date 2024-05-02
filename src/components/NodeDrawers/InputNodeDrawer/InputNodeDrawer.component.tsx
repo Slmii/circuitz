@@ -30,8 +30,8 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
 
-	const { mutateAsync: addNode, isLoading: isAddNodeLoading } = useAddNode();
-	const { mutateAsync: editNode, isLoading: isEditNodeLoading } = useEditNode();
+	const { mutateAsync: addNode, isPending: isAddNodePending } = useAddNode();
+	const { mutateAsync: editNode, isPending: isEditNodePending } = useEditNode();
 
 	useEffect(() => {
 		// Set node source if we are in 'Edit' mode
@@ -69,7 +69,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 			}}
 			onSubmit={submitter}
 			isOpen={open}
-			isLoading={isAddNodeLoading || isEditNodeLoading}
+			isLoading={isAddNodePending || isEditNodePending}
 			isDisabled={!nodeSource}
 			title={`Input Node${nodeSource ? ` - ${nodeSource.toUpperCase()}` : ''}`}
 		>

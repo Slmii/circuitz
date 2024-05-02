@@ -32,8 +32,8 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
 
 	const circuitId = useGetParam('circuitId');
-	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
-	const { mutateAsync: deleteNode, isLoading: isDeleteNodeLoading } = useDeleteNode();
+	const { data: circuitTraces, isPending: isCircuitTracesPending } = useGetCircuitTraces(Number(circuitId));
+	const { mutateAsync: deleteNode, isPending: isDeleteNodePending } = useDeleteNode();
 	const { mutate: toggleStatus } = useToggleNodeStatus();
 
 	const navigate = useNavigate();
@@ -79,7 +79,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
-	if (!(!!circuitTraces && !isCircuitTracesLoading)) {
+	if (!(!!circuitTraces && !isCircuitTracesPending)) {
 		return null;
 	}
 
@@ -183,10 +183,10 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				}}
 				onConfirmText="Delete"
 				onConfirmColor="error"
-				onConfirmLoading={isDeleteNodeLoading}
+				onConfirmLoading={isDeleteNodePending}
 				onClose={() => setDeleteNodeState({ open: false })}
 				onCancelText="Cancel"
-				onCancelDisabled={isDeleteNodeLoading}
+				onCancelDisabled={isDeleteNodePending}
 			>
 				<B1>Are you sure you want to delete this node? This action cannot be undone.</B1>
 			</Dialog>
