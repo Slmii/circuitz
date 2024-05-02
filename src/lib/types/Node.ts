@@ -9,7 +9,7 @@ import {
 	Operator,
 	Pin,
 	PinType
-} from 'declarations/canister.declarations';
+} from 'declarations/nodes.declarations';
 
 export interface Node {
 	id: number;
@@ -35,22 +35,13 @@ export interface NodeSource {
 }
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-type NodeTypeKey = KeysOfUnion<NodeType>;
-type PinTypeKey = KeysOfUnion<PinType>;
-type ArgTypeKey = KeysOfUnion<Arg>;
-type OperatorTypeKey = KeysOfUnion<Operator>;
-type ConditionGroupTypeKey = KeysOfUnion<ConditionGroup>;
-type ConditionTypeKey = KeysOfUnion<Condition>;
-type OperandTypeKey = KeysOfUnion<OldOperandType>;
-type DataTypeKey = KeysOfUnion<OldDataType>;
-
-export type NodeSourceType = NodeTypeKey;
-export type PinSourceType = PinTypeKey;
-export type LookCanisterArgType = ArgTypeKey;
-export type OperatorType = OperatorTypeKey;
-export type ConditionGroupType = ConditionGroupTypeKey;
-export type ConditionType = ConditionTypeKey;
-export type OperandType = OperandTypeKey;
-export type DataType = DataTypeKey;
+export type NodeSourceType = KeysOfUnion<NodeType>;
+export type PinSourceType = KeysOfUnion<PinType>;
+export type LookCanisterArgType = KeysOfUnion<Arg>;
+export type OperatorType = KeysOfUnion<Operator>;
+export type ConditionGroupType = KeysOfUnion<ConditionGroup>;
+export type ConditionType = KeysOfUnion<Condition>;
+export type OperandType = KeysOfUnion<OldOperandType>;
+export type DataType = KeysOfUnion<OldDataType>;
 
 export type SampleData = Record<string, unknown>;

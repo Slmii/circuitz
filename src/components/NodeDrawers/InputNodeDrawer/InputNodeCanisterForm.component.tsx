@@ -8,7 +8,7 @@ import { useFormContext, useFieldArray } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { v4 as uuidv4 } from 'uuid';
 import { Node } from 'lib/types';
-import { NodeType, VerificationType } from 'declarations/canister.declarations';
+import { NodeType, VerificationType } from 'declarations/nodes.declarations';
 import { toPrincipal, getInputCanisterFormValues } from 'lib/utils';
 import { inputCanisterSchema } from 'lib/schemas';
 import { StandaloneEditor } from 'components/Editor';

@@ -1,6 +1,6 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
-import { NodeType } from 'declarations/canister.declarations';
+import { NodeType } from 'declarations/nodes.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { LookupNodeDrawerProps } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';

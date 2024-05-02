@@ -1,6 +1,6 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
 import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
-import { NodeType } from 'declarations/canister.declarations';
+import { NodeType } from 'declarations/nodes.declarations';
 import { InputNodeCanisterForm } from './InputNodeCanisterForm.component';
 import { H5 } from 'components/Typography';
 import { ButtonBase, Paper, Stack } from '@mui/material';

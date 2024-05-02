@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 		await authClient.login({
 			onSuccess: async () => {
 				await initUser();
-				navigate('/dashboard');
+				navigate('/circuits');
 			},
 			onError: error => {
 				setLoadingII(false);

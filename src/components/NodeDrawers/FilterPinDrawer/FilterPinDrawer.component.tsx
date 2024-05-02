@@ -2,7 +2,7 @@ import { useAddPin, useEditPin, useFormSubmit, useModal } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
 import { FilterPinDrawerForm } from './FilterPinDrawerForm.component';
 import { DeletePinModalProps, Node } from 'lib/types';
-import { Pin } from 'declarations/canister.declarations';
+import { Pin } from 'declarations/nodes.declarations';
 
 export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();

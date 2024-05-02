@@ -8,7 +8,7 @@ import type {
 	Operator as OldOperator,
 	Rule,
 	Token
-} from 'declarations/canister.declarations';
+} from 'declarations/nodes.declarations';
 import type {
 	LookCanisterArgType,
 	Node,

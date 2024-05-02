@@ -5,11 +5,13 @@ import { HOST, II_AUTH } from 'lib/constants';
 import { getDelegation } from 'lib/utils';
 import { idlFactory as icIdl } from 'declarations/ic.declarations';
 import { idlFactory as canisterIdl } from 'declarations/canister.declarations';
+import { idlFactory as nodesIdl } from 'declarations/nodes.declarations';
 
-export type Controller = 'canister' | 'ic';
+export type Controller = 'canister' | 'nodes' | 'ic';
 
 const idlFactoryMapping: Record<Controller, IDL.InterfaceFactory> = {
 	canister: canisterIdl,
+	nodes: nodesIdl,
 	ic: icIdl
 };
 

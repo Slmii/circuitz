@@ -9,4 +9,9 @@ export const canisterId: CanisterId = {
 	production: 'myqvg-hiaaa-aaaal-ac5da-cai'
 };
 
+export const nodesCanisterId: CanisterId = {
+	development: 'm7rts-kqaaa-aaaal-ac5dq-cai',
+	production: 'm7rts-kqaaa-aaaal-ac5dq-cai'
+};
+
 export const MANAGEMENT_CANISTER_ID = 'aaaaa-aa';

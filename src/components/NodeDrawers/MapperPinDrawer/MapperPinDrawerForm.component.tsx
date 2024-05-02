@@ -5,7 +5,7 @@ import { RefObject, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
 import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
 import { getPin, stringifyJson } from 'lib/utils';
-import { MapperPin, Pin } from 'declarations/canister.declarations';
+import { MapperPin, Pin } from 'declarations/nodes.declarations';
 import { OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';
 import { H5 } from 'components/Typography';
 import { Button } from 'components/Button';

@@ -4,7 +4,7 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
 import { Node } from 'lib/types';
-import { NodeType } from 'declarations/canister.declarations';
+import { NodeType } from 'declarations/nodes.declarations';
 import { lookupCanisterSchema } from 'lib/schemas';
 import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';

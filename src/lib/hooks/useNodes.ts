@@ -3,6 +3,8 @@ import { api } from 'api/index';
 import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
 import { Node, SampleData } from 'lib/types';
 import { useSnackbar } from './useSnackbar';
+import { useGetCircuit } from './useCircuits';
+import { Principal } from '@dfinity/principal';
 
 export const useGetCircuitNode = (nodeId: number) => {
 	return useQuery({
@@ -35,6 +37,11 @@ export const useGetSampleData = (
 		queryFn: () => api.Nodes.getSampleData(nodes),
 		...options
 	});
+};
+
+export const useGetNodeCanisterId = (circuitId: number) => {
+	const { data: circuit } = useGetCircuit(circuitId);
+	return circuit?.nodeCanisterId ?? Principal.anonymous();
 };
 
 export const useDeleteNode = () => {

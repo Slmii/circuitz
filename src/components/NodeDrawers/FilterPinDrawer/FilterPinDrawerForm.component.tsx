@@ -22,7 +22,7 @@ import {
 	getPin,
 	stringifyJson
 } from 'lib/utils';
-import { FilterPin, Pin } from 'declarations/canister.declarations';
+import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
 import { OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';

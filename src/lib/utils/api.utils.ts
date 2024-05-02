@@ -1,4 +1,4 @@
-import { HttpRequest } from 'declarations/canister.declarations';
+import { HttpRequest } from 'declarations/nodes.declarations';
 
 export const httpRequest = async (request: HttpRequest) => {
 	const requestBodyAsString = request.request_body[0] ? request.request_body[0] : '{}';

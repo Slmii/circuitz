@@ -11,7 +11,7 @@ import { deleteNodeState } from 'lib/recoil';
 import { Icon } from 'components/Icon';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { CircularProgress } from 'components/Progress';
-import { FilterPin } from 'declarations/canister.declarations';
+import { FilterPin } from 'declarations/nodes.declarations';
 import { useNavigate } from 'react-router-dom';
 
 const absolutePosition = {
@@ -151,7 +151,6 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
 	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
 	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
-	const hasLookupTransformPin = !!getPin<FilterPin>(node, 'LookupTransformPin');
 
 	return (
 		<Stack
@@ -185,17 +184,6 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 					})}
 				/>
 			)}
-			{hasLookupTransformPin && (
-				// Show only if LookupTransformPin is present
-				<IconButton
-					icon="transformer"
-					tooltip="LookupTransformPin"
-					color="primary"
-					{...stopPropagation({
-						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupTransformPin/edit`)
-					})}
-				/>
-			)}
 			{hasMapperPin && (
 				// Show only if MapperPin is present
 				<IconButton
@@ -226,7 +214,6 @@ const NodePins = ({
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
 	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
 	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
-	const hasLookupTransformPin = !!getPin<FilterPin>(node, 'LookupTransformPin');
 
 	const metadata = getNodeMetaData(node);
 
@@ -274,22 +261,8 @@ const NodePins = ({
 									})}
 								/>
 							)}
-							{!hasLookupTransformPin && (
-								// Show only if LookupTransformPin is not present
-								<IconButton
-									icon="transformer"
-									tooltip="LookupTransformPin"
-									{...stopPropagation({
-										onClick: () => {
-											onClosePins();
-											navigate(`/circuits/${node.circuitId}/nodes/${node.id}/LookupTransformPin/add`);
-										}
-									})}
-								/>
-							)}
 						</>
 					)}
-					{/* TODO: move to output node */}
 					{!hasMapperPin && (
 						// Show only if MapperPin is not present
 						<IconButton
