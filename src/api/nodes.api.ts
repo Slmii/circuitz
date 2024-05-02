@@ -112,8 +112,7 @@ export async function getSampleData(nodes: Node[]) {
 
 		// ==========
 
-		// TODO: add all pins logic
-
+		// Pin that executes before the node and checks if the node should be executed
 		const filterPin = getPin<FilterPin>(node, 'FilterPin');
 		if (filterPin) {
 			const filterPinFormValues = getFilterPinFormValues(filterPin);
@@ -125,12 +124,14 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
+		// Lookup Nodes
 		if ('LookupCanister' in node.nodeType) {
 			sampleData[`Node:${nodeIndex}`] = await previewLookupCanister(node.nodeType.LookupCanister);
 		} else if ('LookupHttpRequest' in node.nodeType) {
 			sampleData[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
+		// Pin that executes after the node and checks if the node should pass the data to the next node
 		const lookupfilterPin = getPin<FilterPin>(node, 'LookupFilterPin');
 		if (lookupfilterPin) {
 			const filterPinFormValues = getFilterPinFormValues(lookupfilterPin);
@@ -144,6 +145,8 @@ export async function getSampleData(nodes: Node[]) {
 				continue;
 			}
 		}
+
+		// TODO: add mapper pin logic
 	}
 
 	return sampleData;
