@@ -6,7 +6,7 @@ import { MapperPinFormValues } from '../NodeDrawers.types';
 import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
 import { getPin, stringifyJson } from 'lib/utils';
 import { MapperPin, Pin } from 'declarations/nodes.declarations';
-import { OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';
+import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { H5 } from 'components/Typography';
 import { Button } from 'components/Button';
 import { Editor, StandaloneEditor } from 'components/Editor';
@@ -141,7 +141,7 @@ export const MapperPinDrawerForm = ({
 									Preview
 								</Button>
 							</Stack>
-							<TipAlert>You can also populate the sample data yourself to save Cycles.</TipAlert>
+							<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={250} />
 						</Stack>
 						<Stack direction="column" spacing={2}>

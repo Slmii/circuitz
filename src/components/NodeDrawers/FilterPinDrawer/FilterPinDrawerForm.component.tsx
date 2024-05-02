@@ -25,7 +25,7 @@ import {
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { SkeletonRules } from 'components/Skeleton';
-import { OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';
+import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
 
@@ -140,7 +140,7 @@ export const FilterPinDrawerForm = ({
 									Preview
 								</Button>
 							</Stack>
-							<TipAlert>You can also populate the sample data yourself to save Cycles.</TipAlert>
+							<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>

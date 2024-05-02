@@ -13,7 +13,7 @@ import { Principal } from '@dfinity/principal';
 import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg, stringifyJson, toPrincipal } from 'lib/utils';
 import { Button, CopyTextButton } from 'components/Button';
 import { Select } from 'components/Form/Select';
-import { ENV, OVERFLOW, OVERFLOW_FIELDS } from 'lib/constants';
+import { ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { Icon } from 'components/Icon';
 import { Editor } from 'components/Editor';
@@ -103,7 +103,7 @@ export const LookupNodeCanisterForm = ({
 						Before querying the desired canister, ensure Canister ID{' '}
 						<CopyTextButton textToCopy={canisterId[ENV]}>{canisterId[ENV]}</CopyTextButton> is authorized.
 					</B2>
-					<TipAlert>You can also populate the sample data yourself to save Cycles.</TipAlert>
+					<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
 					<Editor name="inputSampleData" mode="javascript" height="50%" />
 					<PreviewCall />
 				</Stack>
