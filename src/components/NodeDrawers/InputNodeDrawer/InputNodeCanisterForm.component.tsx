@@ -11,11 +11,13 @@ import { Node } from 'lib/types';
 import { NodeType, VerificationType } from 'declarations/nodes.declarations';
 import { toPrincipal, getInputCanisterFormValues } from 'lib/utils';
 import { inputCanisterSchema } from 'lib/schemas';
-import { StandaloneEditor } from 'components/Editor';
+import { Editor, StandaloneEditor } from 'components/Editor';
 import { InputNodeFormValues } from '../NodeDrawers.types';
 import { Alert } from 'components/Alert';
 import { ENV } from 'lib/constants';
 import { canisterId } from 'api/canisterIds';
+import { useAuth } from 'lib/hooks';
+import { CopyTextButton } from 'components/Button';
 
 export const InputNodeCanisterForm = ({
 	formRef,
@@ -26,6 +28,8 @@ export const InputNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => Promise<void>;
 }) => {
+	const { user } = useAuth();
+
 	const handleOnSubmit = (data: InputNodeFormValues) => {
 		let verificationType: VerificationType = { None: null };
 		if (data.verificationType === 'token') {
@@ -57,7 +61,7 @@ export const InputNodeCanisterForm = ({
 			defaultValues={getInputCanisterFormValues(node)}
 			myRef={formRef}
 			schema={inputCanisterSchema}
-			render={({ watch, setValue }) => (
+			render={({ watch }) => (
 				<>
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
@@ -81,7 +85,11 @@ export const InputNodeCanisterForm = ({
 						<H5 fontWeight="bold">Verification</H5>
 						<B2>
 							It's advised to use the <b>Whitelist</b> verification for Input Nodes. This guarantees that only
-							designated principals (callers) can transmit data to the node.
+							designated principals{' '}
+							<CopyTextButton textToCopy={user?.user_id.toString() ?? ''}>
+								(click here to copy your principal)
+							</CopyTextButton>{' '}
+							can transmit data to the node.
 						</B2>
 						<RadioButton
 							name="verificationType"
@@ -113,12 +121,7 @@ export const InputNodeCanisterForm = ({
 							Here's the sample data for the circuit. Enter your sample JSON data below. This data will serve as the
 							foundation and will undergo processing by the configured nodes.
 						</B2>
-						<StandaloneEditor
-							id="input-node-canister-sample-data"
-							mode="javascript"
-							onChange={value => setValue('sampleData', value)}
-							value={watch('sampleData')}
-						/>
+						<Editor name="sampleData" mode="javascript" />
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>
@@ -197,7 +200,6 @@ const InputNodeVerficationType = () => {
 	const { fields, append, remove } = useFieldArray({
 		name: 'verificationTypeWhitelist'
 	});
-
 	return (
 		<>
 			{watch('verificationType') === 'token' && (

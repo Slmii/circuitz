@@ -52,6 +52,10 @@ export const StandaloneEditor = ({
 					enableLiveAutocompletion: true,
 					enableSnippets: true
 				}}
+				style={{
+					border: `1px solid ${errorMessage ? theme.palette.error.main : theme.palette.divider}`,
+					borderRadius: theme.shape.borderRadius
+				}}
 			/>
 			{errorMessage ? <FormHelperText error>{errorMessage}</FormHelperText> : null}
 		</Stack>
