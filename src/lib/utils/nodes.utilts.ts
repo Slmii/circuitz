@@ -272,11 +272,14 @@ export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
 	return 'Boolean';
 };
 
-export const getNodeMetaData = (node: Node): { name: string; description: string; type: NodeSourceType } => {
+export const getNodeMetaData = (
+	node: Node
+): { name: string; description: string; type: NodeSourceType; inputSampleData: string } => {
 	if ('LookupCanister' in node.nodeType) {
 		return {
 			name: node.nodeType.LookupCanister.name,
 			description: node.nodeType.LookupCanister.description[0] ?? '',
+			inputSampleData: node.nodeType.LookupCanister.sample_data[0] ?? '',
 			type: 'LookupCanister'
 		};
 	}
@@ -285,6 +288,7 @@ export const getNodeMetaData = (node: Node): { name: string; description: string
 		return {
 			name: node.nodeType.LookupHttpRequest.name,
 			description: node.nodeType.LookupHttpRequest.description[0] ?? '',
+			inputSampleData: '',
 			type: 'LookupHttpRequest'
 		};
 	}
@@ -293,6 +297,7 @@ export const getNodeMetaData = (node: Node): { name: string; description: string
 		return {
 			name: node.nodeType.Output.name,
 			description: node.nodeType.Output.description[0] ?? '',
+			inputSampleData: '',
 			type: 'Output'
 		};
 	}
@@ -301,6 +306,7 @@ export const getNodeMetaData = (node: Node): { name: string; description: string
 		return {
 			name: node.nodeType.HttpRequest.name,
 			description: node.nodeType.HttpRequest.description[0] ?? '',
+			inputSampleData: '',
 			type: 'HttpRequest'
 		};
 	}
@@ -308,6 +314,7 @@ export const getNodeMetaData = (node: Node): { name: string; description: string
 	return {
 		name: node.nodeType.Canister.name,
 		description: node.nodeType.Canister.description[0] ?? '',
+		inputSampleData: node.nodeType.Canister.sample_data[0] ?? '',
 		type: 'Canister'
 	};
 };

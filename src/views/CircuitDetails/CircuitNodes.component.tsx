@@ -32,7 +32,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
 
 	const circuitId = useGetParam('circuitId');
-	const { data: circuitTraces, isPending: isCircuitTracesPending } = useGetCircuitTraces(Number(circuitId));
+	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
 	const { mutateAsync: deleteNode, isPending: isDeleteNodePending } = useDeleteNode();
 	const { mutate: toggleStatus } = useToggleNodeStatus();
 
@@ -79,7 +79,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
-	if (!(!!circuitTraces && !isCircuitTracesPending)) {
+	if (!(!!circuitTraces && !isCircuitTracesLoading)) {
 		return null;
 	}
 

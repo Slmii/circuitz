@@ -1,6 +1,6 @@
 import MuiTooltip from '@mui/material/Tooltip';
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 
-export const Tooltip = ({ label, children }: { label: string; children: ReactElement }) => {
+export const Tooltip = ({ label, children }: { label: string | ReactNode; children: ReactElement }) => {
 	return <MuiTooltip title={label ? label : ''}>{children}</MuiTooltip>;
 };

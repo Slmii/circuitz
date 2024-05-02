@@ -10,7 +10,13 @@ import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.type
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
-import { getLookupCanisterFormValues, getLookupCanisterValuesAsArg, stringifyJson, toPrincipal } from 'lib/utils';
+import {
+	getLookupCanisterFormValues,
+	getLookupCanisterValuesAsArg,
+	getNodeMetaData,
+	stringifyJson,
+	toPrincipal
+} from 'lib/utils';
 import { Button, CopyTextButton } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
@@ -51,14 +57,21 @@ export const LookupNodeCanisterForm = ({
 		<Form<LookupCanisterFormValues>
 			action={handleOnSubmit}
 			defaultValues={() => {
-				const lastNode = circuitNodes?.[circuitNodes.length - 1];
+				const formValues = getLookupCanisterFormValues(node);
+				let inputSampleData = formValues.inputSampleData;
 
-				console.log({ lastNode });
+				// If there is no inputSampleData, populate it with the last node's output
+				if (!inputSampleData.length) {
+					const lastNode = circuitNodes?.[circuitNodes.length - 1];
+					if (lastNode) {
+						const metadata = getNodeMetaData(lastNode);
+						inputSampleData = metadata.inputSampleData;
+					}
+				}
 
 				return {
 					...getLookupCanisterFormValues(node),
-					inputSampleData:
-						!!lastNode && 'Canister' in lastNode.nodeType ? lastNode.nodeType.Canister.sample_data[0] ?? '' : ''
+					inputSampleData
 				};
 			}}
 			myRef={formRef}
@@ -101,7 +114,18 @@ export const LookupNodeCanisterForm = ({
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>
-						<H5 fontWeight="bold">Arguments</H5>
+						<Stack spacing={0.5} direction="row" alignItems="center">
+							<H5 fontWeight="bold">Arguments</H5>
+							<Icon
+								fontSize="small"
+								tooltip={
+									<>
+										You can also provide a path to a field in the preview data, eg: <code>{'{{data.name}}'}</code>
+									</>
+								}
+								icon="info"
+							/>
+						</Stack>
 						<B2>
 							Argument order matters. The first argument corresponds to the method's first parameter, the second to its
 							second, and so forth.
@@ -174,13 +198,7 @@ const LookupCanisterArgs = () => {
 						label="Data type"
 						placeholder="String"
 					/>
-					<Field
-						fullWidth
-						name={`args.${index}.value`}
-						label="Value"
-						placeholder="5"
-						endElement={<Icon tooltip="You can also provide a path to a field in the preview data" icon="question" />}
-					/>
+					<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
 					<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
 				</Stack>
 			))}
@@ -206,21 +224,21 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 			return;
 		}
 
-		const index = nodesLength + 1;
-		const key = `LookupCanister:${index}`;
+		const key = `LookupCanister:${nodesLength}`;
+		const inputSampleData = getValues('inputSampleData');
 
 		if (error) {
-			setValue('inputSampleData', stringifyJson({ [key]: error }));
+			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: error }));
 			return;
 		}
 
 		if ('Ok' in data) {
-			setValue('inputSampleData', stringifyJson({ [key]: JSON.parse(data.Ok) }));
+			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: JSON.parse(data.Ok) }));
 			return;
 		}
 
-		setValue('inputSampleData', stringifyJson({ [key]: data }));
-	}, [data, error, nodesLength, setValue]);
+		setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: data }));
+	}, [data, error, getValues, nodesLength, setValue]);
 
 	return (
 		<>
@@ -258,7 +276,6 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 
 const PreviewCall = () => {
 	const { watch } = useFormContext<LookupCanisterFormValues>();
-
 	const args = watch('args');
 
 	return (
