@@ -128,8 +128,7 @@ export async function getSampleData(nodes: Node[]) {
 		}
 
 		if ('LookupCanister' in node.nodeType) {
-			const lookupCanisterResponse = await previewLookupCanister(node.nodeType.LookupCanister);
-			sampleData.data[`Node:${nodeIndex}`] = lookupCanisterResponse;
+			sampleData.data[`Node:${nodeIndex}`] = await previewLookupCanister(node.nodeType.LookupCanister);
 		} else if ('LookupHttpRequest' in node.nodeType) {
 			sampleData.data[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}

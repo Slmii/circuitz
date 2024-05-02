@@ -17,6 +17,7 @@ export const lookupCanisterSchema = yup.object().shape({
 			return false;
 		}
 	}),
+	inputSampleData: yup.string().required(FORM_ERRORS.required),
 	cycles: yup.string().matches(/^[0-9.,]+$/, FORM_ERRORS.numeric),
 	methodName: yup.string().required(FORM_ERRORS.required),
 	args: yup.array().of(

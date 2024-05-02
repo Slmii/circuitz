@@ -18,7 +18,7 @@ import { Alert, TipAlert } from 'components/Alert';
 import { Icon } from 'components/Icon';
 import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
-import { usePreview } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam, usePreview } from 'lib/hooks';
 import createMapper from 'map-factory';
 
 export const LookupNodeCanisterForm = ({
@@ -82,7 +82,7 @@ export const LookupNodeCanisterForm = ({
 								type="number"
 								label="Cycles (T)"
 								placeholder="10_000_000_000"
-								helperText="To determine the required cycles, use the Preview request feature. The cycle count varies based on the number of arguments."
+								helperText="To determine the required cycles, use the Preview request feature. The cycles count varies based on the number of arguments."
 							/>
 						</Stack>
 					</Stack>
@@ -188,23 +188,29 @@ const Preview = () => {
 	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
 	const { mutate: preview, data, error, isLoading: isPreviewLoading } = usePreview();
 
+	const circuitId = useGetParam('circuitId');
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+
 	useEffect(() => {
 		if (!data) {
 			return;
 		}
 
+		const nodesLength = circuitNodes ? circuitNodes.length + 1 : 1;
+		const key = `Node:${nodesLength}`;
+
 		if (error) {
-			setValue('inputSampleData', stringifyJson(error));
+			setValue('inputSampleData', stringifyJson({ [key]: error }));
 			return;
 		}
 
 		if ('Ok' in data) {
-			setValue('inputSampleData', stringifyJson(JSON.parse(data.Ok)));
+			setValue('inputSampleData', stringifyJson({ [key]: JSON.parse(data.Ok) }));
 			return;
 		}
 
-		setValue('inputSampleData', stringifyJson(data));
-	}, [data, error, setValue]);
+		setValue('inputSampleData', stringifyJson({ [key]: data }));
+	}, [circuitNodes, data, error, setValue]);
 
 	return (
 		<>
@@ -215,7 +221,7 @@ const Preview = () => {
 				size="large"
 				startIcon="infinite"
 				onClick={async () => {
-					const isValid = await trigger();
+					const isValid = await trigger(['args', 'canisterId', 'methodName', 'cycles']);
 					if (!isValid) {
 						return;
 					}
@@ -224,11 +230,13 @@ const Preview = () => {
 					preview({
 						args: getLookupCanisterValuesAsArg(values.args),
 						canister: toPrincipal(values.canisterId),
-						description: values.description.length ? [values.description] : [],
 						method: values.methodName,
-						name: values.name,
 						cycles: BigInt(values.cycles),
-						sample_data: values.inputSampleData.length ? [values.inputSampleData] : []
+
+						// Preview dont need these values
+						description: [],
+						name: '',
+						sample_data: []
 					});
 				}}
 			>
@@ -241,46 +249,52 @@ const Preview = () => {
 const PreviewCall = () => {
 	const { watch } = useFormContext<LookupCanisterFormValues>();
 
+	const args = watch('args');
+
 	return (
 		<pre>{`
 const canister = ic("${watch('canisterId')}");
-const response = await canister.call("${watch('methodName')}", ${watch('args')
-			.map(arg => {
-				const returnAsType = (arg: LookupCanisterArg, value: unknown) => {
-					if (arg.dataType === 'String' || arg.dataType === 'Principal') {
-						return `"${value}"`;
-					}
+const response = await canister.call("${watch('methodName')}"${
+			args.length
+				? `, ${args
+						.map(arg => {
+							const returnAsType = (arg: LookupCanisterArg, value: unknown) => {
+								if (arg.dataType === 'String' || arg.dataType === 'Principal') {
+									return `"${value}"`;
+								}
 
-					if (arg.dataType === 'BigInt') {
-						return `${value}n`;
-					}
+								if (arg.dataType === 'BigInt') {
+									return `${value}n`;
+								}
 
-					if (arg.dataType === 'Array' || arg.dataType === 'Object') {
-						return JSON.stringify(value);
-					}
+								if (arg.dataType === 'Array' || arg.dataType === 'Object') {
+									return JSON.stringify(value);
+								}
 
-					return value;
-				};
+								return value;
+							};
 
-				// Check if arg.value is between curly braces
-				if (arg.value.startsWith('{{') && arg.value.endsWith('}}')) {
-					// Get the value between the curly braces
-					const key = arg.value.slice(2, -2);
+							// Check if arg.value is between curly braces
+							if (arg.value.startsWith('{{') && arg.value.endsWith('}}')) {
+								// Get the value between the curly braces
+								const key = arg.value.slice(2, -2);
 
-					const mapper = createMapper();
-					mapper.map(key).to('value');
+								const mapper = createMapper();
+								mapper.map(key).to('value');
 
-					try {
-						const output = mapper.execute(JSON.parse(watch('inputSampleData')));
-						return returnAsType(arg, output.value);
-					} catch (error) {
-						return '';
-					}
-				}
+								try {
+									const output = mapper.execute(JSON.parse(watch('inputSampleData')));
+									return returnAsType(arg, output.value);
+								} catch (error) {
+									return '';
+								}
+							}
 
-				return returnAsType(arg, arg.value);
-			})
-			.join(', ')});
+							return returnAsType(arg, arg.value);
+						})
+						.join(', ')}`
+				: ''
+		});
 						`}</pre>
 	);
 };
