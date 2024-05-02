@@ -49,7 +49,7 @@ export const InputNodeCanisterForm = ({
 			Canister: {
 				description: data.description.length ? [data.description] : [],
 				name: data.name,
-				sample_data: data.sampleData.length ? [data.sampleData] : [],
+				sample_data: data.inputSampleData.length ? [data.inputSampleData] : [],
 				verification_type: verificationType
 			}
 		});
@@ -121,7 +121,7 @@ export const InputNodeCanisterForm = ({
 							Here's the sample data for the circuit. Enter your sample JSON data below. This data will serve as the
 							foundation and will undergo processing by the configured nodes.
 						</B2>
-						<Editor name="sampleData" mode="javascript" />
+						<Editor name="inputSampleData" mode="javascript" />
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>

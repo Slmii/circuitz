@@ -30,7 +30,7 @@ export interface InputNodeFormValues {
 	verificationTypeToken: string;
 	verificationTypeTokenField: string;
 	verificationTypeWhitelist: { principal: string }[];
-	sampleData: string;
+	inputSampleData: string;
 }
 
 export interface LookupCanisterFormValues {

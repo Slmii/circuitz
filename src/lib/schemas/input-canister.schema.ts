@@ -5,7 +5,7 @@ import * as yup from 'yup';
 
 export const inputCanisterSchema = yup.object().shape({
 	name: yup.string().required(FORM_ERRORS.required),
-	sampleData: yup.string().required(FORM_ERRORS.required),
+	inputSampleData: yup.string().required(FORM_ERRORS.required),
 	verificationType: yup.string().oneOf(['token', 'whitelist', 'none'], 'Invalid verification type'),
 	verificationTypeToken: yup.string().when('verificationType', {
 		is: (type: VerificationType) => type === 'token',
