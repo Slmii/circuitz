@@ -200,6 +200,7 @@ const InputNodeVerficationType = () => {
 	const { fields, append, remove } = useFieldArray({
 		name: 'verificationTypeWhitelist'
 	});
+
 	return (
 		<>
 			{watch('verificationType') === 'token' && (
