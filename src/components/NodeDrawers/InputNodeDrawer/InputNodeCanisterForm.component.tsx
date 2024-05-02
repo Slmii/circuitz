@@ -65,7 +65,7 @@ export const InputNodeCanisterForm = ({
 				<>
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
-							An Input Node accepts data from the external world and is the initial Node in your Circuit.
+							An Input Node accepts data from the outside world and is the initial Node in your Circuit.
 						</Alert>
 						<H5 fontWeight="bold">General</H5>
 						<Stack direction="column" spacing={4}>
