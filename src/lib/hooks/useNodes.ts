@@ -30,7 +30,7 @@ export const useGetSampleData = (
 		circuitId: number;
 		nodes: Node[];
 	},
-	options?: CustomUseQueryOptions<Record<'data', SampleData>>
+	options?: CustomUseQueryOptions<SampleData>
 ) => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.SAMPLE_DATA, circuitId, nodes.map(node => node.id)],

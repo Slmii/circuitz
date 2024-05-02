@@ -89,9 +89,7 @@ export async function editOrder({
 }
 
 export async function getSampleData(nodes: Node[]) {
-	const sampleData: Record<'data', SampleData> = {
-		data: {}
-	};
+	let sampleData: SampleData = {};
 
 	for (const [index, node] of nodes.entries()) {
 		const nodeIndex = index + 1;
@@ -104,11 +102,11 @@ export async function getSampleData(nodes: Node[]) {
 		// Input Nodes (Starting point)
 		if ('Canister' in node.nodeType) {
 			const sampleDataAsString = node.nodeType.Canister.sample_data[0] ? node.nodeType.Canister.sample_data[0] : '{}';
-			sampleData.data = JSON.parse(sampleDataAsString);
+			sampleData = JSON.parse(sampleDataAsString);
 		}
 
 		if ('HttpRequest' in node.nodeType) {
-			sampleData.data = await httpRequest(node.nodeType.HttpRequest);
+			sampleData = await httpRequest(node.nodeType.HttpRequest);
 		}
 		// End Input Nodes
 
@@ -128,9 +126,9 @@ export async function getSampleData(nodes: Node[]) {
 		}
 
 		if ('LookupCanister' in node.nodeType) {
-			sampleData.data[`Node:${nodeIndex}`] = await previewLookupCanister(node.nodeType.LookupCanister);
+			sampleData[`Node:${nodeIndex}`] = await previewLookupCanister(node.nodeType.LookupCanister);
 		} else if ('LookupHttpRequest' in node.nodeType) {
-			sampleData.data[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
+			sampleData[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
 		const lookupfilterPin = getPin<FilterPin>(node, 'LookupFilterPin');
@@ -141,7 +139,7 @@ export async function getSampleData(nodes: Node[]) {
 			const isTrue = isFilterTrue(filterPinFormValues);
 			if (!isTrue) {
 				// Remove the lookup data from the sample data
-				delete sampleData.data[`Node:${nodeIndex}`];
+				delete sampleData[`Node:${nodeIndex}`];
 
 				continue;
 			}
