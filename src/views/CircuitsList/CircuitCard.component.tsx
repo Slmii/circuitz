@@ -48,11 +48,11 @@ export const CircuitCard = ({ circuit, onEdit }: { circuit: ICircuit; onEdit: ()
 									icon: 'edit',
 									action: onEdit
 								},
-								{
-									id: 'clone',
-									label: 'Clone',
-									icon: 'copy'
-								},
+								// {
+								// 	id: 'clone',
+								// 	label: 'Clone',
+								// 	icon: 'copy'
+								// },
 								{
 									id: 'delete',
 									label: 'Delete',

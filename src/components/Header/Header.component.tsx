@@ -42,16 +42,16 @@ export const Header = () => {
 								icon: 'circuit',
 								action: () => navigate('/circuits')
 							},
-							{
-								id: 'settings',
-								label: 'Settings',
-								icon: 'settings'
-							},
-							{
-								id: 'feedback',
-								label: 'Bug/Feedback',
-								icon: 'message'
-							},
+							// {
+							// 	id: 'settings',
+							// 	label: 'Settings',
+							// 	icon: 'settings'
+							// },
+							// {
+							// 	id: 'feedback',
+							// 	label: 'Bug/Feedback',
+							// 	icon: 'message'
+							// },
 							{
 								id: 'signout',
 								label: 'Sign Out',
