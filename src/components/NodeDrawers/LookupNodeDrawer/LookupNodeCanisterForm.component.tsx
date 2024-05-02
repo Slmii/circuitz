@@ -30,6 +30,9 @@ export const LookupNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => void;
 }) => {
+	const circuitId = useGetParam('circuitId');
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+
 	const handleOnSubmit = (data: LookupCanisterFormValues) => {
 		onProcessNode({
 			LookupCanister: {
@@ -47,7 +50,17 @@ export const LookupNodeCanisterForm = ({
 	return (
 		<Form<LookupCanisterFormValues>
 			action={handleOnSubmit}
-			defaultValues={getLookupCanisterFormValues(node)}
+			defaultValues={() => {
+				const lastNode = circuitNodes?.[circuitNodes.length - 1];
+
+				console.log({ lastNode });
+
+				return {
+					...getLookupCanisterFormValues(node),
+					inputSampleData:
+						!!lastNode && 'Canister' in lastNode.nodeType ? lastNode.nodeType.Canister.sample_data[0] ?? '' : ''
+				};
+			}}
 			myRef={formRef}
 			schema={lookupCanisterSchema}
 		>
@@ -98,7 +111,7 @@ export const LookupNodeCanisterForm = ({
 				</Stack>
 				<Divider orientation="vertical" flexItem />
 				<Stack direction="column" spacing={2} width="50%">
-					<Preview />
+					<Preview nodesLength={circuitNodes?.length ?? 0} />
 					<B2>
 						Before querying the desired canister, ensure Canister ID{' '}
 						<CopyTextButton textToCopy={canisterId[ENV]}>{canisterId[ENV]}</CopyTextButton> is authorized.
@@ -184,20 +197,17 @@ const LookupCanisterArgs = () => {
 	);
 };
 
-const Preview = () => {
+const Preview = ({ nodesLength }: { nodesLength: number }) => {
 	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
 	const { mutate: preview, data, error, isLoading: isPreviewLoading } = usePreview();
-
-	const circuitId = useGetParam('circuitId');
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	useEffect(() => {
 		if (!data) {
 			return;
 		}
 
-		const nodesLength = circuitNodes ? circuitNodes.length + 1 : 1;
-		const key = `Node:${nodesLength}`;
+		const index = nodesLength + 1;
+		const key = `LookupCanister:${index}`;
 
 		if (error) {
 			setValue('inputSampleData', stringifyJson({ [key]: error }));
@@ -210,7 +220,7 @@ const Preview = () => {
 		}
 
 		setValue('inputSampleData', stringifyJson({ [key]: data }));
-	}, [circuitNodes, data, error, setValue]);
+	}, [data, error, nodesLength, setValue]);
 
 	return (
 		<>
