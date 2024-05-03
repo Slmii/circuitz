@@ -7,25 +7,23 @@ import { H5 } from 'components/Typography';
 import { Node } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
-import { UseFormSetValue, useFieldArray, useFormContext } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { RadioButton } from 'components/Form/RadioButton';
 import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
-import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
 import {
 	getFilterPinValuesAsArg,
 	getSampleDataFields,
 	getFilterPinFormValues,
 	isFilterTrue,
 	getPin,
-	stringifyJson,
 	getNodeMetaData
 } from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
-import { SkeletonRules } from 'components/Skeleton';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
@@ -41,16 +39,11 @@ export const FilterPinDrawerForm = ({
 	filterType: 'FilterPin' | 'LookupFilterPin';
 	onProcessFilter: (data: Pin) => void;
 }) => {
+	const [outputSampleData, setOutputSampleData] = useState('');
 	const circuitId = useGetParam('circuitId');
 	const circuitIdNumber = Number(circuitId);
 
 	const { data: circuitNodes } = useGetCircuitNodes(circuitIdNumber);
-	const { isFetching: isSampleDataFetching, refetch: refetchSampleData } = useGetSampleData(
-		{ circuitId: circuitIdNumber, nodes: circuitNodes ?? [] },
-		{ enabled: false }
-	);
-
-	const [outputSampleData, setOutputSampleData] = useState('');
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		const values: FilterPin = {
@@ -83,12 +76,6 @@ export const FilterPinDrawerForm = ({
 		}
 	};
 
-	// Fetch sample data
-	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<FilterPinFormValues>) => {
-		const { data: sampleData } = await refetchSampleData();
-		setValueInForm('inputSampleData', stringifyJson(sampleData));
-	};
-
 	return (
 		<Form<FilterPinFormValues>
 			action={handleOnSubmit}
@@ -97,14 +84,10 @@ export const FilterPinDrawerForm = ({
 				const formValues = getFilterPinFormValues(filterPin);
 				let inputSampleData = formValues.inputSampleData;
 
-				// If there is no inputSampleData, populate it with the output of the node before the Lookup Node
-				// Meaning we want a sample data thats not tampered with by the Lookup Node
-				if (!inputSampleData.length) {
-					const lastNode = circuitNodes?.[circuitNodes.length - (filterType === 'LookupFilterPin' ? 1 : 2)];
-					if (lastNode) {
-						const metadata = getNodeMetaData(lastNode);
-						inputSampleData = metadata.inputSampleData;
-					}
+				const lastNode = circuitNodes?.[circuitNodes.length - (filterType === 'LookupFilterPin' ? 1 : 2)];
+				if (lastNode) {
+					const metadata = getNodeMetaData(lastNode);
+					inputSampleData = metadata.inputSampleData;
 				}
 
 				return {
@@ -114,7 +97,7 @@ export const FilterPinDrawerForm = ({
 			}}
 			schema={filterPinSchema}
 			myRef={formRef}
-			render={({ getValues, setValue }) => (
+			render={({ getValues }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
@@ -128,35 +111,23 @@ export const FilterPinDrawerForm = ({
 								p: 2
 							}}
 						>
-							{isSampleDataFetching ? <SkeletonRules /> : <Rules />}
+							<Rules />
 						</Paper>
 					</Stack>
 					<Divider orientation="vertical" flexItem />
 					<Stack direction="column" spacing={4} width="50%" height="100%">
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Input</H5>
-							<Stack direction="row" spacing={1}>
-								<Button
-									fullWidth
-									variant="outlined"
-									loading={isSampleDataFetching}
-									size="large"
-									onClick={() => handleOnFetchSampleData(setValue)}
-									tooltip="This action will activate every node within this circuit. Collecting Sample Data might consume cycles if there's one or more Lookup Nodes in the circuit."
-								>
-									Collect Sample Data
-								</Button>
-								<Button
-									fullWidth
-									variant="contained"
-									size="large"
-									startIcon="filter-linear"
-									disabled={isSampleDataFetching || !getValues().inputSampleData}
-									onClick={() => handleOnPreview(getValues())}
-								>
-									Preview
-								</Button>
-							</Stack>
+							<Button
+								fullWidth
+								variant="contained"
+								size="large"
+								startIcon="filter-linear"
+								disabled={!getValues().inputSampleData}
+								onClick={() => handleOnPreview(getValues())}
+							>
+								Preview
+							</Button>
 							<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={450} />
 						</Stack>

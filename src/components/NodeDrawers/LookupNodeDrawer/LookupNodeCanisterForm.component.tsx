@@ -224,7 +224,7 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 			return;
 		}
 
-		const key = `LookupCanister:${nodesLength}`;
+		const key = `Node:${nodesLength}`;
 		const inputSampleData = getValues('inputSampleData');
 
 		if (error) {
