@@ -1,17 +1,15 @@
-import { Divider, Paper, Stack } from '@mui/material';
+import { Divider, FormHelperText, Paper, Stack } from '@mui/material';
 import { Form } from 'components/Form';
 import { Node } from 'lib/types';
 import { RefObject, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
-import { useGetCircuitNodes, useGetParam, useGetSampleData } from 'lib/hooks';
 import { getPin, stringifyJson } from 'lib/utils';
 import { MapperPin, Pin } from 'declarations/nodes.declarations';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { H5 } from 'components/Typography';
 import { Button } from 'components/Button';
 import { Editor, StandaloneEditor } from 'components/Editor';
-import { UseFormSetValue, useFieldArray } from 'react-hook-form';
-import { SkeletonMapperPinField } from 'components/Skeleton';
+import { useFieldArray } from 'react-hook-form';
 import { Alert, TipAlert } from 'components/Alert';
 import { IconButton } from 'components/IconButton';
 import { Field } from 'components/Form/Field';
@@ -28,14 +26,6 @@ export const MapperPinDrawerForm = ({
 	node: Node;
 	onProcessMapper: (data: Pin) => void;
 }) => {
-	const circuitId = useGetParam('circuitId');
-
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
-	const { isFetching: isSampleDataFetching, refetch: refetchSampleData } = useGetSampleData(
-		{ circuitId: Number(circuitId), nodes: circuitNodes ?? [] },
-		{ enabled: false }
-	);
-
 	const [outputSampleData, setOutputSampleData] = useState('');
 
 	const handleOnPreview = (formValues: MapperPinFormValues) => {
@@ -57,12 +47,6 @@ export const MapperPinDrawerForm = ({
 		} catch (error) {
 			setOutputSampleData((error as Error).message);
 		}
-	};
-
-	// Fetch sample data
-	const handleOnFetchSampleData = async (setValueInForm: UseFormSetValue<MapperPinFormValues>) => {
-		const { data: sampleData } = await refetchSampleData();
-		setValueInForm('inputSampleData', stringifyJson(sampleData));
 	};
 
 	const handleOnSubmit = (data: MapperPinFormValues) => {
@@ -100,7 +84,7 @@ export const MapperPinDrawerForm = ({
 			}}
 			schema={mapperPinSchema}
 			myRef={formRef}
-			render={({ getValues, setValue }) => (
+			render={({ getValues, clearErrors, trigger, formState: { errors } }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
 					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
 						<Alert severity="info">
@@ -109,38 +93,38 @@ export const MapperPinDrawerForm = ({
 						<H5 fontWeight="bold">Fields</H5>
 						<Paper
 							sx={{
-								p: 2
+								p: 2,
+								// In case there are no fields and there is an error show a red border
+								border:
+									getValues('fields').length === 0 && errors.fields
+										? theme => `1px solid ${theme.palette.error.main}`
+										: undefined
 							}}
 						>
-							{isSampleDataFetching ? <SkeletonMapperPinField /> : <Fields />}
+							<Fields onClearError={() => clearErrors('fields')} />
 						</Paper>
+						{errors.fields && <FormHelperText error>{errors.fields.message}</FormHelperText>}
 					</Stack>
 					<Divider orientation="vertical" flexItem />
 					<Stack direction="column" spacing={4} width="50%" height="100%">
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Input</H5>
-							<Stack direction="row" spacing={1}>
-								<Button
-									fullWidth
-									variant="outlined"
-									size="large"
-									loading={isSampleDataFetching}
-									onClick={() => handleOnFetchSampleData(setValue)}
-									tooltip="This action will activate every node within this circuit. Collecting Sample Data might consume cycles if there's one or more Lookup Nodes in the circuit."
-								>
-									Collect Sample Data
-								</Button>
-								<Button
-									fullWidth
-									variant="contained"
-									size="large"
-									startIcon="filter-linear"
-									disabled={isSampleDataFetching}
-									onClick={() => handleOnPreview(getValues())}
-								>
-									Preview
-								</Button>
-							</Stack>
+							<Button
+								fullWidth
+								variant="contained"
+								size="large"
+								startIcon="filter-linear"
+								onClick={async () => {
+									const isValid = await trigger();
+									if (!isValid) {
+										return;
+									}
+
+									handleOnPreview(getValues());
+								}}
+							>
+								Preview
+							</Button>
 							<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
 							<Editor name="inputSampleData" mode="javascript" height={250} />
 						</Stack>
@@ -161,34 +145,33 @@ export const MapperPinDrawerForm = ({
 	);
 };
 
-const Fields = () => {
+const Fields = ({ onClearError }: { onClearError: () => void }) => {
 	const { fields, append, remove } = useFieldArray<MapperPinFormValues>({ name: 'fields' });
 
 	return (
-		<Stack spacing={1} padding={1}>
-			<Stack spacing={2}>
-				{fields.map((field, index) => (
-					<Stack key={field.id} direction="row" spacing={1} alignItems="center">
-						<Field fullWidth name={`fields.${index}.input`} label="Input" />
-						<Field fullWidth name={`fields.${index}.output`} label="Ouput" />
-						<IconButton
-							disabled={fields.length === 1}
-							icon="close-linear"
-							color="error"
-							onClick={() => remove(index)}
-						/>
-					</Stack>
-				))}
-				<Button
-					startIcon="add-linear"
-					sx={{ width: 'fit-content' }}
-					variant="outlined"
-					size="large"
-					onClick={() => append({ input: '', output: '' })}
-				>
-					{!fields.length ? 'Add first mapper' : 'Add mapper'}
-				</Button>
-			</Stack>
+		<Stack spacing={2}>
+			{fields.map((field, index) => (
+				<Stack key={field.id} direction="row" spacing={1} alignItems="center">
+					<Field fullWidth name={`fields.${index}.input`} label="Input" />
+					<Field fullWidth name={`fields.${index}.output`} label="Ouput" />
+					<IconButton disabled={fields.length === 1} icon="close-linear" color="error" onClick={() => remove(index)} />
+				</Stack>
+			))}
+			<Button
+				startIcon="add-linear"
+				sx={{ width: 'fit-content' }}
+				variant="outlined"
+				size="large"
+				onClick={() => {
+					if (fields.length === 0) {
+						onClearError();
+					}
+
+					append({ input: '', output: '' });
+				}}
+			>
+				{!fields.length ? 'Add first mapper' : 'Add mapper'}
+			</Button>
 		</Stack>
 	);
 };

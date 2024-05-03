@@ -185,7 +185,7 @@ const Rules = () => {
 
 	return (
 		<>
-			<Stack spacing={1} padding={1}>
+			<Stack spacing={1}>
 				<Stack direction="row" columnGap={2} width="100%" alignItems="flex-start">
 					<StandaloneCheckbox
 						name="condition"
