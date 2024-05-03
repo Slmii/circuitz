@@ -100,7 +100,7 @@ export const FilterPinDrawerForm = ({
 				// If there is no inputSampleData, populate it with the output of the node before the Lookup Node
 				// Meaning we want a sample data thats not tampered with by the Lookup Node
 				if (!inputSampleData.length) {
-					const lastNode = circuitNodes?.[circuitNodes.length - 2];
+					const lastNode = circuitNodes?.[circuitNodes.length - (filterType === 'LookupFilterPin' ? 1 : 2)];
 					if (lastNode) {
 						const metadata = getNodeMetaData(lastNode);
 						inputSampleData = metadata.inputSampleData;
