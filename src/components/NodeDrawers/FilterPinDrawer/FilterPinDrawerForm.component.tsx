@@ -20,7 +20,8 @@ import {
 	getFilterPinFormValues,
 	isFilterTrue,
 	getPin,
-	stringifyJson
+	stringifyJson,
+	getNodeMetaData
 } from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
@@ -93,7 +94,23 @@ export const FilterPinDrawerForm = ({
 			action={handleOnSubmit}
 			defaultValues={() => {
 				const filterPin = getPin<FilterPin>(node, filterType);
-				return getFilterPinFormValues(filterPin);
+				const formValues = getFilterPinFormValues(filterPin);
+				let inputSampleData = formValues.inputSampleData;
+
+				// If there is no inputSampleData, populate it with the output of the node before the Lookup Node
+				// Meaning we want a sample data thats not tampered with by the Lookup Node
+				if (!inputSampleData.length) {
+					const lastNode = circuitNodes?.[circuitNodes.length - 2];
+					if (lastNode) {
+						const metadata = getNodeMetaData(lastNode);
+						inputSampleData = metadata.inputSampleData;
+					}
+				}
+
+				return {
+					...formValues,
+					inputSampleData
+				};
 			}}
 			schema={filterPinSchema}
 			myRef={formRef}
