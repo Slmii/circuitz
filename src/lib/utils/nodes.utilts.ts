@@ -31,6 +31,7 @@ import {
 import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
+import createMapper from 'map-factory';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -574,8 +575,18 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 
 	// Fetch the operand value based on operandType
 	if (rule.operandType === 'Field') {
-		// Treat rule.value as a field path
-		ruleValue = getNestedValue(data, rule.value) as number | bigint | boolean | string;
+		if (rule.value.startsWith('{{') && rule.value.endsWith('}}')) {
+			// Get the value between the curly braces
+			const key = rule.value.slice(2, -2);
+
+			const mapper = createMapper();
+			mapper.map(key).to('value');
+
+			const output = mapper.execute(data);
+			ruleValue = output.value;
+		} else {
+			ruleValue = '';
+		}
 	} else {
 		// Treat rule.value as a literal value
 		ruleValue = rule.value;

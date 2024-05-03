@@ -266,11 +266,7 @@ const Rules = () => {
 						>
 							<Select fullWidth name={`rules.${index}.field`} label="Field" options={options} />
 							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
-							{values.rules[index].operandType === 'Field' ? (
-								<Select fullWidth name={`rules.${index}.value`} label="Value" options={options} />
-							) : (
-								<Field fullWidth name={`rules.${index}.value`} label="Value" />
-							)}
+							<Field fullWidth name={`rules.${index}.value`} label="Value" />
 							<IconButton
 								icon="settings"
 								onClick={() => setFieldSettingsIndex(index)}
@@ -295,7 +291,12 @@ const Rules = () => {
 			>
 				<Stack spacing={4} mt={2}>
 					<Select
-						helperText="Operand type 'Field' will allow you to compare the field with another field."
+						helperText={
+							<>
+								Operand type 'Field' will allow you to compare the field with another field. You can provide a path to a
+								field in the sample data, eg: <code>{'{{data.name}}'}</code>.
+							</>
+						}
 						fullWidth
 						name={`rules.${fieldSettingsIndex}.operandType`}
 						label="Operand type"

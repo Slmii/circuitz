@@ -120,7 +120,7 @@ export const LookupNodeCanisterForm = ({
 								fontSize="small"
 								tooltip={
 									<>
-										You can also provide a path to a field in the preview data, eg: <code>{'{{data.name}}'}</code>
+										You can also provide a path to a field in the preview data, eg: <code>{'{{data.name}}'}</code>.
 									</>
 								}
 								icon="info"
