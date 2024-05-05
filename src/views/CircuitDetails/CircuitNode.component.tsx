@@ -123,7 +123,7 @@ export const CircuitNode = ({ node, index, trace, onNodeSelect, onToggleNodeStat
 						<IconButton
 							icon={isInputNode ? 'settings' : 'add-linear'}
 							color="primary"
-							tooltip={isInputNode ? 'Settings' : 'Add pin'}
+							tooltip={isInputNode ? 'Settings' : 'Add Pin'}
 							onClick={() => setIsShowPins(prevState => !prevState)}
 						/>
 					</Box>
@@ -222,7 +222,7 @@ const NodePins = ({
 			<IconButton
 				icon="trash"
 				color="error"
-				tooltip="Delete Node"
+				tooltip="Delete Pin"
 				{...stopPropagation({
 					onClick: () => {
 						onClosePins();

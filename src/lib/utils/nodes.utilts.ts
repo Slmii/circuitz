@@ -673,10 +673,9 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 };
 
 const getNestedValue = (data: SampleData, path: string): unknown => {
-	return path.split('.').reduce((acc, part) => {
-		if (acc && typeof acc === 'object' && part in acc) {
-			return (acc as SampleData)[part];
-		}
-		return undefined;
-	}, data as unknown);
+	const mapper = createMapper();
+	mapper.map(path).to('value');
+
+	const output = mapper.execute(data);
+	return output.value;
 };

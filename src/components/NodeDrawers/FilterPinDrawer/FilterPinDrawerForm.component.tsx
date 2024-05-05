@@ -2,7 +2,7 @@ import { Divider, Paper, Stack } from '@mui/material';
 import { StandaloneEditor, Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
-import { Select, Option } from 'components/Form/Select';
+import { Select } from 'components/Form/Select';
 import { H5 } from 'components/Typography';
 import { Node } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
@@ -14,14 +14,7 @@ import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
-import {
-	getFilterPinValuesAsArg,
-	getSampleDataFields,
-	getFilterPinFormValues,
-	isFilterTrue,
-	getPin,
-	getNodeMetaData
-} from 'lib/utils';
+import { getFilterPinValuesAsArg, getFilterPinFormValues, isFilterTrue, getPin, getNodeMetaData } from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
@@ -149,7 +142,6 @@ const Rules = () => {
 
 	const { fields: formFields, append, remove } = useFieldArray({ name: 'rules' });
 	const { watch, setValue } = useFormContext<FilterPinFormValues>();
-	const values = watch();
 
 	useEffect(() => {
 		if (formFields.length > 1) {
@@ -161,23 +153,6 @@ const Rules = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formFields.length]);
 
-	const getFields = (sampleData: string): Option[] => {
-		// If there's no sample data, return an empty array
-		if (!sampleData.length) {
-			return [];
-		}
-
-		try {
-			// Get the fields from the input sample data
-			return getSampleDataFields(JSON.parse(sampleData));
-		} catch (error) {
-			return [];
-		}
-	};
-
-	const inputSampleData = watch('inputSampleData');
-	const options = getFields(inputSampleData);
-
 	return (
 		<>
 			<Stack spacing={1}>
@@ -185,7 +160,7 @@ const Rules = () => {
 					<StandaloneCheckbox
 						name="condition"
 						label="Not"
-						checked={values.condition === 'Not'}
+						checked={watch('condition') === 'Not'}
 						onChange={checked => setValue('condition', checked ? 'Not' : 'Is')}
 					/>
 					<RadioButton
@@ -229,11 +204,11 @@ const Rules = () => {
 							key={field.id}
 							direction="row"
 							spacing={1}
-							alignItems="flex-start"
+							alignItems="center"
 							onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
 							onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
 						>
-							<Select fullWidth name={`rules.${index}.field`} label="Field" options={options} />
+							<Field fullWidth name={`rules.${index}.field`} label="Field" />
 							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
 							<Field fullWidth name={`rules.${index}.value`} label="Value" />
 							<IconButton
@@ -262,8 +237,8 @@ const Rules = () => {
 					<Select
 						helperText={
 							<>
-								Operand type 'Field' will allow you to compare the field with another field. You can provide a path to a
-								field in the sample data, eg: <code>{'{{data.name}}'}</code>.
+								Operand type 'Field' will allow you to compare the field with another field. You can also provide a path
+								to a field in the sample data, eg: <code>{'{{data.name}}'}</code>.
 							</>
 						}
 						fullWidth

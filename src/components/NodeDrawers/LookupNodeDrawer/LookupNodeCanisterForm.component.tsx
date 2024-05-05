@@ -21,7 +21,6 @@ import { Button, CopyTextButton } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
-import { Icon } from 'components/Icon';
 import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
 import { useGetCircuitNodes, useGetParam, usePreview } from 'lib/hooks';
@@ -114,21 +113,11 @@ export const LookupNodeCanisterForm = ({
 					</Stack>
 					<Divider />
 					<Stack direction="column" spacing={2}>
-						<Stack spacing={0.5} direction="row" alignItems="center">
-							<H5 fontWeight="bold">Arguments</H5>
-							<Icon
-								fontSize="small"
-								tooltip={
-									<>
-										You can also provide a path to a field in the preview data, eg: <code>{'{{data.name}}'}</code>.
-									</>
-								}
-								icon="info"
-							/>
-						</Stack>
+						<H5 fontWeight="bold">Arguments</H5>
 						<B2>
 							Argument order matters. The first argument corresponds to the method's first parameter, the second to its
-							second, and so forth.
+							second, and so forth. You can also also provide a path to a field in the preview data, eg:{' '}
+							<code>{'{{data.name}}'}</code>.
 						</B2>
 						<LookupCanisterArgs />
 					</Stack>
