@@ -31,7 +31,11 @@ const getUrlValue = (values: LookupHttpRequestFormValues) => {
 		? (getDynamicPathValue(JSON.parse(values.inputSampleData), dynamicKey) as string | undefined)
 		: undefined;
 
-	return dynamicValue ? values.url.replace(`{{${dynamicKey}}}`, encodeURIComponent(dynamicValue)) : values.url;
+	return {
+		url: dynamicValue ? values.url.replace(`{{${dynamicKey}}}`, encodeURIComponent(dynamicValue)) : values.url,
+		dynamicKey,
+		dynamicValue
+	};
 };
 
 export const LookupNodeHttpRequestForm = ({
@@ -52,6 +56,8 @@ export const LookupNodeHttpRequestForm = ({
 			method = { post: null };
 		}
 
+		const { url, dynamicKey } = getUrlValue(data);
+
 		onProcessNode({
 			LookupHttpRequest: {
 				cycles: BigInt(data.cycles),
@@ -61,7 +67,8 @@ export const LookupNodeHttpRequestForm = ({
 				name: data.name,
 				request_body: data.requestBody.length ? [data.requestBody] : [],
 				sample_data: data.inputSampleData,
-				url: getUrlValue(data)
+				url,
+				dynamic_url: dynamicKey ? [data.url] : []
 			}
 		});
 	};
@@ -120,7 +127,9 @@ export const LookupNodeHttpRequestForm = ({
 									endElement={<IconHelper />}
 									placeholder="https://api.example.com/v1/data"
 									helperText={
-										watch('url').includes('{{') && watch('url').includes('}}') ? getUrlValue(getValues()) : undefined
+										watch('url').includes('{{') && watch('url').includes('}}')
+											? getUrlValue(getValues()).url
+											: undefined
 									}
 								/>
 								<Select
@@ -228,7 +237,7 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 							headers: values.headers.map(header => [header.key, header.value]),
 							method,
 							request_body: values.requestBody.length ? [values.requestBody] : [],
-							url: getUrlValue(values)
+							url: getUrlValue(values).url
 						});
 
 						setValue('inputSampleData', stringifyJson({ ...JSON.parse(values.inputSampleData), [key]: data }));

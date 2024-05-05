@@ -215,14 +215,14 @@ export const getLookupHTTRequestFormValues = (node?: Node): LookupHttpRequestFor
 	const lookup = node.nodeType.LookupHttpRequest;
 
 	return {
-		cycles: '',
+		cycles: lookup.cycles.toString(),
 		description: lookup.description[0] ?? '',
 		headers: lookup.headers.map(header => ({ key: header[0], value: header[1] })),
 		inputSampleData: lookup.sample_data,
 		method: getHttpRequestMethod(lookup.method),
 		name: lookup.name,
 		requestBody: lookup.request_body[0] ?? '',
-		url: lookup.url
+		url: lookup.dynamic_url[0] ? lookup.dynamic_url[0] : lookup.url
 	};
 };
 
@@ -582,15 +582,11 @@ const getRuleOperator = (rule: Rule): OperatorType => {
 };
 
 const getHttpRequestMethod = (method: HttpMethod): HeaderRequestMethodType => {
-	if ('GET' in method) {
+	if ('get' in method) {
 		return 'GET';
 	}
 
-	if ('POST' in method) {
-		return 'POST';
-	}
-
-	return 'HEAD';
+	return 'POST';
 };
 
 export function getPin<T>(node: Node, pinType: PinSourceType): T | undefined {
