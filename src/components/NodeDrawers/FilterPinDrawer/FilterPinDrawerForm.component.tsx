@@ -208,13 +208,16 @@ const Rules = () => {
 						size="small"
 						sx={{ ml: 'auto' }}
 						onClick={() =>
-							append({
-								field: '',
-								operator: '',
-								value: '',
-								dataType: 'String',
-								operandType: 'Value'
-							})
+							append(
+								{
+									field: '',
+									operator: '',
+									value: '',
+									dataType: 'String',
+									operandType: 'Value'
+								},
+								{ shouldFocus: false }
+							)
 						}
 					>
 						Add rule

@@ -207,7 +207,7 @@ const LookupCanisterArgs = () => {
 				sx={{ width: 'fit-content' }}
 				variant="outlined"
 				size="large"
-				onClick={() => append({ dataType: 'String', value: '' })}
+				onClick={() => append({ dataType: 'String', value: '' }, { shouldFocus: false })}
 			>
 				{!formFields.length ? 'Add first argument' : 'Add argument'}
 			</Button>

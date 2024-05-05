@@ -99,7 +99,7 @@ export const MapperPinDrawerForm = ({
 						{errors.fields && <FormHelperText error>{errors.fields.message}</FormHelperText>}
 					</Stack>
 					<Divider orientation="vertical" flexItem />
-					<Stack direction="column" spacing={4} width="50%" height="100%">
+					<Stack direction="column" spacing={4} width="50%" height="100%" sx={OVERFLOW}>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Input</H5>
 							<Button
@@ -160,7 +160,7 @@ const Fields = ({ onClearError }: { onClearError: () => void }) => {
 						onClearError();
 					}
 
-					append({ input: '', output: '' });
+					append({ input: '', output: '' }, { shouldFocus: false });
 				}}
 			>
 				Add mapper
