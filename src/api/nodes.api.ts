@@ -1,9 +1,19 @@
-import type { FilterPin, LookupCanister, NodeType, Pin, _SERVICE } from 'declarations/nodes.declarations';
+import type { FilterPin, LookupCanister, MapperPin, NodeType, Pin, _SERVICE } from 'declarations/nodes.declarations';
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
-import { getFilterPinFormValues, getPin, httpRequest, isFilterTrue, mapToNode, unwrapResult } from 'lib/utils';
+import {
+	getFilterPinFormValues,
+	getMapperPinFormValues,
+	getPin,
+	httpRequest,
+	isFilterTrue,
+	mapToNode,
+	unwrapResult
+} from 'lib/utils';
 import { Node, SampleData } from 'lib/types';
 import { createActor } from './actor.api';
+import createMapper from 'map-factory';
+import lodashMerge from 'lodash/merge';
 
 // TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
 
@@ -146,7 +156,24 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
-		// TODO: add mapper pin logic
+		const mapperPin = getPin<MapperPin>(node, 'MapperPin');
+		if (mapperPin) {
+			const mapperPinFormValues = getMapperPinFormValues(mapperPin);
+
+			console.log({ node, mapperPinFormValues });
+			const mapper = createMapper();
+			mapperPinFormValues.fields.forEach(field => {
+				if (field.input.length && field.output.length) {
+					const inputField = field.input.replace('[*]', '[]');
+					const outputField = field.output.replace('[*]', '[]');
+
+					mapper.map(inputField).to(outputField);
+				}
+			});
+
+			const output = mapper.execute(sampleData);
+			sampleData[`Node:${nodeIndex}`] = lodashMerge(sampleData[`Node:${nodeIndex}`], output);
+		}
 	}
 
 	return sampleData;
