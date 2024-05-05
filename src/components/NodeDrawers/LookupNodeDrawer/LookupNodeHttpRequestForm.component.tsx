@@ -1,5 +1,5 @@
 import { Divider, FormLabel, Paper, Stack } from '@mui/material';
-import { RefObject, useState } from 'react';
+import { RefObject, useEffect } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { H5 } from 'components/Typography';
@@ -20,10 +20,9 @@ import { Select } from 'components/Form/Select';
 import { HTTP_METHODS, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor } from 'components/Editor';
-import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam, useLookupHttpRequestPreview } from 'lib/hooks';
 import { lookupHttpRequestSchema } from 'lib/schemas';
 import { Icon } from 'components/Icon';
-import { api } from 'api/index';
 
 const getUrlValue = (values: LookupHttpRequestFormValues) => {
 	const dynamicKey = extractDynamicKey(values.url);
@@ -205,8 +204,29 @@ const HttpRequestHeaders = () => {
 };
 
 const Preview = ({ nodesLength }: { nodesLength: number }) => {
-	const [isPreviewPending, setIsPreviewPending] = useState(false);
 	const { getValues, setValue, trigger } = useFormContext<LookupHttpRequestFormValues>();
+	const { mutate: preview, data, error, isPending: isPreviewPending } = useLookupHttpRequestPreview();
+
+	useEffect(() => {
+		if (!data) {
+			return;
+		}
+
+		const key = `Node:${nodesLength}`;
+		const inputSampleData = getValues('inputSampleData');
+
+		if (error) {
+			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: error }));
+			return;
+		}
+
+		if ('Ok' in data) {
+			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: JSON.parse(data.Ok) }));
+			return;
+		}
+
+		setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: data }));
+	}, [data, error, getValues, nodesLength, setValue]);
 
 	return (
 		<>
@@ -223,32 +243,19 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 					}
 
 					const values = getValues();
-					const key = `Node:${nodesLength}`;
 
-					setIsPreviewPending(true);
-					try {
-						let method: HttpMethod = { get: null };
-						if (values.method === 'POST') {
-							method = { post: null };
-						}
-
-						const data = await api.Nodes.previewLookupHTTPRequest({
-							cycles: BigInt(values.cycles),
-							headers: values.headers.map(header => [header.key, header.value]),
-							method,
-							request_body: values.requestBody.length ? [values.requestBody] : [],
-							url: getUrlValue(values).url
-						});
-
-						setValue('inputSampleData', stringifyJson({ ...JSON.parse(values.inputSampleData), [key]: data }));
-					} catch (error) {
-						setValue(
-							'inputSampleData',
-							stringifyJson({ ...JSON.parse(values.inputSampleData), [key]: (error as Error).message })
-						);
-					} finally {
-						setIsPreviewPending(false);
+					let method: HttpMethod = { get: null };
+					if (values.method === 'POST') {
+						method = { post: null };
 					}
+
+					preview({
+						cycles: BigInt(values.cycles),
+						headers: values.headers.map(header => [header.key, header.value]),
+						method,
+						request_body: values.requestBody.length ? [values.requestBody] : [],
+						url: getUrlValue(values).url
+					});
 				}}
 			>
 				Send preview request

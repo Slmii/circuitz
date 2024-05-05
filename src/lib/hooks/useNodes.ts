@@ -5,6 +5,7 @@ import { CustomUseQueryOptions, Node, SampleData } from 'lib/types';
 import { useSnackbar } from './useSnackbar';
 import { useGetCircuit } from './useCircuits';
 import { Principal } from '@dfinity/principal';
+import { useGetParam } from './useGetParam';
 
 export const useGetCircuitNode = (nodeId: number) => {
 	return useQuery({
@@ -195,9 +196,33 @@ export const useDeletePin = () => {
 	});
 };
 
-export const usePreview = () => {
+export const useLookupCanisterPreview = () => {
+	const queryClient = useQueryClient();
+
+	const circuitId = useGetParam('circuitId');
+	const canisterId = useGetNodeCanisterId(Number(circuitId));
+
 	return useMutation({
-		mutationFn: api.Nodes.previewLookupCanister
+		mutationFn: api.Nodes.previewLookupCanister,
+		onSettled: () => {
+			// Clear the cache
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CANISTER_STATUS, canisterId.toString()] });
+		}
+	});
+};
+
+export const useLookupHttpRequestPreview = () => {
+	const queryClient = useQueryClient();
+
+	const circuitId = useGetParam('circuitId');
+	const canisterId = useGetNodeCanisterId(Number(circuitId));
+
+	return useMutation({
+		mutationFn: api.Nodes.previewLookupHTTPRequest,
+		onSettled: () => {
+			// Clear the cache
+			queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CANISTER_STATUS, canisterId.toString()] });
+		}
 	});
 };
 

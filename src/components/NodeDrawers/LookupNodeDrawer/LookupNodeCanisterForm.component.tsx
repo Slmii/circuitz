@@ -23,7 +23,7 @@ import { ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/consta
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
-import { useGetCircuitNodes, useGetParam, usePreview } from 'lib/hooks';
+import { useGetCircuitNodes, useGetParam, useLookupCanisterPreview } from 'lib/hooks';
 import createMapper from 'map-factory';
 
 export const LookupNodeCanisterForm = ({
@@ -204,7 +204,7 @@ const LookupCanisterArgs = () => {
 
 const Preview = ({ nodesLength }: { nodesLength: number }) => {
 	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
-	const { mutate: preview, data, error, isPending: isPreviewPending } = usePreview();
+	const { mutate: preview, data, error, isPending: isPreviewPending } = useLookupCanisterPreview();
 
 	useEffect(() => {
 		if (!data) {
