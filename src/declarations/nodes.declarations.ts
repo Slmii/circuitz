@@ -167,8 +167,8 @@ export interface _SERVICE {
 	enable_node: ActorMethod<[number], Result>;
 	get_circuit_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
-	preview_http_request: ActorMethod<[LookupHttpRequest], Result_2>;
-	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
+	preview_lookup_canister: ActorMethod<[LookupCanister], Result_2>;
+	preview_lookup_http_request: ActorMethod<[LookupHttpRequest], Result_2>;
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
 }
 
@@ -330,6 +330,7 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
+	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	const LookupHttpRequest = IDL.Record({
 		url: IDL.Text,
 		method: HttpMethod,
@@ -337,7 +338,6 @@ export const idlFactory = ({ IDL }: any) => {
 		cycles: IDL.Nat,
 		request_body: IDL.Opt(IDL.Text)
 	});
-	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	const HttpHeader = IDL.Record({ value: IDL.Text, name: IDL.Text });
 	const HttpResponse = IDL.Record({
 		status: IDL.Nat,
@@ -361,8 +361,8 @@ export const idlFactory = ({ IDL }: any) => {
 		enable_node: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit_node: IDL.Func([IDL.Nat32], [Result], ['query']),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
-		preview_http_request: IDL.Func([LookupHttpRequest], [Result_2], []),
-		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),
+		preview_lookup_canister: IDL.Func([LookupCanister], [Result_2], []),
+		preview_lookup_http_request: IDL.Func([LookupHttpRequest], [Result_2], []),
 		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
 	});
 };

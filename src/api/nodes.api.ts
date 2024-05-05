@@ -85,7 +85,7 @@ export async function editNode({ nodeId, data }: { nodeId: number; data: NodeTyp
  */
 export async function previewLookupCanister(data: LookupCanister) {
 	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
-	return actor.preview_lookup_request(data);
+	return actor.preview_lookup_canister(data);
 }
 
 /**
@@ -93,7 +93,7 @@ export async function previewLookupCanister(data: LookupCanister) {
  */
 export async function previewLookupHTTPRequest(data: LookupHttpRequest) {
 	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
-	return actor.preview_http_request(data);
+	return actor.preview_lookup_http_request(data);
 }
 
 /**
