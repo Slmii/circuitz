@@ -7,7 +7,8 @@ import type {
 	OperandType as OldOperandType,
 	Operator as OldOperator,
 	Rule,
-	Token
+	Token,
+	MapperPin
 } from 'declarations/nodes.declarations';
 import type {
 	LookCanisterArgType,
@@ -26,7 +27,8 @@ import {
 	FilterRule,
 	InputNodeFormValues,
 	LookupCanisterArg,
-	LookupCanisterFormValues
+	LookupCanisterFormValues,
+	MapperPinFormValues
 } from 'components/NodeDrawers';
 import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
@@ -457,6 +459,26 @@ export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValu
 			field: rule.field,
 			value: rule.value,
 			operator: getRuleOperator(rule)
+		}))
+	};
+};
+
+/**
+ * Get the form values for the mapper pin.
+ */
+export const getMapperPinFormValues = (mapperPin?: MapperPin): MapperPinFormValues => {
+	if (!mapperPin) {
+		return {
+			inputSampleData: '',
+			fields: [{ input: '', output: '' }]
+		};
+	}
+
+	return {
+		inputSampleData: mapperPin.sample_data[0] ?? '',
+		fields: mapperPin.fields.map(field => ({
+			input: field[0],
+			output: field[1]
 		}))
 	};
 };

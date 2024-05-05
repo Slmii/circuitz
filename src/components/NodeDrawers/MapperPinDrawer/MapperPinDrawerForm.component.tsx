@@ -3,7 +3,7 @@ import { Form } from 'components/Form';
 import { Node } from 'lib/types';
 import { RefObject, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
-import { getPin, stringifyJson } from 'lib/utils';
+import { getMapperPinFormValues, getNodeMetaData, getPin, stringifyJson } from 'lib/utils';
 import { MapperPin, Pin } from 'declarations/nodes.declarations';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { H5 } from 'components/Typography';
@@ -16,6 +16,7 @@ import { Field } from 'components/Form/Field';
 import createMapper from 'map-factory';
 import lodashMerge from 'lodash/merge';
 import { mapperPinSchema } from 'lib/schemas';
+import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
 
 export const MapperPinDrawerForm = ({
 	formRef,
@@ -27,6 +28,9 @@ export const MapperPinDrawerForm = ({
 	onProcessMapper: (data: Pin) => void;
 }) => {
 	const [outputSampleData, setOutputSampleData] = useState('');
+
+	const circuitId = useGetParam('circuitId');
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	const handleOnPreview = (formValues: MapperPinFormValues) => {
 		try {
@@ -65,21 +69,19 @@ export const MapperPinDrawerForm = ({
 		<Form<MapperPinFormValues>
 			action={handleOnSubmit}
 			defaultValues={() => {
-				const mapperPin = getPin<MapperPin>(node, 'MapperPin');
+				const filterPin = getPin<MapperPin>(node, 'MapperPin');
+				const formValues = getMapperPinFormValues(filterPin);
+				let inputSampleData = formValues.inputSampleData;
 
-				if (!mapperPin) {
-					return {
-						inputSampleData: '',
-						fields: []
-					};
+				const lastNode = circuitNodes?.[circuitNodes.length - 1];
+				if (lastNode) {
+					const metadata = getNodeMetaData(lastNode);
+					inputSampleData = metadata.inputSampleData;
 				}
 
 				return {
-					inputSampleData: mapperPin.sample_data[0] ?? '',
-					fields: mapperPin.fields.map(field => ({
-						input: field[0],
-						output: field[1]
-					}))
+					...formValues,
+					inputSampleData
 				};
 			}}
 			schema={mapperPinSchema}
@@ -91,16 +93,7 @@ export const MapperPinDrawerForm = ({
 							A Mapper Pin allows you to map a value from the input to a value in the output.
 						</Alert>
 						<H5 fontWeight="bold">Fields</H5>
-						<Paper
-							sx={{
-								p: 2,
-								// In case there are no fields and there is an error show a red border
-								border:
-									getValues('fields').length === 0 && errors.fields
-										? theme => `1px solid ${theme.palette.error.main}`
-										: undefined
-							}}
-						>
+						<Paper sx={{ p: 2 }}>
 							<Fields onClearError={() => clearErrors('fields')} />
 						</Paper>
 						{errors.fields && <FormHelperText error>{errors.fields.message}</FormHelperText>}
@@ -126,7 +119,7 @@ export const MapperPinDrawerForm = ({
 								Preview
 							</Button>
 							<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
-							<Editor name="inputSampleData" mode="javascript" height={250} />
+							<Editor name="inputSampleData" mode="javascript" height={450} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
@@ -135,7 +128,7 @@ export const MapperPinDrawerForm = ({
 								mode="javascript"
 								isReadOnly
 								value={outputSampleData}
-								height={500}
+								height={450}
 							/>
 						</Stack>
 					</Stack>
@@ -170,7 +163,7 @@ const Fields = ({ onClearError }: { onClearError: () => void }) => {
 					append({ input: '', output: '' });
 				}}
 			>
-				{!fields.length ? 'Add first mapper' : 'Add mapper'}
+				Add mapper
 			</Button>
 		</Stack>
 	);

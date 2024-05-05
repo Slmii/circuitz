@@ -40,10 +40,9 @@ export const FilterPinDrawerForm = ({
 	onProcessFilter: (data: Pin) => void;
 }) => {
 	const [outputSampleData, setOutputSampleData] = useState('');
-	const circuitId = useGetParam('circuitId');
-	const circuitIdNumber = Number(circuitId);
 
-	const { data: circuitNodes } = useGetCircuitNodes(circuitIdNumber);
+	const circuitId = useGetParam('circuitId');
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	const handleOnSubmit = (data: FilterPinFormValues) => {
 		const values: FilterPin = {
@@ -106,11 +105,7 @@ export const FilterPinDrawerForm = ({
 								: 'A Lookup Filter Pin filters the node according to the specified rules below. If these rules are met, the Lookup values will be merged into the next Node.'}
 						</Alert>
 						<H5 fontWeight="bold">Rules</H5>
-						<Paper
-							sx={{
-								p: 2
-							}}
-						>
+						<Paper sx={{ p: 2 }}>
 							<Rules />
 						</Paper>
 					</Stack>
