@@ -1,7 +1,7 @@
 import { Stack, Fade, ButtonBase } from '@mui/material';
 import { B1, H5 } from 'components/Typography';
 import { useMemo, useState } from 'react';
-import { Node, NodeSourceType } from 'lib/types';
+import { Node, NodeSourceType, PinSourceType } from 'lib/types';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
 import { LookupNodeDrawer, InputNodeDrawer, FilterPinDrawer, LookupFilterPinDrawer } from 'components/NodeDrawers';
@@ -37,7 +37,11 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const { mutate: toggleStatus } = useToggleNodeStatus();
 
 	const navigate = useNavigate();
-	const { nodeId, filterPinType, nodeType } = useParams();
+	const { nodeId, pinType, nodeType } = useParams<{
+		nodeId: string;
+		pinType: PinSourceType;
+		nodeType: NodeSourceType;
+	}>();
 
 	const node = useMemo(() => {
 		if (!nodeId) {
@@ -48,28 +52,28 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	}, [nodeId, nodes]);
 
 	const filterPin = useMemo(() => {
-		if (filterPinType !== 'FilterPin' || !nodeId) {
+		if (pinType !== 'FilterPin' || !nodeId) {
 			return;
 		}
 
 		return nodes.find(node => node.id === Number(nodeId));
-	}, [filterPinType, nodeId, nodes]);
+	}, [pinType, nodeId, nodes]);
 
 	const lookupFilterPin = useMemo(() => {
-		if (filterPinType !== 'LookupFilterPin' || !nodeId) {
+		if (pinType !== 'LookupFilterPin' || !nodeId) {
 			return;
 		}
 
 		return nodes.find(node => node.id === Number(nodeId));
-	}, [filterPinType, nodeId, nodes]);
+	}, [pinType, nodeId, nodes]);
 
 	const mapperPin = useMemo(() => {
-		if (filterPinType !== 'MapperPin' || !nodeId) {
+		if (pinType !== 'MapperPin' || !nodeId) {
 			return;
 		}
 
 		return nodes.find(node => node.id === Number(nodeId));
-	}, [filterPinType, nodeId, nodes]);
+	}, [pinType, nodeId, nodes]);
 
 	const traces = useMemo(() => {
 		if (!circuitTraces) {
@@ -151,13 +155,14 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				)}
 			</Stack>
 			<InputNodeDrawer
-				nodeType={nodeType as NodeSourceType}
+				nodeType={nodeType}
 				open={nodeType === 'Canister' || nodeType === 'HttpRequest'}
 				node={node}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<LookupNodeDrawer
 				open={nodeType === 'LookupCanister' || nodeType === 'LookupHttpRequest'}
+				nodeType={nodeType as NodeSourceType}
 				node={node}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>

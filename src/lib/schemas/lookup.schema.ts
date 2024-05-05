@@ -43,3 +43,17 @@ export const lookupCanisterSchema = yup.object().shape({
 		})
 	)
 });
+
+export const lookupHttpRequestSchema = yup.object().shape({
+	name: yup.string().required(FORM_ERRORS.required),
+	inputSampleData: yup.string().required(FORM_ERRORS.required),
+	cycles: yup.string().matches(/^[0-9.,]+$/, FORM_ERRORS.numeric),
+	method: yup.string().required(FORM_ERRORS.selection),
+	url: yup.string().required(FORM_ERRORS.required),
+	headers: yup.array().of(
+		yup.object({
+			key: yup.string().required(FORM_ERRORS.required),
+			value: yup.string().required(FORM_ERRORS.required)
+		})
+	)
+});

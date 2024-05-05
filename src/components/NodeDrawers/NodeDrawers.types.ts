@@ -7,18 +7,20 @@ import {
 	ConditionType,
 	ConditionGroupType,
 	OperandType,
-	DataType
+	DataType,
+	HeaderRequestMethodType
 } from 'lib/types';
 
 export interface InputNodeDrawerProps {
 	open: boolean;
-	nodeType: NodeSourceType;
+	nodeType?: NodeSourceType;
 	node?: Node;
 	onClose: () => void;
 }
 
 export interface LookupNodeDrawerProps {
 	open: boolean;
+	nodeType: NodeSourceType;
 	node?: Node;
 	onClose: () => void;
 }
@@ -40,6 +42,17 @@ export interface LookupCanisterFormValues {
 	methodName: string;
 	cycles: string;
 	args: LookupCanisterArg[];
+	inputSampleData: string;
+}
+
+export interface LookupHttpRequestFormValues {
+	name: string;
+	description: string;
+	url: string;
+	method: HeaderRequestMethodType;
+	cycles: string;
+	headers: Array<{ key: string; value: string }>;
+	requestBody: string;
 	inputSampleData: string;
 }
 

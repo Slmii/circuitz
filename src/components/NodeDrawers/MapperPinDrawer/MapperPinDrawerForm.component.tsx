@@ -58,7 +58,7 @@ export const MapperPinDrawerForm = ({
 			order: 0,
 			pin_type: {
 				MapperPin: {
-					sample_data: [data.inputSampleData],
+					sample_data: data.inputSampleData,
 					fields: data.fields.map(field => [field.input, field.output])
 				}
 			}
@@ -88,7 +88,7 @@ export const MapperPinDrawerForm = ({
 			myRef={formRef}
 			render={({ getValues, clearErrors, trigger, formState: { errors } }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
-					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
+					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
 							A Mapper Pin allows you to map a value from the input to a value in the output.
 						</Alert>
@@ -99,7 +99,7 @@ export const MapperPinDrawerForm = ({
 						{errors.fields && <FormHelperText error>{errors.fields.message}</FormHelperText>}
 					</Stack>
 					<Divider orientation="vertical" flexItem />
-					<Stack direction="column" spacing={4} width="50%" height="100%" sx={OVERFLOW}>
+					<Stack direction="column" spacing={4} width="50%" height="100%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Input</H5>
 							<Button

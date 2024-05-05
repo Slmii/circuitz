@@ -8,7 +8,8 @@ import type {
 	Operator as OldOperator,
 	Rule,
 	Token,
-	MapperPin
+	MapperPin,
+	HttpMethod
 } from 'declarations/nodes.declarations';
 import type {
 	LookCanisterArgType,
@@ -19,7 +20,8 @@ import type {
 	OperandType,
 	OperatorType,
 	PinSourceType,
-	SampleData
+	SampleData,
+	HeaderRequestMethodType
 } from 'lib/types';
 import { dateFromNano } from './date.utils';
 import {
@@ -28,6 +30,7 @@ import {
 	InputNodeFormValues,
 	LookupCanisterArg,
 	LookupCanisterFormValues,
+	LookupHttpRequestFormValues,
 	MapperPinFormValues
 } from 'components/NodeDrawers';
 import { toPrincipal } from './identity.utils';
@@ -72,7 +75,7 @@ export const getInputCanisterFormValues = (node?: Node): InputNodeFormValues => 
 	return {
 		description: node.nodeType.Canister.description[0] ?? '',
 		name: node.nodeType.Canister.name,
-		inputSampleData: node.nodeType.Canister.sample_data[0] ?? '',
+		inputSampleData: node.nodeType.Canister.sample_data,
 		verificationType: getVerificationType(node.nodeType.Canister.verification_type),
 		verificationTypeToken: token?.token ?? '',
 		verificationTypeTokenField: token?.field ?? '',
@@ -188,7 +191,38 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 		methodName: lookup.method,
 		name: lookup.name,
 		cycles: Number(lookup.cycles).toString(),
-		inputSampleData: lookup.sample_data[0] ?? ''
+		inputSampleData: lookup.sample_data
+	};
+};
+
+/**
+ * Get the form values for the lookup HTTP REquest node. If no node is provided, return the default values.
+ */
+export const getLookupHTTRequestFormValues = (node?: Node): LookupHttpRequestFormValues => {
+	if (!node || !('LookupHttpRequest' in node.nodeType)) {
+		return {
+			cycles: '',
+			description: '',
+			headers: [{ key: 'Content-Type', value: 'application/json' }],
+			inputSampleData: '',
+			method: 'GET',
+			name: '',
+			requestBody: '',
+			url: ''
+		};
+	}
+
+	const lookup = node.nodeType.LookupHttpRequest;
+
+	return {
+		cycles: '',
+		description: lookup.description[0] ?? '',
+		headers: lookup.headers.map(header => ({ key: header[0], value: header[1] })),
+		inputSampleData: lookup.sample_data,
+		method: getHttpRequestMethod(lookup.method),
+		name: lookup.name,
+		requestBody: lookup.request_body[0] ?? '',
+		url: lookup.url
 	};
 };
 
@@ -282,7 +316,7 @@ export const getNodeMetaData = (
 		return {
 			name: node.nodeType.LookupCanister.name,
 			description: node.nodeType.LookupCanister.description[0] ?? '',
-			inputSampleData: node.nodeType.LookupCanister.sample_data[0] ?? '',
+			inputSampleData: node.nodeType.LookupCanister.sample_data,
 			type: 'LookupCanister'
 		};
 	}
@@ -317,7 +351,7 @@ export const getNodeMetaData = (
 	return {
 		name: node.nodeType.Canister.name,
 		description: node.nodeType.Canister.description[0] ?? '',
-		inputSampleData: node.nodeType.Canister.sample_data[0] ?? '',
+		inputSampleData: node.nodeType.Canister.sample_data,
 		type: 'Canister'
 	};
 };
@@ -452,7 +486,7 @@ export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValu
 	return {
 		condition: 'Is' in filterPin.condition ? 'Is' : 'Not',
 		conditionGroup: getConditionGroup(filterPin),
-		inputSampleData: filterPin.sample_data[0] ?? '',
+		inputSampleData: filterPin.sample_data,
 		rules: filterPin.rules.map(rule => ({
 			dataType: getRuleDataType(rule),
 			operandType: getRuleOparandType(rule),
@@ -475,7 +509,7 @@ export const getMapperPinFormValues = (mapperPin?: MapperPin): MapperPinFormValu
 	}
 
 	return {
-		inputSampleData: mapperPin.sample_data[0] ?? '',
+		inputSampleData: mapperPin.sample_data,
 		fields: mapperPin.fields.map(field => ({
 			input: field[0],
 			output: field[1]
@@ -545,6 +579,18 @@ const getRuleOperator = (rule: Rule): OperatorType => {
 	}
 
 	return 'Equal';
+};
+
+const getHttpRequestMethod = (method: HttpMethod): HeaderRequestMethodType => {
+	if ('GET' in method) {
+		return 'GET';
+	}
+
+	if ('POST' in method) {
+		return 'POST';
+	}
+
+	return 'HEAD';
 };
 
 export function getPin<T>(node: Node, pinType: PinSourceType): T | undefined {

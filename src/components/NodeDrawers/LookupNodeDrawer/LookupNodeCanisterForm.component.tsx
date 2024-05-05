@@ -47,7 +47,7 @@ export const LookupNodeCanisterForm = ({
 				method: data.methodName,
 				cycles: BigInt(data.cycles),
 				args: getLookupCanisterValuesAsArg(data.args),
-				sample_data: data.inputSampleData.length ? [data.inputSampleData] : []
+				sample_data: data.inputSampleData
 			}
 		});
 	};
@@ -69,7 +69,7 @@ export const LookupNodeCanisterForm = ({
 				}
 
 				return {
-					...getLookupCanisterFormValues(node),
+					...formValues,
 					inputSampleData
 				};
 			}}
@@ -77,7 +77,7 @@ export const LookupNodeCanisterForm = ({
 			schema={lookupCanisterSchema}
 		>
 			<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
-				<Stack spacing={4} width="50%" sx={OVERFLOW}>
+				<Stack spacing={4} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
 							A Lookup Canister Node queries data from an external Canister and forwards it to the subsequent Node in
@@ -100,8 +100,8 @@ export const LookupNodeCanisterForm = ({
 					<Stack direction="column" spacing={2}>
 						<H5 fontWeight="bold">Canister</H5>
 						<Stack direction="column" spacing={4}>
-							<Field name="canisterId" label="Canister ID" placeholder="Enter Canister ID" />
-							<Field name="methodName" label="Method name" placeholder="Enter a method name" />
+							<Field name="canisterId" label="Canister ID" placeholder="aaaaa-aa" />
+							<Field name="methodName" label="Method name" placeholder="get_name" />
 							<Field
 								name="cycles"
 								type="number"
@@ -139,17 +139,13 @@ export const LookupNodeCanisterForm = ({
 };
 
 const LookupCanisterArgs = () => {
-	const {
-		fields: formFields,
-		append,
-		remove
-	} = useFieldArray<LookupCanisterFormValues>({
+	const { fields, append, remove } = useFieldArray<LookupCanisterFormValues>({
 		name: 'args'
 	});
 
 	return (
 		<>
-			{formFields.map((config, index) => (
+			{fields.map((config, index) => (
 				<Stack direction="row" spacing={1} key={config.id} alignItems="center">
 					<Select
 						fullWidth
@@ -198,7 +194,7 @@ const LookupCanisterArgs = () => {
 				size="large"
 				onClick={() => append({ dataType: 'String', value: '' }, { shouldFocus: false })}
 			>
-				{!formFields.length ? 'Add first argument' : 'Add argument'}
+				{!fields.length ? 'Add first argument' : 'Add argument'}
 			</Button>
 		</>
 	);
@@ -253,7 +249,7 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 						// Preview dont need these values
 						description: [],
 						name: '',
-						sample_data: []
+						sample_data: ''
 					});
 				}}
 			>

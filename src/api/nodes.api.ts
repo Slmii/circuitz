@@ -1,4 +1,12 @@
-import type { FilterPin, LookupCanister, MapperPin, NodeType, Pin, _SERVICE } from 'declarations/nodes.declarations';
+import type {
+	FilterPin,
+	LookupCanister,
+	LookupHttpRequest,
+	MapperPin,
+	NodeType,
+	Pin,
+	_SERVICE
+} from 'declarations/nodes.declarations';
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import {
@@ -81,6 +89,14 @@ export async function previewLookupCanister(data: LookupCanister) {
 }
 
 /**
+ * Preview Lookup HTTP Request
+ */
+export async function previewLookupHTTPRequest(data: LookupHttpRequest) {
+	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
+	return actor.preview_http_request(data);
+}
+
+/**
  * Edit order of node
  */
 export async function editOrder({
@@ -111,7 +127,7 @@ export async function getSampleData(nodes: Node[]) {
 
 		// Input Nodes (Starting point)
 		if ('Canister' in node.nodeType) {
-			const sampleDataAsString = node.nodeType.Canister.sample_data[0] ? node.nodeType.Canister.sample_data[0] : '{}';
+			const sampleDataAsString = node.nodeType.Canister.sample_data.length ? node.nodeType.Canister.sample_data : '{}';
 			sampleData = JSON.parse(sampleDataAsString);
 		}
 

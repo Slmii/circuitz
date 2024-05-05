@@ -42,7 +42,7 @@ export const FilterPinDrawerForm = ({
 			condition: data.condition === 'Is' ? { Is: null } : { Not: null },
 			condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
 			rules: getFilterPinValuesAsArg(data.rules),
-			sample_data: [data.inputSampleData]
+			sample_data: data.inputSampleData
 		};
 
 		onProcessFilter({
@@ -91,7 +91,7 @@ export const FilterPinDrawerForm = ({
 			myRef={formRef}
 			render={({ getValues }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
-					<Stack direction="column" spacing={2} width="50%" sx={OVERFLOW}>
+					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
 							{filterType === 'FilterPin'
 								? "A Filter Pin filters the node according to the specified rules below. If these rules are met, the node's execution can be triggered."
@@ -140,18 +140,18 @@ const Rules = () => {
 	const [fieldSettingsIndex, setFieldSettingsIndex] = useState<number | null>(null);
 	const [isFieldHover, setIsFieldHover] = useState<Record<number, boolean>>({});
 
-	const { fields: formFields, append, remove } = useFieldArray({ name: 'rules' });
+	const { fields, append, remove } = useFieldArray({ name: 'rules' });
 	const { watch, setValue } = useFormContext<FilterPinFormValues>();
 
 	useEffect(() => {
-		if (formFields.length > 1) {
+		if (fields.length > 1) {
 			setValue('conditionGroup', 'And');
-		} else if (formFields.length === 1) {
+		} else if (fields.length === 1) {
 			setValue('conditionGroup', null);
 		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [formFields.length]);
+	}, [fields.length]);
 
 	return (
 		<>
@@ -164,7 +164,7 @@ const Rules = () => {
 						onChange={checked => setValue('condition', checked ? 'Not' : 'Is')}
 					/>
 					<RadioButton
-						disabled={formFields.length === 1}
+						disabled={fields.length === 1}
 						row
 						name="conditionGroup"
 						options={[
@@ -199,7 +199,7 @@ const Rules = () => {
 					</Button>
 				</Stack>
 				<Stack spacing={2}>
-					{formFields.map((field, index) => (
+					{fields.map((field, index) => (
 						<Stack
 							key={field.id}
 							direction="row"
@@ -217,7 +217,7 @@ const Rules = () => {
 								disabled={!isFieldHover[index]}
 							/>
 							<IconButton
-								disabled={formFields.length === 1}
+								disabled={fields.length === 1}
 								icon="close-linear"
 								color="error"
 								onClick={() => remove(index)}

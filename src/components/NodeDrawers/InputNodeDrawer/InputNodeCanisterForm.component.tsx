@@ -49,7 +49,7 @@ export const InputNodeCanisterForm = ({
 			Canister: {
 				description: data.description.length ? [data.description] : [],
 				name: data.name,
-				sample_data: data.inputSampleData.length ? [data.inputSampleData] : [],
+				sample_data: data.inputSampleData,
 				verification_type: verificationType
 			}
 		});

@@ -61,7 +61,7 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 					: undefined
 			}
 		>
-			{node && <MapperPinDrawerForm formRef={formRef} node={node} onProcessMapper={handleOnSubmit} />}
+			{!!node && open && <MapperPinDrawerForm formRef={formRef} node={node} onProcessMapper={handleOnSubmit} />}
 		</Drawer>
 	);
 };

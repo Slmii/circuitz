@@ -73,39 +73,44 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 			isDisabled={!nodeSource}
 			title={`Input Node${nodeSource ? ` - ${nodeSource.toUpperCase()}` : ''}`}
 		>
-			{nodeSource ? (
-				<Stack alignItems="flex-start" spacing={2}>
-					{!node && <Back label="Select Node Source" onBack={() => setNodeSource(null)} />}
-					{nodeSource === 'Canister' && (
-						<InputNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+			{open && (
+				<>
+					{nodeSource ? (
+						<Stack alignItems="flex-start" spacing={2}>
+							{!node && <Back label="Select Node Source" onBack={() => setNodeSource(null)} />}
+							{nodeSource === 'Canister' && (
+								<InputNodeCanisterForm formRef={formRef} node={node} onProcessNode={handleOnSubmit} />
+							)}
+						</Stack>
+					) : (
+						<Stack spacing={2}>
+							<H5 fontWeight="bold">Select Node Source</H5>
+							<Stack direction="row" spacing={2}>
+								{NODE_SOURCES.map(source => (
+									<Paper
+										key={source.id}
+										disabled={source.disabled}
+										onClick={() => setNodeSource(source.id)}
+										component={ButtonBase}
+										sx={{
+											minWidth: 150,
+											display: 'flex',
+											flexDirection: 'column',
+											gap: 1,
+											border: theme =>
+												`1px solid ${source.id === nodeSource ? theme.palette.primary.main : 'transparent'}`,
+											p: 2,
+											opacity: source.disabled ? 0.5 : 1
+										}}
+									>
+										<img src={`/logos/${source.icon}.png`} style={{ width: 66, height: 66 }} />
+										<H5>{source.label}</H5>
+									</Paper>
+								))}
+							</Stack>
+						</Stack>
 					)}
-				</Stack>
-			) : (
-				<Stack spacing={2}>
-					<H5 fontWeight="bold">Select Node Source</H5>
-					<Stack direction="row" spacing={2}>
-						{NODE_SOURCES.map(source => (
-							<Paper
-								key={source.id}
-								disabled={source.disabled}
-								onClick={() => setNodeSource(source.id)}
-								component={ButtonBase}
-								sx={{
-									minWidth: 150,
-									display: 'flex',
-									flexDirection: 'column',
-									gap: 1,
-									border: theme => `1px solid ${source.id === nodeSource ? theme.palette.primary.main : 'transparent'}`,
-									p: 2,
-									opacity: source.disabled ? 0.5 : 1
-								}}
-							>
-								<img src={`/logos/${source.icon}.png`} style={{ width: 66, height: 66 }} />
-								<H5>{source.label}</H5>
-							</Paper>
-						))}
-					</Stack>
-				</Stack>
+				</>
 			)}
 		</Drawer>
 	);

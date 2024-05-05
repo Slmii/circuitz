@@ -8,7 +8,8 @@ import {
 	OperandType as OldOperandType,
 	Operator,
 	Pin,
-	PinType
+	PinType,
+	HttpMethod
 } from 'declarations/nodes.declarations';
 
 export interface Node {
@@ -43,5 +44,6 @@ export type ConditionGroupType = KeysOfUnion<ConditionGroup>;
 export type ConditionType = KeysOfUnion<Condition>;
 export type OperandType = KeysOfUnion<OldOperandType>;
 export type DataType = KeysOfUnion<OldDataType>;
+export type HeaderRequestMethodType = Uppercase<KeysOfUnion<HttpMethod>>;
 
 export type SampleData = Record<string, unknown>;

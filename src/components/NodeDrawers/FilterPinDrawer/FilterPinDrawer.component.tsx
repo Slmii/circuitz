@@ -61,7 +61,7 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 					: undefined
 			}
 		>
-			{node && (
+			{!!node && open && (
 				<FilterPinDrawerForm filterType="FilterPin" formRef={formRef} node={node} onProcessFilter={handleOnSubmit} />
 			)}
 		</Drawer>

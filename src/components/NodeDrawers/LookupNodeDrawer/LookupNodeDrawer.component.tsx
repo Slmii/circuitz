@@ -7,8 +7,9 @@ import { Drawer } from 'components/Drawer';
 import { Dialog } from 'components/Dialog';
 import { useState } from 'react';
 import { Alert } from 'components/Alert';
+import { LookupNodeHttpRequestForm } from './LookupNodeHttpRequestForm.component';
 
-export const LookupNodeDrawer = ({ node, open, onClose }: LookupNodeDrawerProps) => {
+export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDrawerProps) => {
 	const [formData, setFormData] = useState<NodeType | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
@@ -48,10 +49,18 @@ export const LookupNodeDrawer = ({ node, open, onClose }: LookupNodeDrawerProps)
 				onSubmit={submitter}
 				isOpen={open}
 				isLoading={isAddNodePending || isEditNodePending}
-				title="Lookup Canister"
+				title={nodeType === 'LookupCanister' ? 'Lookup Canister' : 'Lookup HTTP Request'}
 				fullWidth
 			>
-				<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={setFormData} />
+				{open && (
+					<>
+						{nodeType === 'LookupCanister' ? (
+							<LookupNodeCanisterForm formRef={formRef} node={node} onProcessNode={setFormData} />
+						) : (
+							<LookupNodeHttpRequestForm formRef={formRef} node={node} onProcessNode={setFormData} />
+						)}
+					</>
+				)}
 			</Drawer>
 			<Dialog
 				open={!!formData}

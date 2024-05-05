@@ -17,7 +17,7 @@ export type Arg =
 export interface Canister {
 	name: string;
 	description: [] | [string];
-	sample_data: [] | [string];
+	sample_data: string;
 	verification_type: VerificationType;
 }
 export type Condition = { Is: null } | { Not: null };
@@ -29,7 +29,7 @@ export interface CustomPinLogic {
 export type DataType = { BigInt: null } | { String: null } | { Boolean: null } | { Principal: null } | { Number: null };
 export interface FilterPin {
 	condition_group: [] | [ConditionGroup];
-	sample_data: [] | [string];
+	sample_data: string;
 	rules: Array<Rule>;
 	condition: Condition;
 }
@@ -37,15 +37,17 @@ export interface HttpHeader {
 	value: string;
 	name: string;
 }
+export type HttpMethod = { get: null } | { head: null } | { post: null };
 export interface HttpRequest {
 	url: string;
-	method: HttpRequestMethod;
+	method: HttpMethod;
 	name: string;
 	description: [] | [string];
 	headers: Array<[string, string]>;
+	sample_data: string;
+	cycles: bigint;
 	request_body: [] | [string];
 }
-export type HttpRequestMethod = { GET: null } | { POST: null };
 export interface HttpResponse {
 	status: bigint;
 	body: Uint8Array | number[];
@@ -56,16 +58,23 @@ export interface LookupCanister {
 	args: Array<Arg>;
 	name: string;
 	description: [] | [string];
-	sample_data: [] | [string];
+	sample_data: string;
 	cycles: bigint;
 	canister: Principal;
+}
+export interface LookupHttpRequest {
+	url: string;
+	method: HttpMethod;
+	headers: Array<[string, string]>;
+	cycles: bigint;
+	request_body: [] | [string];
 }
 export interface LookupTransformPin {
 	output: string;
 	input: string;
 }
 export interface MapperPin {
-	sample_data: [] | [string];
+	sample_data: string;
 	fields: Array<[string, string]>;
 }
 export interface Node {
@@ -157,6 +166,7 @@ export interface _SERVICE {
 	enable_node: ActorMethod<[number], Result>;
 	get_circuit_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
+	preview_http_request: ActorMethod<[LookupHttpRequest], Result_2>;
 	preview_lookup_request: ActorMethod<[LookupCanister], Result_2>;
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
 }
@@ -194,20 +204,23 @@ export const idlFactory = ({ IDL }: any) => {
 		args: IDL.Vec(Arg),
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
-		sample_data: IDL.Opt(IDL.Text),
+		sample_data: IDL.Text,
 		cycles: IDL.Nat,
 		canister: IDL.Principal
 	});
-	const HttpRequestMethod = IDL.Variant({
-		GET: IDL.Null,
-		POST: IDL.Null
+	const HttpMethod = IDL.Variant({
+		get: IDL.Null,
+		head: IDL.Null,
+		post: IDL.Null
 	});
 	const HttpRequest = IDL.Record({
 		url: IDL.Text,
-		method: HttpRequestMethod,
+		method: HttpMethod,
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+		sample_data: IDL.Text,
+		cycles: IDL.Nat,
 		request_body: IDL.Opt(IDL.Text)
 	});
 	const Output = IDL.Record({
@@ -225,7 +238,7 @@ export const idlFactory = ({ IDL }: any) => {
 	const Canister = IDL.Record({
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
-		sample_data: IDL.Opt(IDL.Text),
+		sample_data: IDL.Text,
 		verification_type: VerificationType
 	});
 	const NodeType = IDL.Variant({
@@ -270,12 +283,12 @@ export const idlFactory = ({ IDL }: any) => {
 	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
 	const FilterPin = IDL.Record({
 		condition_group: IDL.Opt(ConditionGroup),
-		sample_data: IDL.Opt(IDL.Text),
+		sample_data: IDL.Text,
 		rules: IDL.Vec(Rule),
 		condition: Condition
 	});
 	const MapperPin = IDL.Record({
-		sample_data: IDL.Opt(IDL.Text),
+		sample_data: IDL.Text,
 		fields: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
 	});
 	const CustomPinLogic = IDL.Record({
@@ -315,6 +328,13 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
+	const LookupHttpRequest = IDL.Record({
+		url: IDL.Text,
+		method: HttpMethod,
+		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+		cycles: IDL.Nat,
+		request_body: IDL.Opt(IDL.Text)
+	});
 	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	const HttpHeader = IDL.Record({ value: IDL.Text, name: IDL.Text });
 	const HttpResponse = IDL.Record({
@@ -339,6 +359,7 @@ export const idlFactory = ({ IDL }: any) => {
 		enable_node: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit_node: IDL.Func([IDL.Nat32], [Result], ['query']),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
+		preview_http_request: IDL.Func([LookupHttpRequest], [Result_2], []),
 		preview_lookup_request: IDL.Func([LookupCanister], [Result_2], []),
 		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
 	});
