@@ -1,4 +1,4 @@
-import { Divider, Stack } from '@mui/material';
+import { Divider, Paper, Stack } from '@mui/material';
 import { RefObject, useEffect } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
@@ -144,59 +144,61 @@ const LookupCanisterArgs = () => {
 	});
 
 	return (
-		<>
-			{fields.map((config, index) => (
-				<Stack direction="row" spacing={1} key={config.id} alignItems="center">
-					<Select
-						fullWidth
-						name={`args.${index}.dataType`}
-						options={[
-							{
-								id: 'String',
-								label: 'String'
-							},
-							{
-								id: 'Number',
-								label: 'Number'
-							},
-							{
-								id: 'BigInt',
-								label: 'BigInt'
-							},
-							{
-								id: 'Boolean',
-								label: 'Boolean'
-							},
-							{
-								id: 'Principal',
-								label: 'Principal'
-							},
-							{
-								id: 'Array',
-								label: 'Array'
-							},
-							{
-								id: 'Object',
-								label: 'Object'
-							}
-						]}
-						label="Data type"
-						placeholder="String"
-					/>
-					<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
-					<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
-				</Stack>
-			))}
-			<Button
-				startIcon="add-linear"
-				sx={{ width: 'fit-content' }}
-				variant="outlined"
-				size="large"
-				onClick={() => append({ dataType: 'String', value: '' }, { shouldFocus: false })}
-			>
-				{!fields.length ? 'Add first argument' : 'Add argument'}
-			</Button>
-		</>
+		<Paper sx={{ p: 2 }}>
+			<Stack direction="column" spacing={2}>
+				{fields.map((config, index) => (
+					<Stack direction="row" spacing={1} key={config.id} alignItems="center">
+						<Select
+							fullWidth
+							name={`args.${index}.dataType`}
+							options={[
+								{
+									id: 'String',
+									label: 'String'
+								},
+								{
+									id: 'Number',
+									label: 'Number'
+								},
+								{
+									id: 'BigInt',
+									label: 'BigInt'
+								},
+								{
+									id: 'Boolean',
+									label: 'Boolean'
+								},
+								{
+									id: 'Principal',
+									label: 'Principal'
+								},
+								{
+									id: 'Array',
+									label: 'Array'
+								},
+								{
+									id: 'Object',
+									label: 'Object'
+								}
+							]}
+							label="Data type"
+							placeholder="String"
+						/>
+						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
+						<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
+					</Stack>
+				))}
+				<Button
+					startIcon="add-linear"
+					sx={{ width: 'fit-content' }}
+					variant="outlined"
+					size="large"
+					onClick={() => append({ dataType: 'String', value: '' }, { shouldFocus: false })}
+				>
+					{!fields.length ? 'Add first argument' : 'Add argument'}
+				</Button>
+			</Stack>
+		</Paper>
 	);
 };
 

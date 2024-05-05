@@ -638,7 +638,7 @@ export const isFilterTrue = (rulesConfig: FilterPinFormValues, data?: SampleData
 };
 
 const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition: 'Is' | 'Not'): boolean => {
-	const fieldValue = getNestedValue(data, rule.field) as number | bigint | boolean | string;
+	const fieldValue = getDynamicPathValue(data, rule.field) as number | bigint | boolean | string;
 	let ruleValue: number | bigint | boolean | string;
 
 	// Fetch the operand value based on operandType
@@ -718,10 +718,15 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 	return isRuleSatisfied;
 };
 
-const getNestedValue = (data: SampleData, path: string): unknown => {
+export const getDynamicPathValue = (data: SampleData, path: string): unknown => {
 	const mapper = createMapper();
 	mapper.map(path).to('value');
 
 	const output = mapper.execute(data);
 	return output.value;
+};
+
+export const extractDynamicKey = (str: string) => {
+	const match = str.match(/{{\s*(.*?)\s*}}/);
+	return match ? match[1] : null;
 };

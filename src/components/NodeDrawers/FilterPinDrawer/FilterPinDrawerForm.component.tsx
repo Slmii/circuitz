@@ -98,9 +98,7 @@ export const FilterPinDrawerForm = ({
 								: 'A Lookup Filter Pin filters the node according to the specified rules below. If these rules are met, the Lookup values will be merged into the next Node.'}
 						</Alert>
 						<H5 fontWeight="bold">Rules</H5>
-						<Paper sx={{ p: 2 }}>
-							<Rules />
-						</Paper>
+						<Rules />
 					</Stack>
 					<Divider orientation="vertical" flexItem />
 					<Stack direction="column" spacing={4} width="50%" height="100%">
@@ -154,7 +152,7 @@ const Rules = () => {
 	}, [fields.length]);
 
 	return (
-		<>
+		<Paper sx={{ p: 2 }}>
 			<Stack spacing={1}>
 				<Stack direction="row" columnGap={2} width="100%" alignItems="flex-start">
 					<StandaloneCheckbox
@@ -255,6 +253,6 @@ const Rules = () => {
 					/>
 				</Stack>
 			</Dialog>
-		</>
+		</Paper>
 	);
 };
