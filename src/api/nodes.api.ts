@@ -160,7 +160,6 @@ export async function getSampleData(nodes: Node[]) {
 		if (mapperPin) {
 			const mapperPinFormValues = getMapperPinFormValues(mapperPin);
 
-			console.log({ node, mapperPinFormValues });
 			const mapper = createMapper();
 			mapperPinFormValues.fields.forEach(field => {
 				if (field.input.length && field.output.length) {
