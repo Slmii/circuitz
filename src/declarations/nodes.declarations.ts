@@ -27,6 +27,14 @@ export interface CustomPinLogic {
 	script: [] | [string];
 }
 export type DataType = { BigInt: null } | { String: null } | { Boolean: null } | { Principal: null } | { Number: null };
+export type DynamicArg =
+	| { BigInt: string }
+	| { String: string }
+	| { Object: string }
+	| { Boolean: string }
+	| { Principal: string }
+	| { Array: string }
+	| { Number: string };
 export interface FilterPin {
 	condition_group: [] | [ConditionGroup];
 	sample_data: string;
@@ -57,6 +65,7 @@ export interface HttpResponse {
 }
 export interface LookupCanister {
 	method: string;
+	dynamic_args: Array<DynamicArg>;
 	args: Array<Arg>;
 	name: string;
 	description: [] | [string];
@@ -177,6 +186,15 @@ export interface _SERVICE {
 export const idlFactory = ({ IDL }: any) => {
 	const Arg = IDL.Rec();
 	const Vec = IDL.Rec();
+	const DynamicArg = IDL.Variant({
+		BigInt: IDL.Text,
+		String: IDL.Text,
+		Object: IDL.Text,
+		Boolean: IDL.Text,
+		Principal: IDL.Text,
+		Array: IDL.Text,
+		Number: IDL.Text
+	});
 	Vec.fill(
 		IDL.Vec(
 			IDL.Variant({
@@ -203,6 +221,7 @@ export const idlFactory = ({ IDL }: any) => {
 	);
 	const LookupCanister = IDL.Record({
 		method: IDL.Text,
+		dynamic_args: IDL.Vec(DynamicArg),
 		args: IDL.Vec(Arg),
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),

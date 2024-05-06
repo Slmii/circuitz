@@ -9,7 +9,8 @@ import type {
 	Rule,
 	Token,
 	MapperPin,
-	HttpMethod
+	HttpMethod,
+	DynamicArg
 } from 'declarations/nodes.declarations';
 import type {
 	LookCanisterArgType,
@@ -158,7 +159,7 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 	const lookup = node.nodeType.LookupCanister;
 
 	return {
-		args: lookup.args.map(arg => {
+		args: lookup.dynamic_args.map(arg => {
 			const dataType = getLookupCanisterFormArgType(arg);
 			let value = '';
 
@@ -167,19 +168,19 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 			}
 
 			if ('Number' in arg) {
-				value = arg.Number.toString();
+				value = arg.Number;
 			}
 
 			if ('Boolean' in arg) {
-				value = arg.Boolean.toString();
+				value = arg.Boolean;
 			}
 
 			if ('BigInt' in arg) {
-				value = Number(arg.BigInt).toString();
+				value = arg.BigInt;
 			}
 
 			if ('Principal' in arg) {
-				value = arg.Principal.toString();
+				value = arg.Principal;
 			}
 
 			return {
@@ -280,6 +281,53 @@ export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[], inputSam
 };
 
 /**
+ * Map the LookupCanister form values arguments to the Arg type. This will be passed to the backend.
+ */
+export const getLookupCanisterValuesAsDynamicArg = (args: LookupCanisterArg[]): DynamicArg[] => {
+	return args.map((arg): DynamicArg => {
+		if (arg.dataType === 'String') {
+			return {
+				String: arg.value
+			};
+		}
+
+		if (arg.dataType === 'Number') {
+			return {
+				Number: arg.value
+			};
+		}
+
+		if (arg.dataType === 'BigInt') {
+			return {
+				BigInt: arg.value
+			};
+		}
+
+		if (arg.dataType === 'Principal') {
+			return {
+				Principal: arg.value
+			};
+		}
+
+		if (arg.dataType === 'Array') {
+			return {
+				Array: arg.value
+			};
+		}
+
+		if (arg.dataType === 'Object') {
+			return {
+				Object: arg.value
+			};
+		}
+
+		return {
+			Boolean: arg.value
+		};
+	});
+};
+
+/**
  * Map the LookupCanister form values arguments as an array of single values.
  */
 export const getLookupCanisterValuesAsArray = (args: LookupCanisterArg[]) => {
@@ -307,7 +355,7 @@ export const getLookupCanisterValuesAsArray = (args: LookupCanisterArg[]) => {
 /**
  * Get the argument type for the LookupCanister form values.
  */
-export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
+export const getLookupCanisterFormArgType = (arg: Arg | DynamicArg): LookCanisterArgType => {
 	if ('String' in arg) {
 		return 'String';
 	}
