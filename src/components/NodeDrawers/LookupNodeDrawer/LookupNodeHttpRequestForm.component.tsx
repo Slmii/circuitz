@@ -41,6 +41,20 @@ const getUrlValue = (values: LookupHttpRequestFormValues) => {
 	};
 };
 
+const getRequestBodyValue = (values: LookupHttpRequestFormValues) => {
+	const dynamicKey = extractDynamicKey(values.requestBody);
+
+	let requestBody = values.requestBody;
+	if (dynamicKey) {
+		requestBody = getHandlebars(values.requestBody, parseJson(values.inputSampleData));
+	}
+
+	return {
+		requestBody,
+		hasDynamicKey: !!dynamicKey
+	};
+};
+
 export const LookupNodeHttpRequestForm = ({
 	formRef,
 	node,
@@ -59,7 +73,8 @@ export const LookupNodeHttpRequestForm = ({
 			method = { post: null };
 		}
 
-		const { url, hasDynamicKey } = getUrlValue(data);
+		const { url, hasDynamicKey: hasDynamicUrlKey } = getUrlValue(data);
+		const { requestBody, hasDynamicKey: hasDynamicRequestBodyKey } = getRequestBodyValue(data);
 
 		onProcessNode({
 			LookupHttpRequest: {
@@ -68,10 +83,11 @@ export const LookupNodeHttpRequestForm = ({
 				headers: data.headers.map(header => [header.key, header.value]),
 				method,
 				name: data.name,
-				request_body: data.requestBody.length ? [data.requestBody] : [],
+				request_body: requestBody.length ? [requestBody] : [],
+				dynamic_request_body: hasDynamicRequestBodyKey && data.requestBody.length ? [data.requestBody] : [],
 				sample_data: data.inputSampleData,
 				url,
-				dynamic_url: hasDynamicKey ? [data.url] : []
+				dynamic_url: hasDynamicUrlKey ? [data.url] : []
 			}
 		});
 	};
@@ -141,7 +157,7 @@ export const LookupNodeHttpRequestForm = ({
 										<FormLabel>Request Body</FormLabel>
 										<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />
 									</Stack>
-									<Editor name="requestBody" mode="javascript" height={150} />
+									<Editor name="requestBody" mode="javascript" height={150} ignoreInvalidJSON />
 								</Stack>
 								<HttpRequestHeaders />
 								<Field

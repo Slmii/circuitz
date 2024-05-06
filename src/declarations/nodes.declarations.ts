@@ -47,6 +47,7 @@ export interface HttpRequest {
 	sample_data: string;
 	dynamic_url: [] | [string];
 	cycles: bigint;
+	dynamic_request_body: [] | [string];
 	request_body: [] | [string];
 }
 export interface HttpResponse {
@@ -223,6 +224,7 @@ export const idlFactory = ({ IDL }: any) => {
 		sample_data: IDL.Text,
 		dynamic_url: IDL.Opt(IDL.Text),
 		cycles: IDL.Nat,
+		dynamic_request_body: IDL.Opt(IDL.Text),
 		request_body: IDL.Opt(IDL.Text)
 	});
 	const Output = IDL.Record({

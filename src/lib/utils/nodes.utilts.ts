@@ -222,7 +222,7 @@ export const getLookupHTTRequestFormValues = (node?: Node): LookupHttpRequestFor
 		inputSampleData: lookup.sample_data,
 		method: getHttpRequestMethod(lookup.method),
 		name: lookup.name,
-		requestBody: lookup.request_body[0] ?? '',
+		requestBody: lookup.dynamic_request_body[0] ? lookup.dynamic_request_body[0] : lookup.request_body[0] ?? '',
 		url: lookup.dynamic_url[0] ? lookup.dynamic_url[0] : lookup.url
 	};
 };

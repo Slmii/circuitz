@@ -18,6 +18,7 @@ export const StandaloneEditor = ({
 	isReadOnly,
 	height = 500,
 	errorMessage,
+	ignoreInvalidJSON,
 	onChange
 }: {
 	id: string;
@@ -26,6 +27,7 @@ export const StandaloneEditor = ({
 	isReadOnly?: boolean;
 	height?: number | string;
 	errorMessage?: string;
+	ignoreInvalidJSON?: boolean;
 	onChange?: (value: string) => void;
 }) => {
 	const [parserError, setParserError] = useState<string | null>(null);
@@ -48,6 +50,11 @@ export const StandaloneEditor = ({
 				readOnly={isReadOnly}
 				onChange={onChange}
 				onBlur={() => {
+					if (ignoreInvalidJSON) {
+						setParserError(null);
+						return;
+					}
+
 					try {
 						JSON.parse(value);
 						setParserError(null);
@@ -77,6 +84,7 @@ export const Editor = (props: {
 	mode: string;
 	isReadOnly?: boolean;
 	height?: number | string;
+	ignoreInvalidJSON?: boolean;
 	onChange?: (value: string) => void;
 }) => {
 	return (
