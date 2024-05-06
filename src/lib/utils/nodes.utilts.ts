@@ -37,7 +37,6 @@ import {
 import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
-import createMapper from 'map-factory';
 import { getHandlebars, isHandlebarsTemplate } from './handlebars.utils';
 
 export const mapToNode = (node: OldNode): Node => {
@@ -778,14 +777,6 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 	}
 
 	return isRuleSatisfied;
-};
-
-export const getDynamicPathValue = (data: SampleData, path: string): unknown => {
-	const mapper = createMapper();
-	mapper.map(path).to('value');
-
-	const output = mapper.execute(data);
-	return output.value;
 };
 
 export const extractDynamicKey = (str: string) => {
