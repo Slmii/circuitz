@@ -32,7 +32,7 @@ export const Drawer = ({
 				direction="row"
 				alignItems="center"
 				sx={{
-					gap: 1,
+					gap: 2,
 					py: 2,
 					px: 4,
 					backgroundColor: 'background.paper',
@@ -49,6 +49,14 @@ export const Drawer = ({
 					target="_blank"
 				>
 					Handlebars guide
+				</Button>
+				<Button
+					variant="outlined"
+					color="secondary"
+					href="https://www.npmjs.com/package/just-handlebars-helpers#helpers"
+					target="_blank"
+				>
+					Handlebars helpers
 				</Button>
 				<IconButton tooltip="Close" icon="close-linear" onClick={onClose} />
 			</Stack>

@@ -1,4 +1,4 @@
-import { Divider, Paper, Stack } from '@mui/material';
+import { Box, Divider, Paper, Stack } from '@mui/material';
 import { RefObject, useEffect } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
@@ -11,9 +11,11 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
 import {
+	getHandlebars,
 	getLookupCanisterFormValues,
 	getLookupCanisterValuesAsArg,
 	getNodeMetaData,
+	isHandlebarsTemplate,
 	stringifyJson,
 	toPrincipal
 } from 'lib/utils';
@@ -24,7 +26,6 @@ import { Alert, TipAlert } from 'components/Alert';
 import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
 import { useGetCircuitNodes, useGetParam, useLookupCanisterPreview } from 'lib/hooks';
-import createMapper from 'map-factory';
 import { HandlebarsInfo } from 'components/Shared';
 
 export const LookupNodeCanisterForm = ({
@@ -237,7 +238,13 @@ const PreviewCall = () => {
 	const args = watch('args');
 
 	return (
-		<pre>{`
+		<Box
+			component="pre"
+			sx={{
+				overflowX: 'auto',
+				whiteSpace: 'pre-wrap'
+			}}
+		>{`
 const canister = ic("${watch('canisterId')}");
 const response = await canister.call("${watch('methodName')}"${
 			args.length
@@ -252,27 +259,12 @@ const response = await canister.call("${watch('methodName')}"${
 									return `${value}n`;
 								}
 
-								if (arg.dataType === 'Array' || arg.dataType === 'Object') {
-									return JSON.stringify(value);
-								}
-
 								return value;
 							};
 
-							// Check if arg.value is between curly braces
-							if (arg.value.startsWith('{{') && arg.value.endsWith('}}')) {
-								// Get the value between the curly braces
-								const key = arg.value.slice(2, -2);
-
-								const mapper = createMapper();
-								mapper.map(key).to('value');
-
-								try {
-									const output = mapper.execute(JSON.parse(watch('inputSampleData')));
-									return returnAsType(arg, output.value);
-								} catch (error) {
-									return '';
-								}
+							if (isHandlebarsTemplate(arg.value)) {
+								const result = getHandlebars(arg.value, JSON.parse(watch('inputSampleData')));
+								return returnAsType(arg, result);
 							}
 
 							return returnAsType(arg, arg.value);
@@ -280,6 +272,6 @@ const response = await canister.call("${watch('methodName')}"${
 						.join(', ')}`
 				: ''
 		});
-						`}</pre>
+						`}</Box>
 	);
 };

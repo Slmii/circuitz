@@ -30,6 +30,7 @@
 		"dompurify": "^3.0.6",
 		"handlebars": "^4.7.8",
 		"ic0": "^0.2.8",
+		"just-handlebars-helpers": "^1.0.19",
 		"lodash-es": "^4.17.21",
 		"luxon": "^3.4.3",
 		"map-factory": "^3.8.7",

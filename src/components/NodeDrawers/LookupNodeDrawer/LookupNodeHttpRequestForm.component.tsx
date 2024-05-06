@@ -8,7 +8,14 @@ import { HttpMethod, NodeType } from 'declarations/nodes.declarations';
 import { LookupHttpRequestFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
-import { extractDynamicKey, getLookupHTTRequestFormValues, getNodeMetaData, stringifyJson } from 'lib/utils';
+import {
+	extractDynamicKey,
+	getHandlebars,
+	getLookupHTTRequestFormValues,
+	getNodeMetaData,
+	isHandlebarsTemplate,
+	stringifyJson
+} from 'lib/utils';
 import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { HTTP_METHODS, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
@@ -17,7 +24,6 @@ import { Editor } from 'components/Editor';
 import { useGetCircuitNodes, useGetParam, useLookupHttpRequestPreview } from 'lib/hooks';
 import { lookupHttpRequestSchema } from 'lib/schemas';
 import { Icon } from 'components/Icon';
-import Handlebars from 'handlebars';
 import { HandlebarsInfo } from 'components/Shared';
 
 const getUrlValue = (values: LookupHttpRequestFormValues) => {
@@ -25,10 +31,7 @@ const getUrlValue = (values: LookupHttpRequestFormValues) => {
 
 	let url = values.url;
 	if (dynamicKey) {
-		const template = Handlebars.compile(values.url);
-		const result = template(JSON.parse(values.inputSampleData));
-
-		url = result;
+		url = getHandlebars(values.url, JSON.parse(values.inputSampleData));
 	}
 
 	return {
@@ -125,11 +128,7 @@ export const LookupNodeHttpRequestForm = ({
 									label="URL Endpoint"
 									endElement={<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />}
 									placeholder="https://api.example.com/v1/data"
-									helperText={
-										watch('url').includes('{{') && watch('url').includes('}}')
-											? getUrlValue(getValues()).url
-											: undefined
-									}
+									helperText={isHandlebarsTemplate(watch('url')) ? getUrlValue(getValues()).url : undefined}
 								/>
 								<Select
 									name="method"

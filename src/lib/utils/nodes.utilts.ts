@@ -37,6 +37,7 @@ import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
 import createMapper from 'map-factory';
+import { isHandlebarsTemplate } from './handlebars.utils';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -639,7 +640,7 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 
 	// Fetch the operand value based on operandType
 	if (rule.operandType === 'Field') {
-		if (rule.value.startsWith('{{') && rule.value.endsWith('}}')) {
+		if (isHandlebarsTemplate(rule.value)) {
 			// Get the value between the curly braces
 			const key = rule.value.slice(2, -2);
 

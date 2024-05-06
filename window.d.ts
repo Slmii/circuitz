@@ -43,3 +43,5 @@ interface CreateActor {
 interface RequestConnect {
 	whitelist: string;
 }
+
+declare module 'just-handlebars-helpers';
