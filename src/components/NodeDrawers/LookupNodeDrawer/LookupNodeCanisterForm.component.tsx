@@ -19,7 +19,7 @@ import {
 } from 'lib/utils';
 import { Button, CopyTextButton } from 'components/Button';
 import { Select } from 'components/Form/Select';
-import { ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
+import { DATA_TYPES, ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
@@ -151,36 +151,7 @@ const LookupCanisterArgs = () => {
 						<Select
 							fullWidth
 							name={`args.${index}.dataType`}
-							options={[
-								{
-									id: 'String',
-									label: 'String'
-								},
-								{
-									id: 'Number',
-									label: 'Number'
-								},
-								{
-									id: 'BigInt',
-									label: 'BigInt'
-								},
-								{
-									id: 'Boolean',
-									label: 'Boolean'
-								},
-								{
-									id: 'Principal',
-									label: 'Principal'
-								},
-								{
-									id: 'Array',
-									label: 'Array'
-								},
-								{
-									id: 'Object',
-									label: 'Object'
-								}
-							]}
+							options={DATA_TYPES.map(dataType => ({ id: dataType, label: dataType }))}
 							label="Data type"
 							placeholder="String"
 						/>
