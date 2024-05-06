@@ -8,13 +8,7 @@ import { HttpMethod, NodeType } from 'declarations/nodes.declarations';
 import { LookupHttpRequestFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
-import {
-	extractDynamicKey,
-	getDynamicPathValue,
-	getLookupHTTRequestFormValues,
-	getNodeMetaData,
-	stringifyJson
-} from 'lib/utils';
+import { extractDynamicKey, getLookupHTTRequestFormValues, getNodeMetaData, stringifyJson } from 'lib/utils';
 import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { HTTP_METHODS, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
@@ -23,17 +17,23 @@ import { Editor } from 'components/Editor';
 import { useGetCircuitNodes, useGetParam, useLookupHttpRequestPreview } from 'lib/hooks';
 import { lookupHttpRequestSchema } from 'lib/schemas';
 import { Icon } from 'components/Icon';
+import Handlebars from 'handlebars';
+import { HandlebarsInfo } from 'components/Shared';
 
 const getUrlValue = (values: LookupHttpRequestFormValues) => {
 	const dynamicKey = extractDynamicKey(values.url);
-	const dynamicValue = dynamicKey
-		? (getDynamicPathValue(JSON.parse(values.inputSampleData), dynamicKey) as string | undefined)
-		: undefined;
+
+	let url = values.url;
+	if (dynamicKey) {
+		const template = Handlebars.compile(values.url);
+		const result = template(JSON.parse(values.inputSampleData));
+
+		url = result;
+	}
 
 	return {
-		url: dynamicValue ? values.url.replace(`{{${dynamicKey}}}`, encodeURIComponent(dynamicValue)) : values.url,
-		dynamicKey,
-		dynamicValue
+		url,
+		hasDynamicKey: !!dynamicKey
 	};
 };
 
@@ -55,7 +55,7 @@ export const LookupNodeHttpRequestForm = ({
 			method = { post: null };
 		}
 
-		const { url, dynamicKey } = getUrlValue(data);
+		const { url, hasDynamicKey } = getUrlValue(data);
 
 		onProcessNode({
 			LookupHttpRequest: {
@@ -67,7 +67,7 @@ export const LookupNodeHttpRequestForm = ({
 				request_body: data.requestBody.length ? [data.requestBody] : [],
 				sample_data: data.inputSampleData,
 				url,
-				dynamic_url: dynamicKey ? [data.url] : []
+				dynamic_url: hasDynamicKey ? [data.url] : []
 			}
 		});
 	};
@@ -123,7 +123,7 @@ export const LookupNodeHttpRequestForm = ({
 								<Field
 									name="url"
 									label="URL Endpoint"
-									endElement={<IconHelper />}
+									endElement={<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />}
 									placeholder="https://api.example.com/v1/data"
 									helperText={
 										watch('url').includes('{{') && watch('url').includes('}}')
@@ -139,7 +139,7 @@ export const LookupNodeHttpRequestForm = ({
 								<Stack direction="column" spacing={0.25}>
 									<Stack direction="row" spacing={1} alignItems="center">
 										<FormLabel>Request Body</FormLabel>
-										<IconHelper />
+										<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />
 									</Stack>
 									<Editor name="requestBody" mode="javascript" height={150} />
 								</Stack>
@@ -261,19 +261,5 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 				Send preview request
 			</Button>
 		</>
-	);
-};
-
-const IconHelper = () => {
-	return (
-		<Icon
-			fontSize="small"
-			icon="info"
-			tooltip={
-				<>
-					You can also also provide a path to a field in the preview data, eg: <code>{'{{data.name}}'}</code>
-				</>
-			}
-		/>
 	);
 };

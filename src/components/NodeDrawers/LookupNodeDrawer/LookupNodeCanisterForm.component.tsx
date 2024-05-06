@@ -25,6 +25,7 @@ import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
 import { useGetCircuitNodes, useGetParam, useLookupCanisterPreview } from 'lib/hooks';
 import createMapper from 'map-factory';
+import { HandlebarsInfo } from 'components/Shared';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -116,8 +117,7 @@ export const LookupNodeCanisterForm = ({
 						<H5 fontWeight="bold">Arguments</H5>
 						<B2>
 							Argument order matters. The first argument corresponds to the method's first parameter, the second to its
-							second, and so forth. You can also also provide a path to a field in the preview data, eg:{' '}
-							<code>{'{{data.name}}'}</code>.
+							second, and so forth. <HandlebarsInfo />.
 						</B2>
 						<LookupCanisterArgs />
 					</Stack>

@@ -31,8 +31,8 @@ export const Drawer = ({
 			<Stack
 				direction="row"
 				alignItems="center"
-				justifyContent="space-between"
 				sx={{
+					gap: 1,
 					py: 2,
 					px: 4,
 					backgroundColor: 'background.paper',
@@ -41,6 +41,15 @@ export const Drawer = ({
 				}}
 			>
 				{typeof title === 'string' ? <H3>{title}</H3> : title}
+				<Button
+					sx={{ ml: 'auto' }}
+					variant="contained"
+					color="secondary"
+					href="https://handlebarsjs.com/guide/expressions.html#basic-usage"
+					target="_blank"
+				>
+					Handlebars guide
+				</Button>
 				<IconButton tooltip="Close" icon="close-linear" onClick={onClose} />
 			</Stack>
 			<Box sx={{ p: 4, height: '100%', overflowY: 'auto' }}>{children}</Box>

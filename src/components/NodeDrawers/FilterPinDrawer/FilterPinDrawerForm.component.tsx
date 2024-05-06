@@ -20,6 +20,7 @@ import { filterPinSchema } from 'lib/schemas';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
+import { HandlebarsInfo } from 'components/Shared';
 
 export const FilterPinDrawerForm = ({
 	formRef,
@@ -235,8 +236,7 @@ const Rules = () => {
 					<Select
 						helperText={
 							<>
-								Operand type 'Field' will allow you to compare the field with another field. You can also provide a path
-								to a field in the sample data, eg: <code>{'{{data.name}}'}</code>.
+								Operand type 'Field' will allow you to compare the field with another field. <HandlebarsInfo />.
 							</>
 						}
 						fullWidth
