@@ -1,5 +1,5 @@
 import { FormHelperText, Stack, useTheme } from '@mui/material';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import AceEditor from 'react-ace';
 import { config } from 'ace-builds';
 
@@ -28,6 +28,7 @@ export const StandaloneEditor = ({
 	errorMessage?: string;
 	onChange?: (value: string) => void;
 }) => {
+	const [parserError, setParserError] = useState<string | null>(null);
 	const theme = useTheme();
 
 	const aceEditorTheme = useMemo(() => {
@@ -46,6 +47,14 @@ export const StandaloneEditor = ({
 				value={value}
 				readOnly={isReadOnly}
 				onChange={onChange}
+				onBlur={() => {
+					try {
+						JSON.parse(value);
+						setParserError(null);
+					} catch (error) {
+						setParserError((error as Error).message);
+					}
+				}}
 				wrapEnabled
 				setOptions={{
 					enableBasicAutocompletion: true,
@@ -53,11 +62,11 @@ export const StandaloneEditor = ({
 					enableSnippets: true
 				}}
 				style={{
-					border: `1px solid ${errorMessage ? theme.palette.error.main : theme.palette.divider}`,
+					border: `1px solid ${!!errorMessage || !!parserError ? theme.palette.error.main : theme.palette.divider}`,
 					borderRadius: theme.shape.borderRadius
 				}}
 			/>
-			{errorMessage ? <FormHelperText error>{errorMessage}</FormHelperText> : null}
+			{!!errorMessage || !!parserError ? <FormHelperText error>{errorMessage ?? parserError}</FormHelperText> : null}
 		</Stack>
 	);
 };

@@ -14,6 +14,7 @@ import {
 	getLookupHTTRequestFormValues,
 	getNodeMetaData,
 	isHandlebarsTemplate,
+	parseJson,
 	stringifyJson
 } from 'lib/utils';
 import { Button } from 'components/Button';
@@ -31,7 +32,7 @@ const getUrlValue = (values: LookupHttpRequestFormValues) => {
 
 	let url = values.url;
 	if (dynamicKey) {
-		url = getHandlebars(values.url, JSON.parse(values.inputSampleData));
+		url = getHandlebars(values.url, parseJson(values.inputSampleData));
 	}
 
 	return {
@@ -212,19 +213,19 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 		}
 
 		const key = `Node:${nodesLength}`;
-		const inputSampleData = getValues('inputSampleData');
+		const inputSampleData = parseJson(getValues('inputSampleData'));
 
 		if (error) {
-			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: error }));
+			setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: error }));
 			return;
 		}
 
 		if ('Ok' in data) {
-			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: JSON.parse(data.Ok) }));
+			setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: JSON.parse(data.Ok) }));
 			return;
 		}
 
-		setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: data }));
+		setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: data }));
 	}, [data, error, getValues, nodesLength, setValue]);
 
 	return (

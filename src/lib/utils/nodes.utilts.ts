@@ -37,7 +37,7 @@ import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
 import createMapper from 'map-factory';
-import { isHandlebarsTemplate } from './handlebars.utils';
+import { getHandlebars, isHandlebarsTemplate } from './handlebars.utils';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -230,34 +230,51 @@ export const getLookupHTTRequestFormValues = (node?: Node): LookupHttpRequestFor
 /**
  * Map the LookupCanister form values arguments to the Arg type. This will be passed to the backend.
  */
-export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[]): Arg[] => {
+export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[], inputSampleData: SampleData): Arg[] => {
 	return args.map((arg): Arg => {
+		let value = arg.value;
+		if (isHandlebarsTemplate(arg.value)) {
+			value = getHandlebars(value, inputSampleData);
+		}
+
 		if (arg.dataType === 'String') {
 			return {
-				String: arg.value
+				String: value
 			};
 		}
 
 		if (arg.dataType === 'Number') {
 			return {
-				Number: Number(arg.value)
+				Number: Number(value)
 			};
 		}
 
 		if (arg.dataType === 'BigInt') {
 			return {
-				BigInt: BigInt(arg.value)
+				BigInt: BigInt(value)
 			};
 		}
 
 		if (arg.dataType === 'Principal') {
 			return {
-				Principal: toPrincipal(arg.value)
+				Principal: toPrincipal(value)
+			};
+		}
+
+		if (arg.dataType === 'Array') {
+			return {
+				Array: JSON.parse(value)
+			};
+		}
+
+		if (arg.dataType === 'Object') {
+			return {
+				Object: JSON.parse(value)
 			};
 		}
 
 		return {
-			Boolean: arg.value === 'true'
+			Boolean: value === 'true'
 		};
 	});
 };

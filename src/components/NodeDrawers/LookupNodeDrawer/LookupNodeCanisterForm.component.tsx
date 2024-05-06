@@ -16,6 +16,7 @@ import {
 	getLookupCanisterValuesAsArg,
 	getNodeMetaData,
 	isHandlebarsTemplate,
+	parseJson,
 	stringifyJson,
 	toPrincipal
 } from 'lib/utils';
@@ -48,7 +49,7 @@ export const LookupNodeCanisterForm = ({
 				canister: Principal.fromText(data.canisterId),
 				method: data.methodName,
 				cycles: BigInt(data.cycles),
-				args: getLookupCanisterValuesAsArg(data.args),
+				args: getLookupCanisterValuesAsArg(data.args, JSON.parse(data.inputSampleData)),
 				sample_data: data.inputSampleData
 			}
 		});
@@ -184,19 +185,19 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 		}
 
 		const key = `Node:${nodesLength}`;
-		const inputSampleData = getValues('inputSampleData');
+		const inputSampleData = parseJson(getValues('inputSampleData'));
 
 		if (error) {
-			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: error }));
+			setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: error }));
 			return;
 		}
 
 		if ('Ok' in data) {
-			setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: JSON.parse(data.Ok) }));
+			setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: JSON.parse(data.Ok) }));
 			return;
 		}
 
-		setValue('inputSampleData', stringifyJson({ ...JSON.parse(inputSampleData), [key]: data }));
+		setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: data }));
 	}, [data, error, getValues, nodesLength, setValue]);
 
 	return (
@@ -214,8 +215,9 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 					}
 
 					const values = getValues();
+
 					preview({
-						args: getLookupCanisterValuesAsArg(values.args),
+						args: getLookupCanisterValuesAsArg(values.args, parseJson(values.inputSampleData)),
 						canister: toPrincipal(values.canisterId),
 						method: values.methodName,
 						cycles: BigInt(values.cycles),
@@ -263,7 +265,7 @@ const response = await canister.call("${watch('methodName')}"${
 							};
 
 							if (isHandlebarsTemplate(arg.value)) {
-								const result = getHandlebars(arg.value, JSON.parse(watch('inputSampleData')));
+								const result = getHandlebars(arg.value, parseJson(watch('inputSampleData')));
 								return returnAsType(arg, result);
 							}
 
