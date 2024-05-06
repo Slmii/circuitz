@@ -1,7 +1,16 @@
 import { FilterRule } from 'components/NodeDrawers';
 import { FORM_ERRORS } from 'lib/constants';
 import { OperandType } from 'lib/types';
+import { isHandlebarsTemplate } from 'lib/utils';
 import * as yup from 'yup';
+
+const isHandlebarsTest = (value?: string) => {
+	if (!value) {
+		return false;
+	}
+
+	return isHandlebarsTemplate(value);
+};
 
 export const filterPinSchema = yup.object().shape({
 	inputSampleData: yup.string().required(FORM_ERRORS.required),
@@ -13,13 +22,13 @@ export const filterPinSchema = yup.object().shape({
 	}),
 	rules: yup.array().of(
 		yup.object({
-			field: yup.string().required(FORM_ERRORS.selection),
+			field: yup.string().test('is-handlebars', FORM_ERRORS.handlebars, isHandlebarsTest),
 			operator: yup.string().required(FORM_ERRORS.selection),
 			operandType: yup.string().required(FORM_ERRORS.selection),
 			dataType: yup.string().required(FORM_ERRORS.selection),
 			value: yup.string().when('operandType', {
 				is: (type: OperandType) => type === 'Field',
-				then: schema => schema.required(FORM_ERRORS.selection),
+				then: schema => schema.test('is-handlebars', FORM_ERRORS.handlebars, isHandlebarsTest),
 				otherwise: schema => schema.required(FORM_ERRORS.required)
 			})
 		})

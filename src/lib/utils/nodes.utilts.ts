@@ -470,7 +470,7 @@ export function getSampleDataFields<T extends object>(obj: T, path: string[] = [
 /**
  * Map the FilterPin form values arguments to the Rule type. This will be passed to the backend.
  */
-export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
+export const getFilterPinValuesAsArg = (pins: FilterRule[], inputSampleData: SampleData): Rule[] => {
 	return pins.map((pin): Rule => {
 		let dataType: OldDataType = { String: null };
 		if (pin.dataType === 'BigInt') {
@@ -501,9 +501,19 @@ export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
 			operator = { LessThanOrEqual: null };
 		}
 
+		let field = pin.field;
+		if (isHandlebarsTemplate(field)) {
+			field = getHandlebars(field, inputSampleData);
+		}
+
+		let value = pin.value;
+		if (isHandlebarsTemplate(value)) {
+			value = getHandlebars(value, inputSampleData);
+		}
+
 		return {
-			field: pin.field,
-			value: pin.value,
+			field,
+			value,
 			operand: {
 				data_type: dataType,
 				operand_type: operandType
@@ -700,42 +710,32 @@ export const isFilterTrue = (rulesConfig: FilterPinFormValues, data?: SampleData
 };
 
 const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition: 'Is' | 'Not'): boolean => {
-	const fieldValue = getDynamicPathValue(data, rule.field) as number | bigint | boolean | string;
-	let ruleValue: number | bigint | boolean | string;
+	let field: number | bigint | boolean | string = '';
+	// Should always be handlebars template
+	if (isHandlebarsTemplate(rule.field)) {
+		field = getHandlebars(rule.field, data);
+	}
 
 	// Fetch the operand value based on operandType
-	if (rule.operandType === 'Field') {
-		if (isHandlebarsTemplate(rule.value)) {
-			// Get the value between the curly braces
-			const key = rule.value.slice(2, -2);
-
-			const mapper = createMapper();
-			mapper.map(key).to('value');
-
-			const output = mapper.execute(data);
-			ruleValue = output.value;
-		} else {
-			ruleValue = '';
-		}
-	} else {
-		// Treat rule.value as a literal value
-		ruleValue = rule.value;
+	let value: number | bigint | boolean | string = rule.value;
+	if (rule.operandType === 'Field' && isHandlebarsTemplate(rule.value)) {
+		value = getHandlebars(rule.value, data);
 	}
 
 	// Convert to appropriate type
 	switch (rule.dataType) {
 		case 'Number':
-			ruleValue = Number(ruleValue);
+			value = Number(value);
 			break;
 		case 'BigInt':
-			ruleValue = BigInt(ruleValue);
+			value = BigInt(value);
 			break;
 		case 'Boolean':
-			ruleValue = ruleValue.toString().toLowerCase() === 'true';
+			value = value.toString().toLowerCase() === 'true';
 			break;
 		case 'String':
 		case 'Principal':
-			ruleValue = ruleValue.toString();
+			value = value.toString();
 			break;
 	}
 
@@ -743,31 +743,31 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 	switch (rule.operator) {
 		case 'Equal':
 			// console.log('Equal', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue === ruleValue;
+			isRuleSatisfied = field === value;
 			break;
 		case 'NotEqual':
 			// console.log('NotEqual', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue !== ruleValue;
+			isRuleSatisfied = field !== value;
 			break;
 		case 'LessThan':
 			// console.log('LessThan', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue < ruleValue;
+			isRuleSatisfied = field < value;
 			break;
 		case 'GreaterThan':
 			// console.log('GreaterThan', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue > ruleValue;
+			isRuleSatisfied = field > value;
 			break;
 		case 'LessThanOrEqual':
 			// console.log('LessThanOrEqual', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue <= ruleValue;
+			isRuleSatisfied = field <= value;
 			break;
 		case 'GreaterThanOrEqual':
 			// console.log('GreaterThanOrEqual', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue >= ruleValue;
+			isRuleSatisfied = field >= value;
 			break;
 		case 'Contains':
 			// console.log('Contains', { fieldValue, ruleValue });
-			isRuleSatisfied = fieldValue.toString().includes(ruleValue.toString());
+			isRuleSatisfied = field.toString().includes(value.toString());
 			break;
 		default:
 			isRuleSatisfied = false;

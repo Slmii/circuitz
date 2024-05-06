@@ -14,5 +14,6 @@ export const FORM_ERRORS = {
 	url: 'Please provide a valid URL',
 	minDate: 'Please provide a date in the future',
 	principal: 'Please provide a valid Principal ID',
-	canister: 'Please provide a valid Canister ID'
+	canister: 'Please provide a valid Canister ID',
+	handlebars: 'Please provide a valid Handlebars template'
 };

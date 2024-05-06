@@ -21,6 +21,7 @@ import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { HandlebarsInfo } from 'components/Shared';
+import { Icon } from 'components/Icon';
 
 export const FilterPinDrawerForm = ({
 	formRef,
@@ -42,7 +43,7 @@ export const FilterPinDrawerForm = ({
 		const values: FilterPin = {
 			condition: data.condition === 'Is' ? { Is: null } : { Not: null },
 			condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
-			rules: getFilterPinValuesAsArg(data.rules),
+			rules: getFilterPinValuesAsArg(data.rules, JSON.parse(data.inputSampleData)),
 			sample_data: data.inputSampleData
 		};
 
@@ -207,7 +208,12 @@ const Rules = () => {
 							onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
 							onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
 						>
-							<Field fullWidth name={`rules.${index}.field`} label="Field" />
+							<Field
+								fullWidth
+								name={`rules.${index}.field`}
+								label="Field"
+								endElement={<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />}
+							/>
 							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
 							<Field fullWidth name={`rules.${index}.value`} label="Value" />
 							<IconButton
