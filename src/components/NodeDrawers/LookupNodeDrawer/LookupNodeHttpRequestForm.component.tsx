@@ -1,5 +1,5 @@
-import { Divider, FormLabel, Paper, Stack } from '@mui/material';
-import { RefObject, useEffect } from 'react';
+import { Box, Divider, FormLabel, Paper, Stack } from '@mui/material';
+import { RefObject, useEffect, useState } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { H5 } from 'components/Typography';
@@ -21,11 +21,12 @@ import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { HTTP_METHODS, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
-import { Editor } from 'components/Editor';
+import { Editor, StandaloneEditor } from 'components/Editor';
 import { useGetCircuitNodes, useGetParam, useLookupHttpRequestPreview } from 'lib/hooks';
 import { lookupHttpRequestSchema } from 'lib/schemas';
 import { Icon } from 'components/Icon';
 import { HandlebarsInfo } from 'components/Shared';
+import { StandaloneCheckbox } from 'components/Form/Checkbox';
 
 const getUrlValue = (values: LookupHttpRequestFormValues) => {
 	const dynamicKey = extractDynamicKey(values.url);
@@ -58,6 +59,7 @@ export const LookupNodeHttpRequestForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => void;
 }) => {
+	const [isLivePreview, setIsLivePreview] = useState(false);
 	const circuitId = useGetParam('circuitId');
 	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
@@ -142,11 +144,42 @@ export const LookupNodeHttpRequestForm = ({
 									options={HTTP_METHODS.map(method => ({ id: method, label: method }))}
 								/>
 								<Stack direction="column" spacing={0.25}>
-									<Stack direction="row" spacing={1} alignItems="center">
-										<FormLabel>Request Body</FormLabel>
-										<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />
+									<Stack direction="row" justifyContent="space-between">
+										<Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+											<FormLabel>Request Body</FormLabel>
+											<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />
+										</Stack>
+										<Box sx={{ ml: 'auto' }}>
+											<StandaloneCheckbox
+												label="Live preview"
+												name="livePreview"
+												checked={isLivePreview}
+												onChange={setIsLivePreview}
+											/>
+										</Box>
 									</Stack>
-									<Editor name="requestBody" mode="javascript" height={150} ignoreInvalidJSON />
+									<Stack
+										direction="column"
+										spacing={1}
+										alignItems="center"
+										width="100%"
+										sx={{
+											'& *': {
+												width: '100%'
+											}
+										}}
+									>
+										<Editor name="requestBody" mode="handlebars" height={150} ignoreInvalidJSON />
+										{isLivePreview && (
+											<StandaloneEditor
+												isReadOnly
+												id="requestBodyPreview"
+												value={getHandlebars(watch('requestBody'), parseJson(watch('inputSampleData')))}
+												mode="javascript"
+												height={150}
+											/>
+										)}
+									</Stack>
 								</Stack>
 								<HttpRequestHeaders />
 								<Field

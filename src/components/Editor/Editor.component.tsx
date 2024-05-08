@@ -6,6 +6,7 @@ import { config } from 'ace-builds';
 config.setModuleUrl('basePath', '/node_modules/ace-builds/src-noconflict');
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-rust';
+import 'ace-builds/src-noconflict/mode-handlebars';
 import 'ace-builds/src-noconflict/theme-cloud9_night';
 import 'ace-builds/src-noconflict/theme-cloud9_day';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -50,7 +51,7 @@ export const StandaloneEditor = ({
 				readOnly={isReadOnly}
 				onChange={onChange}
 				onBlur={() => {
-					if (ignoreInvalidJSON) {
+					if (isReadOnly || ignoreInvalidJSON) {
 						setParserError(null);
 						return;
 					}
