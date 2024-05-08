@@ -79,15 +79,19 @@ export const FilterPinDrawerForm = ({
 				let inputSampleData = formValues.inputSampleData;
 
 				if (!inputSampleData.length) {
-					const nodes = circuitNodes ?? [];
-					const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
+					if (filterType === 'LookupFilterPin' && node) {
+						const metadata = getNodeMetaData(node);
+						inputSampleData = metadata.inputSampleData;
+					} else {
+						const nodes = circuitNodes ?? [];
+						const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
 
-					if (currentNodeIndex !== -1) {
-						const previousNode = nodes[currentNodeIndex - (filterType === 'LookupFilterPin' ? 0 : 1)];
-						console.log('previousNode', previousNode);
-						if (previousNode) {
-							const metadata = getNodeMetaData(previousNode);
-							inputSampleData = metadata.inputSampleData;
+						if (currentNodeIndex !== -1) {
+							const previousNode = nodes[currentNodeIndex - 1];
+							if (previousNode) {
+								const metadata = getNodeMetaData(previousNode);
+								inputSampleData = metadata.inputSampleData;
+							}
 						}
 					}
 				}

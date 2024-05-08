@@ -16,7 +16,6 @@ import { Field } from 'components/Form/Field';
 import createMapper from 'map-factory';
 import lodashMerge from 'lodash/merge';
 import { mapperPinSchema } from 'lib/schemas';
-import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
 
 export const MapperPinDrawerForm = ({
 	formRef,
@@ -28,9 +27,6 @@ export const MapperPinDrawerForm = ({
 	onProcessMapper: (data: Pin) => void;
 }) => {
 	const [outputSampleData, setOutputSampleData] = useState('');
-
-	const circuitId = useGetParam('circuitId');
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
 
 	const handleOnPreview = (formValues: MapperPinFormValues) => {
 		try {
@@ -73,17 +69,9 @@ export const MapperPinDrawerForm = ({
 				const formValues = getMapperPinFormValues(filterPin);
 				let inputSampleData = formValues.inputSampleData;
 
-				if (!inputSampleData.length) {
-					const nodes = circuitNodes ?? [];
-					const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
-
-					if (currentNodeIndex !== -1) {
-						const previousNode = nodes[currentNodeIndex - 1];
-						if (previousNode) {
-							const metadata = getNodeMetaData(previousNode);
-							inputSampleData = metadata.inputSampleData;
-						}
-					}
+				if (!inputSampleData.length && node) {
+					const metadata = getNodeMetaData(node);
+					inputSampleData = metadata.inputSampleData;
 				}
 
 				return {
