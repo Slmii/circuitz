@@ -43,7 +43,7 @@ export const FilterPinDrawerForm = ({
 		const values: FilterPin = {
 			condition: data.condition === 'Is' ? { Is: null } : { Not: null },
 			condition_group: data.conditionGroup ? [data.conditionGroup === 'And' ? { And: null } : { Or: null }] : [],
-			rules: getFilterPinValuesAsArg(data.rules, JSON.parse(data.inputSampleData)),
+			rules: getFilterPinValuesAsArg(data.rules),
 			sample_data: data.inputSampleData
 		};
 
@@ -78,10 +78,13 @@ export const FilterPinDrawerForm = ({
 				const formValues = getFilterPinFormValues(filterPin);
 				let inputSampleData = formValues.inputSampleData;
 
-				const lastNode = circuitNodes?.[circuitNodes.length - (filterType === 'LookupFilterPin' ? 1 : 2)];
-				if (lastNode) {
-					const metadata = getNodeMetaData(lastNode);
-					inputSampleData = metadata.inputSampleData;
+				// If there is no inputSampleData, populate it with the according node's output
+				if (!inputSampleData.length) {
+					const lastNode = circuitNodes?.[circuitNodes.length - (filterType === 'LookupFilterPin' ? 1 : 2)];
+					if (lastNode) {
+						const metadata = getNodeMetaData(lastNode);
+						inputSampleData = metadata.inputSampleData;
+					}
 				}
 
 				return {

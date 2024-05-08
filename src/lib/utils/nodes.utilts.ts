@@ -462,7 +462,7 @@ export function getSampleDataFields<T extends object>(obj: T, path: string[] = [
 /**
  * Map the FilterPin form values arguments to the Rule type. This will be passed to the backend.
  */
-export const getFilterPinValuesAsArg = (pins: FilterRule[], inputSampleData: SampleData): Rule[] => {
+export const getFilterPinValuesAsArg = (pins: FilterRule[]): Rule[] => {
 	return pins.map((pin): Rule => {
 		let dataType: OldDataType = { String: null };
 		if (pin.dataType === 'BigInt') {
@@ -493,21 +493,9 @@ export const getFilterPinValuesAsArg = (pins: FilterRule[], inputSampleData: Sam
 			operator = { LessThanOrEqual: null };
 		}
 
-		let field = pin.field;
-		if (isHandlebarsTemplate(field)) {
-			field = getHandlebars(field, inputSampleData);
-		}
-
-		let value = pin.value;
-		if (isHandlebarsTemplate(value)) {
-			value = getHandlebars(value, inputSampleData);
-		}
-
 		return {
-			field,
-			dynamic_field: pin.field,
-			value,
-			dynamic_value: pin.value,
+			field: pin.field,
+			value: pin.value,
 			operand: {
 				data_type: dataType,
 				operand_type: operandType
@@ -560,8 +548,8 @@ export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValu
 		rules: filterPin.rules.map(rule => ({
 			dataType: getRuleDataType(rule),
 			operandType: getRuleOparandType(rule),
-			field: rule.dynamic_field,
-			value: rule.dynamic_value,
+			field: rule.field,
+			value: rule.value,
 			operator: getRuleOperator(rule)
 		}))
 	};

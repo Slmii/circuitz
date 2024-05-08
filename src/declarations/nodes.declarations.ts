@@ -145,11 +145,9 @@ export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export type Result_2 = { Ok: string } | { Err: ApiError };
 export interface Rule {
 	field: string;
-	dynamic_value: string;
 	value: string;
 	operand: Operand;
 	operator: Operator;
-	dynamic_field: string;
 }
 export interface Token {
 	field: string;
@@ -266,11 +264,9 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const Rule = IDL.Record({
 		field: IDL.Text,
-		dynamic_value: IDL.Text,
 		value: IDL.Text,
 		operand: Operand,
-		operator: Operator,
-		dynamic_field: IDL.Text
+		operator: Operator
 	});
 	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
 	const FilterPin = IDL.Record({
