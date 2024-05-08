@@ -73,10 +73,12 @@ export const MapperPinDrawerForm = ({
 				const formValues = getMapperPinFormValues(filterPin);
 				let inputSampleData = formValues.inputSampleData;
 
-				const lastNode = circuitNodes?.[circuitNodes.length - 1];
-				if (lastNode) {
-					const metadata = getNodeMetaData(lastNode);
-					inputSampleData = metadata.inputSampleData;
+				if (!inputSampleData.length) {
+					const lastNode = circuitNodes?.[circuitNodes.length - 1];
+					if (lastNode) {
+						const metadata = getNodeMetaData(lastNode);
+						inputSampleData = metadata.inputSampleData;
+					}
 				}
 
 				return {
