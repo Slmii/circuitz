@@ -45,9 +45,7 @@ export interface HttpRequest {
 	description: [] | [string];
 	headers: Array<[string, string]>;
 	sample_data: string;
-	dynamic_url: [] | [string];
 	cycles: bigint;
-	dynamic_request_body: [] | [string];
 	request_body: [] | [string];
 }
 export interface HttpResponse {
@@ -70,7 +68,7 @@ export interface LookupCanisterPreview {
 	cycles: bigint;
 	canister: Principal;
 }
-export interface LookupHttpRequest {
+export interface LookupHttpRequestPreview {
 	url: string;
 	method: HttpMethod;
 	headers: Array<[string, string]>;
@@ -176,7 +174,7 @@ export interface _SERVICE {
 	get_circuit_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
 	preview_lookup_canister: ActorMethod<[LookupCanisterPreview], Result_2>;
-	preview_lookup_http_request: ActorMethod<[LookupHttpRequest], Result_2>;
+	preview_lookup_http_request: ActorMethod<[LookupHttpRequestPreview], Result_2>;
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
 }
 
@@ -212,9 +210,7 @@ export const idlFactory = ({ IDL }: any) => {
 		description: IDL.Opt(IDL.Text),
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
 		sample_data: IDL.Text,
-		dynamic_url: IDL.Opt(IDL.Text),
 		cycles: IDL.Nat,
-		dynamic_request_body: IDL.Opt(IDL.Text),
 		request_body: IDL.Opt(IDL.Text)
 	});
 	const Output = IDL.Record({
@@ -340,7 +336,7 @@ export const idlFactory = ({ IDL }: any) => {
 		canister: IDL.Principal
 	});
 	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
-	const LookupHttpRequest = IDL.Record({
+	const LookupHttpRequestPreview = IDL.Record({
 		url: IDL.Text,
 		method: HttpMethod,
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
@@ -371,7 +367,7 @@ export const idlFactory = ({ IDL }: any) => {
 		get_circuit_node: IDL.Func([IDL.Nat32], [Result], ['query']),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
 		preview_lookup_canister: IDL.Func([LookupCanisterPreview], [Result_2], []),
-		preview_lookup_http_request: IDL.Func([LookupHttpRequest], [Result_2], []),
+		preview_lookup_http_request: IDL.Func([LookupHttpRequestPreview], [Result_2], []),
 		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
 	});
 };

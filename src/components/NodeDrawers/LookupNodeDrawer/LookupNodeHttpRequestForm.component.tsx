@@ -35,10 +35,7 @@ const getUrlValue = (values: LookupHttpRequestFormValues) => {
 		url = getHandlebars(values.url, parseJson(values.inputSampleData));
 	}
 
-	return {
-		url,
-		hasDynamicKey: !!dynamicKey
-	};
+	return url;
 };
 
 const getRequestBodyValue = (values: LookupHttpRequestFormValues) => {
@@ -49,10 +46,7 @@ const getRequestBodyValue = (values: LookupHttpRequestFormValues) => {
 		requestBody = getHandlebars(values.requestBody, parseJson(values.inputSampleData));
 	}
 
-	return {
-		requestBody,
-		hasDynamicKey: !!dynamicKey
-	};
+	return requestBody;
 };
 
 export const LookupNodeHttpRequestForm = ({
@@ -73,9 +67,6 @@ export const LookupNodeHttpRequestForm = ({
 			method = { post: null };
 		}
 
-		const { url, hasDynamicKey: hasDynamicUrlKey } = getUrlValue(data);
-		const { requestBody, hasDynamicKey: hasDynamicRequestBodyKey } = getRequestBodyValue(data);
-
 		onProcessNode({
 			LookupHttpRequest: {
 				cycles: BigInt(data.cycles),
@@ -83,11 +74,9 @@ export const LookupNodeHttpRequestForm = ({
 				headers: data.headers.map(header => [header.key, header.value]),
 				method,
 				name: data.name,
-				request_body: requestBody.length ? [requestBody] : [],
-				dynamic_request_body: hasDynamicRequestBodyKey && data.requestBody.length ? [data.requestBody] : [],
+				request_body: data.requestBody.length ? [data.requestBody] : [],
 				sample_data: data.inputSampleData,
-				url,
-				dynamic_url: hasDynamicUrlKey ? [data.url] : []
+				url: data.url
 			}
 		});
 	};
@@ -145,7 +134,7 @@ export const LookupNodeHttpRequestForm = ({
 									label="URL Endpoint"
 									endElement={<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />}
 									placeholder="https://api.example.com/v1/data"
-									helperText={isHandlebarsTemplate(watch('url')) ? getUrlValue(getValues()).url : undefined}
+									helperText={isHandlebarsTemplate(watch('url')) ? getUrlValue(getValues()) : undefined}
 								/>
 								<Select
 									name="method"
@@ -265,12 +254,15 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 						method = { post: null };
 					}
 
+					const requestBody = getRequestBodyValue(values);
+					const url = getUrlValue(values);
+
 					preview({
 						cycles: BigInt(values.cycles),
 						headers: values.headers.map(header => [header.key, header.value]),
 						method,
-						request_body: values.requestBody.length ? [values.requestBody] : [],
-						url: getUrlValue(values).url
+						request_body: requestBody.length ? [requestBody] : [],
+						url
 					});
 				}}
 			>

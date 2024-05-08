@@ -1,7 +1,7 @@
 import type {
 	FilterPin,
 	LookupCanisterPreview,
-	LookupHttpRequest,
+	LookupHttpRequestPreview,
 	MapperPin,
 	NodeType,
 	Pin,
@@ -92,7 +92,7 @@ export async function previewLookupCanister(data: LookupCanisterPreview) {
 /**
  * Preview Lookup HTTP Request
  */
-export async function previewLookupHTTPRequest(data: LookupHttpRequest) {
+export async function previewLookupHTTPRequest(data: LookupHttpRequestPreview) {
 	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
 	return actor.preview_lookup_http_request(data);
 }
