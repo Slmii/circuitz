@@ -1,6 +1,6 @@
 import type {
 	FilterPin,
-	LookupCanister,
+	LookupCanisterPreview,
 	LookupHttpRequest,
 	MapperPin,
 	NodeType,
@@ -16,6 +16,7 @@ import {
 	httpRequest,
 	isFilterTrue,
 	mapToNode,
+	toPrincipal,
 	unwrapResult
 } from 'lib/utils';
 import { Node, SampleData } from 'lib/types';
@@ -83,7 +84,7 @@ export async function editNode({ nodeId, data }: { nodeId: number; data: NodeTyp
 /**
  * Preview Lookup Canister request
  */
-export async function previewLookupCanister(data: LookupCanister) {
+export async function previewLookupCanister(data: LookupCanisterPreview) {
 	const actor = await createActor<_SERVICE>(nodesCanisterId[ENV], 'nodes');
 	return actor.preview_lookup_canister(data);
 }
@@ -152,7 +153,38 @@ export async function getSampleData(nodes: Node[]) {
 
 		// Lookup Nodes
 		if ('LookupCanister' in node.nodeType) {
-			sampleData[`Node:${nodeIndex}`] = await previewLookupCanister(node.nodeType.LookupCanister);
+			sampleData[`Node:${nodeIndex}`] = await previewLookupCanister({
+				args: node.nodeType.LookupCanister.args.map(arg => {
+					if ('String' in arg) {
+						return arg.String;
+					}
+
+					if ('Number' in arg) {
+						return Number(arg.Number);
+					}
+
+					if ('Boolean' in arg) {
+						return arg.Boolean === 'true';
+					}
+
+					if ('Principal' in arg) {
+						return toPrincipal(arg.Principal);
+					}
+
+					if ('Array' in arg) {
+						return JSON.parse(arg.Array);
+					}
+
+					if ('Object' in arg) {
+						return JSON.parse(arg.Object);
+					}
+
+					return BigInt(arg.BigInt);
+				}),
+				canister: node.nodeType.LookupCanister.canister,
+				cycles: node.nodeType.LookupCanister.cycles,
+				method: node.nodeType.LookupCanister.method
+			});
 		} else if ('LookupHttpRequest' in node.nodeType) {
 			sampleData[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
 		}

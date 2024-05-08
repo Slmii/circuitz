@@ -14,7 +14,7 @@ import {
 	getHandlebars,
 	getLookupCanisterFormValues,
 	getLookupCanisterValuesAsArg,
-	getLookupCanisterValuesAsDynamicArg,
+	getLookupCanisterValuesAsPreviewArg,
 	getNodeMetaData,
 	isHandlebarsTemplate,
 	parseJson,
@@ -50,8 +50,7 @@ export const LookupNodeCanisterForm = ({
 				canister: Principal.fromText(data.canisterId),
 				method: data.methodName,
 				cycles: BigInt(data.cycles),
-				args: getLookupCanisterValuesAsArg(data.args, JSON.parse(data.inputSampleData)),
-				dynamic_args: getLookupCanisterValuesAsDynamicArg(data.args),
+				args: getLookupCanisterValuesAsArg(data.args),
 				sample_data: data.inputSampleData
 			}
 		});
@@ -219,16 +218,10 @@ const Preview = ({ nodesLength }: { nodesLength: number }) => {
 					const values = getValues();
 
 					preview({
-						args: getLookupCanisterValuesAsArg(values.args, parseJson(values.inputSampleData)),
+						args: getLookupCanisterValuesAsPreviewArg(values.args),
 						canister: toPrincipal(values.canisterId),
 						method: values.methodName,
-						cycles: BigInt(values.cycles),
-
-						// Preview dont need these values
-						dynamic_args: [],
-						description: [],
-						name: '',
-						sample_data: ''
+						cycles: BigInt(values.cycles)
 					});
 				}}
 			>

@@ -42,7 +42,7 @@ export const Drawer = ({
 			>
 				{typeof title === 'string' ? <H3>{title}</H3> : title}
 				<Button
-					sx={{ ml: 'auto' }}
+					sx={{ ml: 'auto', minWidth: 'fit-content' }}
 					variant="contained"
 					color="secondary"
 					href="https://handlebarsjs.com/guide/expressions.html#basic-usage"
@@ -51,6 +51,7 @@ export const Drawer = ({
 					Handlebars guide
 				</Button>
 				<Button
+					sx={{ minWidth: 'fit-content' }}
 					variant="outlined"
 					color="secondary"
 					href="https://www.npmjs.com/package/just-handlebars-helpers#helpers"

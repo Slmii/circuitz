@@ -7,13 +7,13 @@ export type ApiError =
 	| { AlreadyExists: string }
 	| { InterCanister: string };
 export type Arg =
-	| { BigInt: bigint }
+	| { BigInt: string }
 	| { String: string }
-	| { Object: Array<[string, Arg]> }
-	| { Boolean: boolean }
-	| { Principal: Principal }
-	| { Array: Vec }
-	| { Number: number };
+	| { Object: string }
+	| { Boolean: string }
+	| { Principal: string }
+	| { Array: string }
+	| { Number: string };
 export interface Canister {
 	name: string;
 	description: [] | [string];
@@ -27,14 +27,6 @@ export interface CustomPinLogic {
 	script: [] | [string];
 }
 export type DataType = { BigInt: null } | { String: null } | { Boolean: null } | { Principal: null } | { Number: null };
-export type DynamicArg =
-	| { BigInt: string }
-	| { String: string }
-	| { Object: string }
-	| { Boolean: string }
-	| { Principal: string }
-	| { Array: string }
-	| { Number: string };
 export interface FilterPin {
 	condition_group: [] | [ConditionGroup];
 	sample_data: string;
@@ -65,11 +57,16 @@ export interface HttpResponse {
 }
 export interface LookupCanister {
 	method: string;
-	dynamic_args: Array<DynamicArg>;
 	args: Array<Arg>;
 	name: string;
 	description: [] | [string];
 	sample_data: string;
+	cycles: bigint;
+	canister: Principal;
+}
+export interface LookupCanisterPreview {
+	method: string;
+	args: Array<PreviewArg>;
 	cycles: bigint;
 	canister: Principal;
 }
@@ -137,14 +134,24 @@ export type PinType =
 	| { PrePin: CustomPinLogic }
 	| { PostPin: CustomPinLogic }
 	| { LookupFilterPin: FilterPin };
+export type PreviewArg =
+	| { BigInt: bigint }
+	| { String: string }
+	| { Object: Array<[string, Arg]> }
+	| { Boolean: boolean }
+	| { Principal: Principal }
+	| { Array: Array<Arg> }
+	| { Number: number };
 export type Result = { Ok: Node } | { Err: ApiError };
 export type Result_1 = { Ok: [Principal, Array<Node>] } | { Err: ApiError };
 export type Result_2 = { Ok: string } | { Err: ApiError };
 export interface Rule {
 	field: string;
+	dynamic_value: string;
 	value: string;
 	operand: Operand;
 	operator: Operator;
+	dynamic_field: string;
 }
 export interface Token {
 	field: string;
@@ -154,15 +161,6 @@ export interface TransformArgs {
 	context: Uint8Array | number[];
 	response: HttpResponse;
 }
-export type Vec = Array<
-	| { BigInt: bigint }
-	| { String: string }
-	| { Object: Array<[string, Arg]> }
-	| { Boolean: boolean }
-	| { Principal: Principal }
-	| { Array: Vec }
-	| { Number: number }
->;
 export type VerificationType = { None: null } | { Token: Token } | { Whitelist: Array<Principal> };
 export interface _SERVICE {
 	__get_candid_interface_tmp_hack: ActorMethod<[], string>;
@@ -177,16 +175,14 @@ export interface _SERVICE {
 	enable_node: ActorMethod<[number], Result>;
 	get_circuit_node: ActorMethod<[number], Result>;
 	get_circuit_nodes: ActorMethod<[number], Result_1>;
-	preview_lookup_canister: ActorMethod<[LookupCanister], Result_2>;
+	preview_lookup_canister: ActorMethod<[LookupCanisterPreview], Result_2>;
 	preview_lookup_http_request: ActorMethod<[LookupHttpRequest], Result_2>;
 	transform: ActorMethod<[TransformArgs], HttpResponse>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const idlFactory = ({ IDL }: any) => {
-	const Arg = IDL.Rec();
-	const Vec = IDL.Rec();
-	const DynamicArg = IDL.Variant({
+	const Arg = IDL.Variant({
 		BigInt: IDL.Text,
 		String: IDL.Text,
 		Object: IDL.Text,
@@ -195,33 +191,8 @@ export const idlFactory = ({ IDL }: any) => {
 		Array: IDL.Text,
 		Number: IDL.Text
 	});
-	Vec.fill(
-		IDL.Vec(
-			IDL.Variant({
-				BigInt: IDL.Nat64,
-				String: IDL.Text,
-				Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
-				Boolean: IDL.Bool,
-				Principal: IDL.Principal,
-				Array: Vec,
-				Number: IDL.Nat32
-			})
-		)
-	);
-	Arg.fill(
-		IDL.Variant({
-			BigInt: IDL.Nat64,
-			String: IDL.Text,
-			Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
-			Boolean: IDL.Bool,
-			Principal: IDL.Principal,
-			Array: Vec,
-			Number: IDL.Nat32
-		})
-	);
 	const LookupCanister = IDL.Record({
 		method: IDL.Text,
-		dynamic_args: IDL.Vec(DynamicArg),
 		args: IDL.Vec(Arg),
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
@@ -299,9 +270,11 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const Rule = IDL.Record({
 		field: IDL.Text,
+		dynamic_value: IDL.Text,
 		value: IDL.Text,
 		operand: Operand,
-		operator: Operator
+		operator: Operator,
+		dynamic_field: IDL.Text
 	});
 	const Condition = IDL.Variant({ Is: IDL.Null, Not: IDL.Null });
 	const FilterPin = IDL.Record({
@@ -351,6 +324,21 @@ export const idlFactory = ({ IDL }: any) => {
 		Ok: IDL.Tuple(IDL.Principal, IDL.Vec(Node)),
 		Err: ApiError
 	});
+	const PreviewArg = IDL.Variant({
+		BigInt: IDL.Nat64,
+		String: IDL.Text,
+		Object: IDL.Vec(IDL.Tuple(IDL.Text, Arg)),
+		Boolean: IDL.Bool,
+		Principal: IDL.Principal,
+		Array: IDL.Vec(Arg),
+		Number: IDL.Nat32
+	});
+	const LookupCanisterPreview = IDL.Record({
+		method: IDL.Text,
+		args: IDL.Vec(PreviewArg),
+		cycles: IDL.Nat,
+		canister: IDL.Principal
+	});
 	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	const LookupHttpRequest = IDL.Record({
 		url: IDL.Text,
@@ -382,7 +370,7 @@ export const idlFactory = ({ IDL }: any) => {
 		enable_node: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit_node: IDL.Func([IDL.Nat32], [Result], ['query']),
 		get_circuit_nodes: IDL.Func([IDL.Nat32], [Result_1], ['query']),
-		preview_lookup_canister: IDL.Func([LookupCanister], [Result_2], []),
+		preview_lookup_canister: IDL.Func([LookupCanisterPreview], [Result_2], []),
 		preview_lookup_http_request: IDL.Func([LookupHttpRequest], [Result_2], []),
 		transform: IDL.Func([TransformArgs], [HttpResponse], ['query'])
 	});

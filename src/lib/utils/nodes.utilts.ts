@@ -10,7 +10,7 @@ import type {
 	Token,
 	MapperPin,
 	HttpMethod,
-	DynamicArg
+	PreviewArg
 } from 'declarations/nodes.declarations';
 import type {
 	LookCanisterArgType,
@@ -158,7 +158,7 @@ export const getLookupCanisterFormValues = (node?: Node): LookupCanisterFormValu
 	const lookup = node.nodeType.LookupCanister;
 
 	return {
-		args: lookup.dynamic_args.map(arg => {
+		args: lookup.args.map(arg => {
 			const dataType = getLookupCanisterFormArgType(arg);
 			let value = '';
 
@@ -230,12 +230,9 @@ export const getLookupHTTRequestFormValues = (node?: Node): LookupHttpRequestFor
 /**
  * Map the LookupCanister form values arguments to the Arg type. This will be passed to the backend.
  */
-export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[], inputSampleData: SampleData): Arg[] => {
-	return args.map((arg): Arg => {
-		let value = arg.value;
-		if (isHandlebarsTemplate(arg.value)) {
-			value = getHandlebars(value, inputSampleData);
-		}
+export const getLookupCanisterValuesAsPreviewArg = (args: LookupCanisterArg[]): PreviewArg[] => {
+	return args.map((arg): PreviewArg => {
+		const value = arg.value;
 
 		if (arg.dataType === 'String') {
 			return {
@@ -261,15 +258,9 @@ export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[], inputSam
 			};
 		}
 
-		if (arg.dataType === 'Array') {
+		if (arg.dataType === 'Array' || arg.dataType === 'Object') {
 			return {
 				Array: JSON.parse(value)
-			};
-		}
-
-		if (arg.dataType === 'Object') {
-			return {
-				Object: JSON.parse(value)
 			};
 		}
 
@@ -282,46 +273,48 @@ export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[], inputSam
 /**
  * Map the LookupCanister form values arguments to the Arg type. This will be passed to the backend.
  */
-export const getLookupCanisterValuesAsDynamicArg = (args: LookupCanisterArg[]): DynamicArg[] => {
-	return args.map((arg): DynamicArg => {
+export const getLookupCanisterValuesAsArg = (args: LookupCanisterArg[]): Arg[] => {
+	return args.map((arg): Arg => {
+		const value = arg.value;
+
 		if (arg.dataType === 'String') {
 			return {
-				String: arg.value
+				String: value
 			};
 		}
 
 		if (arg.dataType === 'Number') {
 			return {
-				Number: arg.value
+				Number: value
 			};
 		}
 
 		if (arg.dataType === 'BigInt') {
 			return {
-				BigInt: arg.value
+				BigInt: value
 			};
 		}
 
 		if (arg.dataType === 'Principal') {
 			return {
-				Principal: arg.value
+				Principal: value
 			};
 		}
 
 		if (arg.dataType === 'Array') {
 			return {
-				Array: arg.value
+				Array: value
 			};
 		}
 
 		if (arg.dataType === 'Object') {
 			return {
-				Object: arg.value
+				Object: value
 			};
 		}
 
 		return {
-			Boolean: arg.value
+			Boolean: value
 		};
 	});
 };
@@ -354,7 +347,7 @@ export const getLookupCanisterValuesAsArray = (args: LookupCanisterArg[]) => {
 /**
  * Get the argument type for the LookupCanister form values.
  */
-export const getLookupCanisterFormArgType = (arg: Arg | DynamicArg): LookCanisterArgType => {
+export const getLookupCanisterFormArgType = (arg: Arg): LookCanisterArgType => {
 	if ('String' in arg) {
 		return 'String';
 	}
@@ -512,7 +505,9 @@ export const getFilterPinValuesAsArg = (pins: FilterRule[], inputSampleData: Sam
 
 		return {
 			field,
+			dynamic_field: pin.field,
 			value,
+			dynamic_value: pin.value,
 			operand: {
 				data_type: dataType,
 				operand_type: operandType
@@ -565,8 +560,8 @@ export const getFilterPinFormValues = (filterPin?: FilterPin): FilterPinFormValu
 		rules: filterPin.rules.map(rule => ({
 			dataType: getRuleDataType(rule),
 			operandType: getRuleOparandType(rule),
-			field: rule.field,
-			value: rule.value,
+			field: rule.dynamic_field,
+			value: rule.dynamic_value,
 			operator: getRuleOperator(rule)
 		}))
 	};
