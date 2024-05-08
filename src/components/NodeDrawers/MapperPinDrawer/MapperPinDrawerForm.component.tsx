@@ -74,10 +74,15 @@ export const MapperPinDrawerForm = ({
 				let inputSampleData = formValues.inputSampleData;
 
 				if (!inputSampleData.length) {
-					const lastNode = circuitNodes?.[circuitNodes.length - 1];
-					if (lastNode) {
-						const metadata = getNodeMetaData(lastNode);
-						inputSampleData = metadata.inputSampleData;
+					const nodes = circuitNodes ?? [];
+					const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
+
+					if (currentNodeIndex !== -1) {
+						const previousNode = nodes[currentNodeIndex - 1];
+						if (previousNode) {
+							const metadata = getNodeMetaData(previousNode);
+							inputSampleData = metadata.inputSampleData;
+						}
 					}
 				}
 

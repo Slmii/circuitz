@@ -78,12 +78,17 @@ export const FilterPinDrawerForm = ({
 				const formValues = getFilterPinFormValues(filterPin);
 				let inputSampleData = formValues.inputSampleData;
 
-				// If there is no inputSampleData, populate it with the according node's output
 				if (!inputSampleData.length) {
-					const lastNode = circuitNodes?.[circuitNodes.length - (filterType === 'LookupFilterPin' ? 1 : 2)];
-					if (lastNode) {
-						const metadata = getNodeMetaData(lastNode);
-						inputSampleData = metadata.inputSampleData;
+					const nodes = circuitNodes ?? [];
+					const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
+
+					if (currentNodeIndex !== -1) {
+						const previousNode = nodes[currentNodeIndex - (filterType === 'LookupFilterPin' ? 0 : 1)];
+						console.log('previousNode', previousNode);
+						if (previousNode) {
+							const metadata = getNodeMetaData(previousNode);
+							inputSampleData = metadata.inputSampleData;
+						}
 					}
 				}
 

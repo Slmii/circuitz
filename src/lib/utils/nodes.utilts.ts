@@ -383,7 +383,7 @@ export const getNodeMetaData = (
 		return {
 			name: node.nodeType.LookupHttpRequest.name,
 			description: node.nodeType.LookupHttpRequest.description[0] ?? '',
-			inputSampleData: '',
+			inputSampleData: node.nodeType.LookupHttpRequest.sample_data,
 			type: 'LookupHttpRequest'
 		};
 	}

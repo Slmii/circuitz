@@ -90,12 +90,16 @@ export const LookupNodeHttpRequestForm = ({
 				const formValues = getLookupHTTRequestFormValues(node);
 				let inputSampleData = formValues.inputSampleData;
 
-				// If there is no inputSampleData, populate it with the last node's output
 				if (!inputSampleData.length) {
-					const lastNode = circuitNodes?.[circuitNodes.length - 1];
-					if (lastNode) {
-						const metadata = getNodeMetaData(lastNode);
-						inputSampleData = metadata.inputSampleData;
+					const nodes = circuitNodes ?? [];
+					const currentNodeIndex = nodes.findIndex(({ id }) => id === node?.id);
+
+					if (currentNodeIndex !== -1) {
+						const previousNode = nodes[currentNodeIndex - 1];
+						if (previousNode) {
+							const metadata = getNodeMetaData(previousNode);
+							inputSampleData = metadata.inputSampleData;
+						}
 					}
 				}
 
