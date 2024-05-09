@@ -65,13 +65,20 @@ export const LookupNodeCanisterForm = ({
 
 				if (!inputSampleData.length) {
 					const nodes = circuitNodes ?? [];
-					const currentNodeIndex = nodes.findIndex(({ id }) => id === node?.id);
 
-					if (currentNodeIndex !== -1) {
-						const previousNode = nodes[currentNodeIndex - 1];
-						if (previousNode) {
-							const metadata = getNodeMetaData(previousNode);
-							inputSampleData = metadata.inputSampleData;
+					if (!node) {
+						const previousNode = nodes[nodes.length - 1];
+						const metadata = getNodeMetaData(previousNode);
+						inputSampleData = metadata.inputSampleData;
+					} else {
+						const currentNodeIndex = nodes.findIndex(({ id }) => id === node?.id);
+
+						if (currentNodeIndex !== -1) {
+							const previousNode = nodes[currentNodeIndex - 1];
+							if (previousNode) {
+								const metadata = getNodeMetaData(previousNode);
+								inputSampleData = metadata.inputSampleData;
+							}
 						}
 					}
 				}
