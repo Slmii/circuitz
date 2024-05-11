@@ -15,3 +15,4 @@ export * from './traces.utilts';
 export * from './url.utils';
 export * from './api.utils';
 export * from './handlebars.utils';
+export * from './idl-parser.utils';

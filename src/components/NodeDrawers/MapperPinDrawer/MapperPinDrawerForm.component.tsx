@@ -28,7 +28,7 @@ export const MapperPinDrawerForm = ({
 }) => {
 	const [outputSampleData, setOutputSampleData] = useState('');
 
-	const handleOnPreview = (formValues: MapperPinFormValues) => {
+	const handleOnPreview = async (formValues: MapperPinFormValues) => {
 		try {
 			const parsedInput = JSON.parse(formValues.inputSampleData);
 
@@ -114,7 +114,7 @@ export const MapperPinDrawerForm = ({
 								Preview
 							</Button>
 							<TipAlert>{POPULATE_SAMPLE_DATA}</TipAlert>
-							<Editor name="inputSampleData" mode="javascript" height={450} />
+							<Editor name="inputSampleData" mode="javascript" height={300} />
 						</Stack>
 						<Stack direction="column" spacing={2}>
 							<H5 fontWeight="bold">Output</H5>
@@ -123,7 +123,7 @@ export const MapperPinDrawerForm = ({
 								mode="javascript"
 								isReadOnly
 								value={outputSampleData}
-								height={450}
+								height={300}
 							/>
 						</Stack>
 					</Stack>
