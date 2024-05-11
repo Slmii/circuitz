@@ -1,4 +1,4 @@
-import { IDLType, ExctractedIDLType, ParsedIDL } from 'lib/types';
+import { IDLType, ExctractedIDLType, ExtractedIDLFunction } from 'lib/types';
 
 const basicTypesMap: Record<IDLType, string> = {
 	'IDL.Nat32': 'Number',
@@ -137,13 +137,16 @@ export function resolveType(typeName: IDLType, typeDefs: ExctractedIDLType) {
  */
 export function parseServiceFunctions(serviceBlock: string, typeDefs: ExctractedIDLType) {
 	const functionRegex = /'([^']+)'\s*:\s*IDL\.Func\(\[([^\]]*)\], \[([^\]]*)\], \[([^\]]*)\]\),/g;
-	const functions: ParsedIDL[] = [];
+	const functions: ExtractedIDLFunction[] = [];
 
 	let match: RegExpExecArray | null = null;
 
 	while ((match = functionRegex.exec(serviceBlock)) !== null) {
 		const [, name, inputs] = match;
-		const parsedInputs = inputs.split(',').map(input => resolveType(input.trim() as IDLType, typeDefs));
+		const parsedInputs = inputs
+			.split(',')
+			.map(input => resolveType(input.trim() as IDLType, typeDefs))
+			.filter(Boolean); // Remove empty strings, meaning no args
 
 		functions.push({ name, params: parsedInputs });
 	}

@@ -1,4 +1,5 @@
 import { SelectChangeEvent } from '@mui/material/Select';
+import { Icons } from 'components/icons';
 import { ReactNode } from 'react';
 
 export interface SelectProps {
@@ -6,11 +7,14 @@ export interface SelectProps {
 	name: string;
 	label?: string;
 	fullWidth?: boolean;
-	onChange?: (value: string) => void;
 	required?: boolean;
 	disabled?: boolean;
 	helperText?: string | ReactNode;
 	placeholder?: string;
+	startIcon?: Icons;
+	endIcon?: Icons;
+	endElement?: JSX.Element;
+	onChange?: (value: string) => void;
 	customLabel?: (option: Option) => JSX.Element | string;
 }
 
@@ -23,5 +27,8 @@ export interface Option<T = string> {
 export interface StandaloneSelectProps extends Omit<SelectProps, 'onChange'> {
 	value: string;
 	error?: string;
+	startIcon?: Icons;
+	endIcon?: Icons;
+	endElement?: JSX.Element;
 	onChange: (event: SelectChangeEvent<string>, child: React.ReactNode) => void;
 }

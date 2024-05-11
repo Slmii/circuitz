@@ -6,7 +6,8 @@ import slugify from 'slugify';
 import { SelectProps, StandaloneSelectProps } from './Select.types';
 import Box from '@mui/material/Box';
 import React from 'react';
-import { FormControl, InputLabel } from '@mui/material';
+import { FormControl, InputAdornment, InputLabel } from '@mui/material';
+import { Icon } from 'components/Icon';
 
 export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSelectProps>(
 	(
@@ -22,7 +23,10 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 			disabled = false,
 			helperText,
 			placeholder = 'Choose an option',
-			customLabel
+			customLabel,
+			startIcon,
+			endIcon,
+			endElement
 		},
 		ref
 	) => {
@@ -58,6 +62,40 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 					value={value}
 					onChange={onChange}
 					inputRef={ref}
+					startAdornment={
+						startIcon ? (
+							<InputAdornment
+								position="start"
+								sx={{
+									padding: 0.5
+								}}
+							>
+								<Icon icon={startIcon} fontSize="small" />
+							</InputAdornment>
+						) : null
+					}
+					endAdornment={
+						endIcon ? (
+							<InputAdornment
+								position="end"
+								sx={{
+									mr: 2,
+									padding: 0.5
+								}}
+							>
+								<Icon icon={endIcon} fontSize="small" />
+							</InputAdornment>
+						) : endElement ? (
+							<InputAdornment
+								position="end"
+								sx={{
+									mr: 3
+								}}
+							>
+								{endElement}
+							</InputAdornment>
+						) : null
+					}
 					renderValue={value => {
 						if (!value) {
 							return (

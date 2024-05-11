@@ -17,18 +17,22 @@ import {
 	getLookupCanisterValuesAsPreviewArg,
 	getNodeMetaData,
 	isHandlebarsTemplate,
+	parseIDL,
 	parseJson,
 	stringifyJson,
 	toPrincipal
 } from 'lib/utils';
 import { Button, CopyTextButton } from 'components/Button';
-import { Select } from 'components/Form/Select';
-import { DATA_TYPES, ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
+import { Select, Option } from 'components/Form/Select';
+import { DATA_TYPES, ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA, QUERY_KEYS } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
 import { useGetCircuitNodes, useGetParam, useLookupCanisterPreview } from 'lib/hooks';
 import { HandlebarsInfo } from 'components/Shared';
+import { api } from 'api/index';
+import { useQuery } from '@tanstack/react-query';
+import { CircularProgress } from 'components/Progress';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -116,7 +120,7 @@ export const LookupNodeCanisterForm = ({
 						<H5 fontWeight="bold">Canister</H5>
 						<Stack direction="column" spacing={4}>
 							<Field name="canisterId" label="Canister ID" placeholder="aaaaa-aa" />
-							<Field name="methodName" label="Method name" placeholder="get_name" />
+							<CanisterMethod />
 							<Field
 								name="cycles"
 								type="number"
@@ -282,5 +286,47 @@ const response = await canister.call("${watch('methodName')}"${
 				: ''
 		});
 						`}</Box>
+	);
+};
+
+const CanisterMethod = () => {
+	const { watch, setValue, clearErrors } = useFormContext<LookupCanisterFormValues>();
+	const canisterId = watch('canisterId');
+
+	const { data, isLoading, refetch, isRefetching } = useQuery({
+		queryKey: [QUERY_KEYS.CANDID, canisterId],
+		enabled: false,
+		queryFn: async ({ queryKey }) => {
+			const did = await api.IC.didToJs(queryKey[1]);
+			return parseIDL(did);
+		}
+	});
+
+	useEffect(() => {
+		try {
+			Principal.fromText(canisterId);
+			refetch();
+		} catch (error) {
+			setValue('methodName', '');
+		}
+	}, [canisterId, clearErrors, refetch, setValue]);
+
+	const options: Option[] = (data ?? []).map(func => ({ id: func.name, label: func.name }));
+
+	return (
+		<Select
+			options={options}
+			name="methodName"
+			label="Method name"
+			placeholder="get_name"
+			disabled={isLoading || isRefetching}
+			endElement={
+				isLoading || isRefetching ? (
+					<CircularProgress />
+				) : (
+					<IconButton icon="refresh-linear" size="small" onClick={() => refetch()} tooltip="Refresh" />
+				)
+			}
+		/>
 	);
 };
