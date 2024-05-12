@@ -84,6 +84,14 @@ export const MapperPinDrawerForm = ({
 						const metadata = getNodeMetaData(node);
 						const nodeInputSampleData = JSON.parse(metadata.inputSampleData);
 
+						// Get the PreMapperPin output
+						const outputPreMapperPin = getMapperPinSampleData({
+							index: currentNodeIndex,
+							node,
+							sampleData: nodeInputSampleData,
+							sourceType: 'PreMapperPin'
+						});
+
 						// Get the PostMapperPin output
 						const outputPostMapperPin = getMapperPinSampleData({
 							index: currentNodeIndex,
@@ -93,7 +101,8 @@ export const MapperPinDrawerForm = ({
 						});
 
 						// Merge the PostMapperPin output with node's inputSampleData
-						const merged = lodashMerge(nodeInputSampleData, outputPostMapperPin);
+						let merged = lodashMerge(nodeInputSampleData, outputPreMapperPin);
+						merged = lodashMerge(merged, outputPostMapperPin);
 						inputSampleData = stringifyJson(merged);
 					} else if (currentNodeIndex !== -1) {
 						// If PreMapperPin, get the inputSampleData from the previous node
