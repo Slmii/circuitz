@@ -1,13 +1,30 @@
-import { IDLType, ExctractedIDLType, ExtractedIDLFunction } from 'lib/types';
+import { IDLType, ExctractedIDLType, ExtractedIDLFunction, IsRequiredIDLType, IDLTypeValue } from 'lib/types';
 
-const basicTypesMap: Record<IDLType, string> = {
+const basicTypesMap: Record<IDLType, IDLTypeValue> = {
 	'IDL.Nat32': 'Number',
 	'IDL.Nat64': 'Number',
 	'IDL.Text': 'String',
 	'IDL.Bool': 'Boolean',
 	'IDL.Nat': 'Number',
+	'IDL.Float32': 'Number',
 	'IDL.Principal': 'String',
-	'IDL.Null': 'Null'
+	'IDL.Null': 'Null',
+	'IDL.Opt(IDL.Bool)': 'Boolean',
+	'IDL.Opt(IDL.Nat)': 'Number',
+	'IDL.Opt(IDL.Nat32)': 'Number',
+	'IDL.Opt(IDL.Nat64)': 'Number',
+	'IDL.Opt(IDL.Principal)': 'Principal',
+	'IDL.Opt(IDL.Text)': 'String',
+	'IDL.Opt(IDL.Null)': 'Null',
+	'IDL.Opt(IDL.Float32)': 'Number',
+	'IDL.Vec(IDL.Bool)': 'Array(Boolean)',
+	'IDL.Vec(IDL.Nat)': 'Array(Number)',
+	'IDL.Vec(IDL.Nat32)': 'Array(Number)',
+	'IDL.Vec(IDL.Nat64)': 'Array(Number)',
+	'IDL.Vec(IDL.Null)': 'Array(Null)',
+	'IDL.Vec(IDL.Principal)': 'Array(Principal)',
+	'IDL.Vec(IDL.Text)': 'Array(String)',
+	'IDL.Vec(IDL.Float32)': 'Array(Number)'
 };
 
 // Function to extract the IDL.Service block
@@ -68,12 +85,15 @@ export function extractTypeDefinitions(tsString: string) {
 	const types: ExctractedIDLType = {};
 	let match: RegExpExecArray | null = null;
 
-	const reduceToObject = (acc: Record<string, IDLType>, field: string) => {
+	const reduceToObject = (acc: Record<string, IsRequiredIDLType>, field: string) => {
 		// Split the field (eg: "'name': IDL.Text") into key and value
 		const [key, value] = field.split(':').map(string => string.trim());
 
 		// Remove extra quotes from key within the IDL
-		acc[key.replace(/['"]/g, '')] = value as IDLType;
+		acc[key.replace(/['"]/g, '')] = {
+			required: value.startsWith('IDL.Opt') ? false : true,
+			type: value as IDLType
+		};
 
 		return acc;
 	};
@@ -81,7 +101,9 @@ export function extractTypeDefinitions(tsString: string) {
 	// Extract records
 	while ((match = recordRegex.exec(tsString)) !== null) {
 		const typeName = match[1];
-		const args = splitTopLevelCommas(match[2]).filter(Boolean).reduce<Record<string, IDLType>>(reduceToObject, {});
+		const args = splitTopLevelCommas(match[2])
+			.filter(Boolean)
+			.reduce<Record<string, IsRequiredIDLType>>(reduceToObject, {});
 
 		types[typeName] = { type: 'Record', args };
 	}
@@ -92,7 +114,9 @@ export function extractTypeDefinitions(tsString: string) {
 	// Extract variants
 	while ((match = variantRegex.exec(tsString)) !== null) {
 		const typeName = match[1];
-		const variants = splitTopLevelCommas(match[2]).filter(Boolean).reduce<Record<string, IDLType>>(reduceToObject, {});
+		const variants = splitTopLevelCommas(match[2])
+			.filter(Boolean)
+			.reduce<Record<string, IsRequiredIDLType>>(reduceToObject, {});
 
 		types[typeName] = { type: 'Variant', variants };
 	}
@@ -113,7 +137,10 @@ export function resolveType(typeName: IDLType, typeDefs: ExctractedIDLType) {
 		if (typeInfo.type === 'Record' && typeInfo.args) {
 			const args: Record<string, unknown> = {};
 			for (const [key, value] of Object.entries(typeInfo.args)) {
-				args[key] = resolveType(value, typeDefs);
+				args[key] = {
+					required: value.required,
+					type: resolveType(value.type, typeDefs)
+				};
 			}
 
 			return { args };
@@ -122,7 +149,7 @@ export function resolveType(typeName: IDLType, typeDefs: ExctractedIDLType) {
 		if (typeInfo.type === 'Variant' && typeInfo.variants) {
 			const variants: Record<string, unknown> = {};
 			for (const [key, value] of Object.entries(typeInfo.variants)) {
-				variants[key] = resolveType(value, typeDefs);
+				variants[key] = resolveType(value.type, typeDefs);
 			}
 
 			return { variants };

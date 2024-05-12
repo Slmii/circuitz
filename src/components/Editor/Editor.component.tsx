@@ -1,16 +1,17 @@
 import { FormHelperText, Stack, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
-import AceEditor from 'react-ace';
+import AceEditor, { IAceOptions } from 'react-ace';
 import { config } from 'ace-builds';
+import { Controller } from 'react-hook-form';
 
 config.setModuleUrl('basePath', '/node_modules/ace-builds/src-noconflict');
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-rust';
 import 'ace-builds/src-noconflict/mode-handlebars';
+import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-cloud9_night';
 import 'ace-builds/src-noconflict/theme-cloud9_day';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import { Controller } from 'react-hook-form';
 
 export const StandaloneEditor = ({
 	id,
@@ -20,6 +21,7 @@ export const StandaloneEditor = ({
 	height = 500,
 	errorMessage,
 	ignoreInvalidJSON,
+	options,
 	onChange
 }: {
 	id: string;
@@ -29,6 +31,7 @@ export const StandaloneEditor = ({
 	height?: number | string;
 	errorMessage?: string;
 	ignoreInvalidJSON?: boolean;
+	options?: IAceOptions;
 	onChange?: (value: string) => void;
 }) => {
 	const [parserError, setParserError] = useState<string | null>(null);
@@ -67,7 +70,8 @@ export const StandaloneEditor = ({
 				setOptions={{
 					enableBasicAutocompletion: true,
 					enableLiveAutocompletion: true,
-					enableSnippets: true
+					enableSnippets: true,
+					...options
 				}}
 				style={{
 					border: `1px solid ${!!errorMessage || !!parserError ? theme.palette.error.main : theme.palette.divider}`,
@@ -86,6 +90,7 @@ export const Editor = (props: {
 	isReadOnly?: boolean;
 	height?: number | string;
 	ignoreInvalidJSON?: boolean;
+	options?: IAceOptions;
 	onChange?: (value: string) => void;
 }) => {
 	return (

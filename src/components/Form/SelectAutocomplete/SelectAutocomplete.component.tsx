@@ -14,7 +14,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Chip from '@mui/material/Chip';
 import { Icon } from 'components/Icon';
 import Skeleton from '@mui/material/Skeleton';
-import { Popper } from '@mui/material';
+import { InputAdornment, Popper } from '@mui/material';
 
 export const StandaloneAutocomplete = ({
 	name,
@@ -28,7 +28,10 @@ export const StandaloneAutocomplete = ({
 	label,
 	placeholder,
 	required,
-	isOptionsLoading
+	isOptionsLoading,
+	endElement,
+	endIcon,
+	startIcon
 }: StandaloneAutocompleteProps) => {
 	const [inputValue, setInputValue] = useState('');
 
@@ -48,7 +51,6 @@ export const StandaloneAutocomplete = ({
 			getOptionLabel={option => option.label}
 			isOptionEqualToValue={(option, value) => option.id === value.id}
 			fullWidth={fullWidth}
-			popupIcon={<Icon icon="search" fontSize="small" />}
 			renderOption={(props, option) => {
 				return (
 					<li {...props} key={option.id}>
@@ -76,6 +78,40 @@ export const StandaloneAutocomplete = ({
 						inputProps={{
 							...params.inputProps,
 							autoComplete: 'new-password' // disable autocomplete and autofill
+						}}
+						InputProps={{
+							...params.InputProps,
+							startAdornment: startIcon ? (
+								<>
+									{params.InputProps?.startAdornment}
+									<InputAdornment
+										position="start"
+										sx={{
+											padding: 0.5
+										}}
+									>
+										<Icon icon={startIcon} fontSize="small" />
+									</InputAdornment>
+								</>
+							) : null,
+							endAdornment: endIcon ? (
+								<>
+									<InputAdornment
+										position="end"
+										sx={{
+											padding: 0.5
+										}}
+									>
+										<Icon icon={endIcon} fontSize="small" />
+									</InputAdornment>
+									{params.InputProps?.endAdornment}
+								</>
+							) : endElement ? (
+								<>
+									<InputAdornment position="end">{endElement}</InputAdornment>
+									{params.InputProps?.endAdornment}
+								</>
+							) : null
 						}}
 					/>
 					{error ? <FormHelperText error>{error}</FormHelperText> : null}
@@ -107,7 +143,10 @@ export const SelectAutocomplete = ({
 	placeholder = 'Type to search',
 	helperText,
 	fullWidth,
-	isOptionsLoading
+	isOptionsLoading,
+	endElement,
+	endIcon,
+	startIcon
 }: SelectAutocompleteSingleProps) => {
 	const { setValue: setFormValue, getValues } = useFormContext();
 
@@ -170,7 +209,6 @@ export const SelectAutocomplete = ({
 							  }
 							: undefined
 					}
-					popupIcon={<Icon icon="search" fontSize="small" />}
 					renderOption={(props, option) => {
 						return (
 							<li {...props} key={option.id}>
@@ -198,6 +236,40 @@ export const SelectAutocomplete = ({
 								inputProps={{
 									...params.inputProps,
 									autoComplete: 'new-password' // disable autocomplete and autofill
+								}}
+								InputProps={{
+									...params.InputProps,
+									startAdornment: startIcon ? (
+										<>
+											{params.InputProps?.startAdornment}
+											<InputAdornment
+												position="start"
+												sx={{
+													padding: 0.5
+												}}
+											>
+												<Icon icon={startIcon} fontSize="small" />
+											</InputAdornment>
+										</>
+									) : null,
+									endAdornment: endIcon ? (
+										<>
+											<InputAdornment
+												position="end"
+												sx={{
+													padding: 0.5
+												}}
+											>
+												<Icon icon={endIcon} fontSize="small" />
+											</InputAdornment>
+											{params.InputProps?.endAdornment}
+										</>
+									) : endElement ? (
+										<>
+											<InputAdornment position="end">{endElement}</InputAdornment>
+											{params.InputProps?.endAdornment}
+										</>
+									) : null
 								}}
 							/>
 							{fieldState.error && fieldState.error.message ? (

@@ -1,3 +1,6 @@
+import { Icons } from 'components/icons';
+import { ReactNode } from 'react';
+
 interface SelectAutocompleteDefault {
 	name: string;
 	label?: string;
@@ -5,10 +8,13 @@ interface SelectAutocompleteDefault {
 	options: Option[];
 	required?: boolean;
 	disabled?: boolean;
-	helperText?: string;
+	helperText?: string | ReactNode;
 	placeholder?: string;
 	fullWidth?: boolean;
 	isOptionsLoading?: boolean;
+	startIcon?: Icons;
+	endIcon?: Icons;
+	endElement?: JSX.Element;
 }
 
 export interface SelectAutocompleteMultipleProps extends SelectAutocompleteDefault {

@@ -1,5 +1,5 @@
 import { Box, Divider, Paper, Stack } from '@mui/material';
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
@@ -23,16 +23,18 @@ import {
 	toPrincipal
 } from 'lib/utils';
 import { Button, CopyTextButton } from 'components/Button';
-import { Select, Option } from 'components/Form/Select';
+import { Select } from 'components/Form/Select';
 import { DATA_TYPES, ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA, QUERY_KEYS } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
-import { Editor } from 'components/Editor';
+import { Editor, StandaloneEditor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
 import { useGetCircuitNodes, useGetParam, useLookupCanisterPreview } from 'lib/hooks';
 import { HandlebarsInfo } from 'components/Shared';
 import { api } from 'api/index';
 import { useQuery } from '@tanstack/react-query';
 import { CircularProgress } from 'components/Progress';
+import { SelectAutocomplete, Option } from 'components/Form/SelectAutocomplete';
+import { StandaloneCheckbox } from 'components/Form/Checkbox';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -156,41 +158,6 @@ export const LookupNodeCanisterForm = ({
 	);
 };
 
-const LookupCanisterArgs = () => {
-	const { fields, append, remove } = useFieldArray<LookupCanisterFormValues>({
-		name: 'args'
-	});
-
-	return (
-		<Paper sx={{ p: 2 }}>
-			<Stack direction="column" spacing={2}>
-				{fields.map((config, index) => (
-					<Stack direction="row" spacing={1} key={config.id} alignItems="center">
-						<Select
-							fullWidth
-							name={`args.${index}.dataType`}
-							options={DATA_TYPES.map(dataType => ({ id: dataType, label: dataType }))}
-							label="Data type"
-							placeholder="String"
-						/>
-						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
-						<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
-					</Stack>
-				))}
-				<Button
-					startIcon="add-linear"
-					sx={{ width: 'fit-content' }}
-					variant="outlined"
-					size="large"
-					onClick={() => append({ dataType: 'String', value: '' }, { shouldFocus: false })}
-				>
-					{!fields.length ? 'Add first argument' : 'Add argument'}
-				</Button>
-			</Stack>
-		</Paper>
-	);
-};
-
 const Preview = ({ nodesLength }: { nodesLength: number }) => {
 	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
 	const { mutate: preview, data, error, isPending: isPreviewPending } = useLookupCanisterPreview();
@@ -290,8 +257,9 @@ const response = await canister.call("${watch('methodName')}"${
 };
 
 const CanisterMethod = () => {
+	const [canShowArgs, setCanShowArgs] = useState(false);
 	const { watch, setValue, clearErrors } = useFormContext<LookupCanisterFormValues>();
-	const canisterId = watch('canisterId');
+	const [canisterId, methodName] = watch(['canisterId', 'methodName']);
 
 	const { data, isLoading, refetch, isRefetching } = useQuery({
 		queryKey: [QUERY_KEYS.CANDID, canisterId],
@@ -312,21 +280,74 @@ const CanisterMethod = () => {
 	}, [canisterId, clearErrors, refetch, setValue]);
 
 	const options: Option[] = (data ?? []).map(func => ({ id: func.name, label: func.name }));
+	const method = (data ?? [])?.find(func => func.name === methodName);
 
 	return (
-		<Select
-			options={options}
-			name="methodName"
-			label="Method name"
-			placeholder="get_name"
-			disabled={isLoading || isRefetching}
-			endElement={
-				isLoading || isRefetching ? (
-					<CircularProgress />
-				) : (
-					<IconButton icon="refresh-linear" size="small" onClick={() => refetch()} tooltip="Refresh" />
-				)
-			}
-		/>
+		<Stack>
+			<SelectAutocomplete
+				options={options}
+				name="methodName"
+				label="Method name"
+				placeholder="get_name"
+				disabled={isLoading || isRefetching}
+				endElement={
+					isLoading || isRefetching ? (
+						<CircularProgress />
+					) : (
+						<IconButton icon="refresh-linear" size="small" onClick={() => refetch()} tooltip="Refresh" />
+					)
+				}
+			/>
+			<StandaloneCheckbox
+				checked={canShowArgs}
+				label="Show arguments preview"
+				name="argumentsPreview"
+				onChange={setCanShowArgs}
+			/>
+			{canShowArgs && method ? (
+				<StandaloneEditor
+					isReadOnly
+					id="methodDescription"
+					mode="json"
+					value={stringifyJson(method)}
+					options={{ wrap: false }}
+				/>
+			) : undefined}
+		</Stack>
+	);
+};
+
+const LookupCanisterArgs = () => {
+	const { fields, append, remove } = useFieldArray<LookupCanisterFormValues>({
+		name: 'args'
+	});
+
+	return (
+		<Paper sx={{ p: 2 }}>
+			<Stack direction="column" spacing={2}>
+				{fields.map((config, index) => (
+					<Stack direction="row" spacing={1} key={config.id} alignItems="center">
+						<Select
+							fullWidth
+							name={`args.${index}.dataType`}
+							options={DATA_TYPES.map(dataType => ({ id: dataType, label: dataType }))}
+							label="Data type"
+							placeholder="String"
+						/>
+						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
+						<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
+					</Stack>
+				))}
+				<Button
+					startIcon="add-linear"
+					sx={{ width: 'fit-content' }}
+					variant="outlined"
+					size="large"
+					onClick={() => append({ dataType: 'String', value: '' }, { shouldFocus: false })}
+				>
+					{!fields.length ? 'Add first argument' : 'Add argument'}
+				</Button>
+			</Stack>
+		</Paper>
 	);
 };
