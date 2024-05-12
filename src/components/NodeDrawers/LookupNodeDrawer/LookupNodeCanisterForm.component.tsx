@@ -310,6 +310,7 @@ const CanisterMethod = () => {
 					id="methodDescription"
 					mode="json"
 					value={stringifyJson(method)}
+					height={250}
 					options={{ wrap: false }}
 				/>
 			) : undefined}
