@@ -1,6 +1,6 @@
 import { Divider, FormHelperText, Paper, Stack } from '@mui/material';
 import { Form } from 'components/Form';
-import { Node } from 'lib/types';
+import { Node, PinSourceType } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
 import { generateNodeIndexKey, getMapperPinFormValues, getPin, stringifyJson } from 'lib/utils';
@@ -18,6 +18,7 @@ import lodashMerge from 'lodash/merge';
 import { mapperPinSchema } from 'lib/schemas';
 import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
 import { getSampleData } from 'api/nodes.api';
+import { useParams } from 'react-router-dom';
 
 export const MapperPinDrawerForm = ({
 	formRef,
@@ -88,7 +89,7 @@ export const MapperPinDrawerForm = ({
 			myRef={formRef}
 			render={({ getValues, clearErrors, trigger, formState: { errors } }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
-					<FormValuesUpdater mapperType={mapperType} node={node} />
+					<FormValuesUpdater />
 					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
 							{mapperType === 'PreMapperPin'
@@ -141,38 +142,37 @@ export const MapperPinDrawerForm = ({
 	);
 };
 
-const FormValuesUpdater = ({ node, mapperType }: { node: Node; mapperType: 'PreMapperPin' | 'PostMapperPin' }) => {
-	const circuitId = useGetParam('circuitId');
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+const FormValuesUpdater = () => {
+	const { circuitId, nodeId, pinType } = useParams<{
+		circuitId: string;
+		nodeId: string;
+		pinType: PinSourceType;
+	}>();
 
-	const { getValues, setValue } = useFormContext<MapperPinFormValues>();
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+	const { setValue } = useFormContext<MapperPinFormValues>();
 
 	useEffect(() => {
-		if (!circuitNodes) {
+		if (!circuitNodes || !nodeId || !pinType) {
 			return;
 		}
 
 		const init = async () => {
-			// Get previous nodes
+			// Get previous nodes before the current node
 			// In case of PostMapperPin, we need to include the current node
-			const index = circuitNodes.findIndex(({ id }) => id === node.id);
-			const previousNodes = circuitNodes.slice(0, mapperType === 'PreMapperPin' ? index : index + 1);
+			const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
+			const previousNodes = circuitNodes.slice(0, pinType === 'PreMapperPin' ? index : index + 1);
 
 			const collectedSampleData = await getSampleData(previousNodes, {
 				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
-				skipPins: mapperType === 'PostMapperPin' ? ['PostMapperPin'] : undefined
+				includePostMapper: pinType === 'PreMapperPin'
 			});
 
-			const formValues = {
-				...getValues(),
-				inputSampleData: stringifyJson(collectedSampleData)
-			};
-
-			setValue('inputSampleData', formValues.inputSampleData);
+			setValue('inputSampleData', stringifyJson(collectedSampleData));
 		};
 
 		init();
-	}, [circuitNodes, getValues, mapperType, node.id, setValue]);
+	}, [circuitNodes, pinType, nodeId, setValue]);
 
 	return null;
 };

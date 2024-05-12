@@ -842,4 +842,4 @@ export const getMapperPinOuput = <T extends object>({
 	return null;
 };
 
-export const generateNodeIndexKey = (index: number) => `Node:${index}`;
+export const generateNodeIndexKey = (index: number) => `Node:${index + 1}`;

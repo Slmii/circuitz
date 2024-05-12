@@ -19,7 +19,7 @@ import {
 	toPrincipal,
 	unwrapResult
 } from 'lib/utils';
-import { Node, NodeSourceType, PinSourceType, SampleData } from 'lib/types';
+import { Node, NodeSourceType, SampleData } from 'lib/types';
 import { createActor } from './actor.api';
 
 // TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
@@ -115,12 +115,15 @@ export async function editOrder({
 
 export async function getSampleData(
 	nodes: Node[],
-	options?: { skipNodes?: Array<NodeSourceType>; skipPins?: Array<PinSourceType> }
+	options?: { skipNodes?: Array<NodeSourceType>; includePostMapper?: boolean }
 ) {
 	let sampleData: SampleData = {};
 
+	// Get last node
+	const lastNodeIndex = nodes.length - 1;
+
 	for (const [index, node] of nodes.entries()) {
-		const nodeIndex = generateNodeIndexKey(index + 1);
+		const nodeIndex = generateNodeIndexKey(index);
 
 		// Skip disabled nodes
 		if (!node.isEnabled) {
@@ -142,7 +145,7 @@ export async function getSampleData(
 
 		// Pin that executes before the node and checks if the node should be executed
 		const filterPin = getPin<FilterPin>(node, 'FilterPin');
-		if (!options?.skipPins?.includes('FilterPin') && filterPin) {
+		if (filterPin) {
 			const filterPinFormValues = getFilterPinFormValues(filterPin);
 
 			// If the filter is not true, skip the node
@@ -152,14 +155,12 @@ export async function getSampleData(
 			}
 		}
 
-		if (!options?.skipPins?.includes('PreMapperPin')) {
-			const output = getMapperPinOuput({ node, sourceType: 'PreMapperPin' });
-			if (output) {
-				sampleData[nodeIndex] = {
-					...sampleData[nodeIndex],
-					PreMapperPin: output
-				};
-			}
+		const output = getMapperPinOuput({ node, sourceType: 'PreMapperPin' });
+		if (output) {
+			sampleData[nodeIndex] = {
+				...sampleData[nodeIndex],
+				PreMapperPin: output
+			};
 		}
 
 		// Lookup Nodes
@@ -202,7 +203,7 @@ export async function getSampleData(
 
 		// Pin that executes after the node and checks if the node should pass the data to the next node
 		const lookupfilterPin = getPin<FilterPin>(node, 'LookupFilterPin');
-		if (!options?.skipPins?.includes('LookupFilterPin') && lookupfilterPin) {
+		if (lookupfilterPin) {
 			const filterPinFormValues = getFilterPinFormValues(lookupfilterPin);
 
 			// If the lookup filter is not true, skip the merge data node
@@ -215,7 +216,8 @@ export async function getSampleData(
 			}
 		}
 
-		if (!options?.skipPins?.includes('PostMapperPin')) {
+		// Skip if it's the last node
+		if (options?.includePostMapper || lastNodeIndex !== index) {
 			const output = getMapperPinOuput({ node, sourceType: 'PostMapperPin' });
 			if (output) {
 				sampleData[nodeIndex] = {
