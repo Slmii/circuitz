@@ -1,8 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGroup from '@mui/material/FormGroup';
-import { FieldValues, FormProvider, useForm } from 'react-hook-form';
+import { DefaultValues, FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { FormProps } from './Form.types';
-import { useEffect } from 'react';
 
 export function Form<T extends FieldValues>({
 	children,
@@ -11,20 +10,13 @@ export function Form<T extends FieldValues>({
 	defaultValues,
 	mode = 'onBlur',
 	render,
-	myRef,
-	isDefaultValuesLoading
+	myRef
 }: FormProps<T>) {
 	const methods = useForm<T>({
 		resolver: schema ? yupResolver(schema) : undefined,
-		defaultValues: typeof defaultValues === 'function' ? defaultValues() : defaultValues,
+		defaultValues: getDefaultValues(defaultValues),
 		mode
 	});
-
-	useEffect(() => {
-		if (typeof isDefaultValuesLoading !== 'undefined' && !isDefaultValuesLoading) {
-			methods.reset(typeof defaultValues === 'function' ? defaultValues() : defaultValues);
-		}
-	}, [defaultValues, isDefaultValuesLoading, methods]);
 
 	return (
 		<FormProvider {...methods}>
@@ -41,4 +33,15 @@ export function Form<T extends FieldValues>({
 			</form>
 		</FormProvider>
 	);
+}
+
+function getDefaultValues<T>(defaultValues: DefaultValues<T> | (() => DefaultValues<T>)) {
+	let values: DefaultValues<T>;
+	if (typeof defaultValues === 'function') {
+		values = (defaultValues as () => DefaultValues<T>)(); // Call if it's a function
+	} else {
+		values = defaultValues; // Directly use it if it's not a function
+	}
+
+	return values;
 }

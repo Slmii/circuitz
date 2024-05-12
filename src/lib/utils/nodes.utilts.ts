@@ -39,8 +39,6 @@ import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
 import { getHandlebars, isHandlebarsTemplate } from './handlebars.utils';
 import createMapper from 'map-factory';
-import lodashMerge from 'lodash/merge';
-import { stringifyJson } from './string.utils';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -799,17 +797,17 @@ export const getLookupInputSampleData = <T extends { inputSampleData: string }>(
 		}
 	}
 	// If the node exists, merge the PreMapperPin output with the inputSampleData
-	else if (node) {
-		const outputPreMapperPin = getMapperPinSampleData({
-			index: currentNodeIndex,
-			node,
-			sampleData: data,
-			sourceType: 'PreMapperPin'
-		});
+	// else if (node) {
+	// 	const outputPreMapperPin = getMapperPinOuput({
+	// 		index: currentNodeIndex,
+	// 		node,
+	// 		sampleData: data,
+	// 		sourceType: 'PreMapperPin'
+	// 	});
 
-		const merged = lodashMerge(JSON.parse(inputSampleData), outputPreMapperPin);
-		inputSampleData = stringifyJson(merged);
-	}
+	// 	const merged = lodashMerge(JSON.parse(inputSampleData), outputPreMapperPin);
+	// 	inputSampleData = stringifyJson(merged);
+	// }
 
 	return inputSampleData;
 };
@@ -817,19 +815,13 @@ export const getLookupInputSampleData = <T extends { inputSampleData: string }>(
 /**
  * Get the output sample data for the MapperPin, based on the configured fields
  */
-export const getMapperPinSampleData = ({
+export const getMapperPinOuput = <T extends object>({
 	node,
-	sampleData,
-	sourceType,
-	index
+	sourceType
 }: {
 	node: Node;
-	sampleData: SampleData;
 	sourceType: PinSourceType;
-	index: number;
-}) => {
-	const json: SampleData = {};
-
+}): T | null => {
 	const mapperPin = getPin<MapperPin>(node, sourceType);
 	if (mapperPin) {
 		const mapperPinFormValues = getMapperPinFormValues(mapperPin);
@@ -844,9 +836,10 @@ export const getMapperPinSampleData = ({
 			}
 		});
 
-		const output = mapper.execute(JSON.parse(mapperPinFormValues.inputSampleData));
-		json[`Node:${index}:${sourceType}`] = lodashMerge(output, sampleData[`Node:${index}:${sourceType}`]);
+		return mapper.execute(JSON.parse(mapperPinFormValues.inputSampleData)) as T;
 	}
 
-	return json;
+	return null;
 };
+
+export const generateNodeIndexKey = (index: number) => `Node:${index}`;

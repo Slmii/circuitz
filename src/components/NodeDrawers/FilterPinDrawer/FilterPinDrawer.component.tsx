@@ -3,6 +3,9 @@ import { Drawer } from 'components/Drawer';
 import { FilterPinDrawerForm } from './FilterPinDrawerForm.component';
 import { DeletePinModalProps, Node } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
+import { Stack } from '@mui/material';
+import { H3, H5 } from 'components/Typography';
+import { getNodeMetaData } from 'lib/utils';
 
 export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
@@ -39,7 +42,12 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinPending || isEditPinPending}
-			title="Filter Pin"
+			title={
+				<Stack>
+					<H3>Filter Pin</H3>
+					{node && <H5 fontWeight="bold">{getNodeMetaData(node).name}</H5>}
+				</Stack>
+			}
 			fullWidth
 			onDeletePin={
 				filterPin

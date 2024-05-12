@@ -14,7 +14,7 @@ export interface FormProps<T extends FieldValues> {
 	/**
 	 * Default values in a form
 	 */
-	defaultValues: (() => DefaultValues<T>) | DefaultValues<T>;
+	defaultValues: DefaultValues<T> | (() => DefaultValues<T>);
 	/**
 	 * Option to configure the validation before onSubmit event
 	 */
@@ -32,9 +32,4 @@ export interface FormProps<T extends FieldValues> {
 	 */
 	myRef?: Ref<HTMLFormElement>;
 	children?: ReactNode;
-	/**
-	 * In case the values are being loaded from an API, this prop will reset the form with the default values
-	 * when the prop changes.
-	 */
-	isDefaultValuesLoading?: boolean;
 }

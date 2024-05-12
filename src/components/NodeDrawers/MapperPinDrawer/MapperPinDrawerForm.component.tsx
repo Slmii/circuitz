@@ -1,15 +1,15 @@
 import { Divider, FormHelperText, Paper, Stack } from '@mui/material';
 import { Form } from 'components/Form';
 import { Node } from 'lib/types';
-import { RefObject, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
-import { getMapperPinFormValues, getMapperPinSampleData, getNodeMetaData, getPin, stringifyJson } from 'lib/utils';
+import { generateNodeIndexKey, getMapperPinFormValues, getPin, stringifyJson } from 'lib/utils';
 import { MapperPin, Pin } from 'declarations/nodes.declarations';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { H5 } from 'components/Typography';
 import { Button } from 'components/Button';
 import { Editor, StandaloneEditor } from 'components/Editor';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Alert, TipAlert } from 'components/Alert';
 import { IconButton } from 'components/IconButton';
 import { Field } from 'components/Form/Field';
@@ -17,6 +17,7 @@ import createMapper from 'map-factory';
 import lodashMerge from 'lodash/merge';
 import { mapperPinSchema } from 'lib/schemas';
 import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
+import { getSampleData } from 'api/nodes.api';
 
 export const MapperPinDrawerForm = ({
 	formRef,
@@ -48,8 +49,15 @@ export const MapperPinDrawerForm = ({
 				}
 			});
 
+			const index = circuitNodes?.findIndex(({ id }) => id === node.id) ?? 0;
 			const output = mapper.execute(parsedInput);
-			setOutputSampleData(stringifyJson(lodashMerge(parsedInput, output)));
+			const merged = lodashMerge(parsedInput, {
+				[generateNodeIndexKey(index)]: {
+					[mapperType]: output
+				}
+			});
+
+			setOutputSampleData(stringifyJson(merged));
 		} catch (error) {
 			setOutputSampleData((error as Error).message);
 		}
@@ -73,56 +81,14 @@ export const MapperPinDrawerForm = ({
 			defaultValues={() => {
 				const mapperPin = getPin<MapperPin>(node, mapperType);
 				const formValues = getMapperPinFormValues(mapperPin);
-				let inputSampleData = formValues.inputSampleData;
 
-				const nodes = circuitNodes ?? [];
-				const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
-
-				// If there is no inputSampleData, collect it
-				if (!inputSampleData.length) {
-					if (mapperType === 'PostMapperPin') {
-						const metadata = getNodeMetaData(node);
-						const nodeInputSampleData = JSON.parse(metadata.inputSampleData);
-
-						// Get the PreMapperPin output
-						const outputPreMapperPin = getMapperPinSampleData({
-							index: currentNodeIndex,
-							node,
-							sampleData: nodeInputSampleData,
-							sourceType: 'PreMapperPin'
-						});
-
-						// Get the PostMapperPin output
-						const outputPostMapperPin = getMapperPinSampleData({
-							index: currentNodeIndex,
-							node,
-							sampleData: nodeInputSampleData,
-							sourceType: 'PostMapperPin'
-						});
-
-						// Merge the PostMapperPin output with node's inputSampleData
-						let merged = lodashMerge(nodeInputSampleData, outputPreMapperPin);
-						merged = lodashMerge(merged, outputPostMapperPin);
-						inputSampleData = stringifyJson(merged);
-					} else if (currentNodeIndex !== -1) {
-						// If PreMapperPin, get the inputSampleData from the previous node
-						const previousNode = nodes[currentNodeIndex - 1];
-						if (previousNode) {
-							const metadata = getNodeMetaData(previousNode);
-							inputSampleData = metadata.inputSampleData;
-						}
-					}
-				}
-
-				return {
-					...formValues,
-					inputSampleData
-				};
+				return formValues;
 			}}
 			schema={mapperPinSchema}
 			myRef={formRef}
 			render={({ getValues, clearErrors, trigger, formState: { errors } }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
+					<FormValuesUpdater mapperType={mapperType} node={node} />
 					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
 							{mapperType === 'PreMapperPin'
@@ -173,6 +139,42 @@ export const MapperPinDrawerForm = ({
 			)}
 		/>
 	);
+};
+
+const FormValuesUpdater = ({ node, mapperType }: { node: Node; mapperType: 'PreMapperPin' | 'PostMapperPin' }) => {
+	const circuitId = useGetParam('circuitId');
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+
+	const { getValues, setValue } = useFormContext<MapperPinFormValues>();
+
+	useEffect(() => {
+		if (!circuitNodes) {
+			return;
+		}
+
+		const init = async () => {
+			// Get previous nodes
+			// In case of PostMapperPin, we need to include the current node
+			const index = circuitNodes.findIndex(({ id }) => id === node.id);
+			const previousNodes = circuitNodes.slice(0, mapperType === 'PreMapperPin' ? index : index + 1);
+
+			const collectedSampleData = await getSampleData(previousNodes, {
+				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
+				skipPins: mapperType === 'PostMapperPin' ? ['PostMapperPin'] : undefined
+			});
+
+			const formValues = {
+				...getValues(),
+				inputSampleData: stringifyJson(collectedSampleData)
+			};
+
+			setValue('inputSampleData', formValues.inputSampleData);
+		};
+
+		init();
+	}, [circuitNodes, getValues, mapperType, node.id, setValue]);
+
+	return null;
 };
 
 const Fields = ({ onClearError }: { onClearError: () => void }) => {

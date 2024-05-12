@@ -9,14 +9,20 @@ import {
 	InputNodeDrawer,
 	FilterPinDrawer,
 	LookupFilterPinDrawer,
-	PreMapperPinDrawer,
-	PostMapperPinDrawer
+	MapperPinDrawer
 } from 'components/NodeDrawers';
 import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
 import { useRecoilState } from 'recoil';
 import { deleteNodeState } from 'lib/recoil';
-import { useDeleteNode, useGetCircuitTraces, useGetParam, useOnClickOutside, useToggleNodeStatus } from 'lib/hooks';
+import {
+	useDeleteNode,
+	useGetCircuit,
+	useGetCircuitTraces,
+	useGetParam,
+	useOnClickOutside,
+	useToggleNodeStatus
+} from 'lib/hooks';
 import { Icon } from 'components/Icon';
 import { Dialog } from 'components/Dialog';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -38,6 +44,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
 
 	const circuitId = useGetParam('circuitId');
+	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
 	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
 	const { mutateAsync: deleteNode, isPending: isDeleteNodePending } = useDeleteNode();
 	const { mutate: toggleStatus } = useToggleNodeStatus();
@@ -73,16 +80,8 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return nodes.find(node => node.id === Number(nodeId));
 	}, [pinType, nodeId, nodes]);
 
-	const preMapperPin = useMemo(() => {
-		if (pinType !== 'PreMapperPin' || !nodeId) {
-			return;
-		}
-
-		return nodes.find(node => node.id === Number(nodeId));
-	}, [pinType, nodeId, nodes]);
-
-	const postMapperPin = useMemo(() => {
-		if (pinType !== 'PostMapperPin' || !nodeId) {
+	const mapperPin = useMemo(() => {
+		if ((pinType !== 'PreMapperPin' && pinType !== 'PostMapperPin') || !nodeId) {
 			return;
 		}
 
@@ -97,7 +96,8 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return circuitTraces.filter(trace => trace.errors.filter(error => !error.resolvedAt));
 	}, [circuitTraces]);
 
-	if (!(!!circuitTraces && !isCircuitTracesLoading)) {
+	const isLoaded = !!circuit && !isCircuitLoading && !!circuitTraces && !isCircuitTracesLoading;
+	if (!isLoaded) {
 		return null;
 	}
 
@@ -186,14 +186,10 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				node={lookupFilterPin}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
-			<PreMapperPinDrawer
-				open={!!preMapperPin}
-				node={preMapperPin}
-				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
-			/>
-			<PostMapperPinDrawer
-				open={!!postMapperPin}
-				node={postMapperPin}
+			<MapperPinDrawer
+				open={pinType === 'PreMapperPin' || pinType === 'PostMapperPin'}
+				node={mapperPin}
+				pinType={pinType as PinSourceType}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<Dialog

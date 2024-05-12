@@ -46,4 +46,4 @@ export type OperandType = KeysOfUnion<OldOperandType>;
 export type DataType = KeysOfUnion<OldDataType>;
 export type HeaderRequestMethodType = Uppercase<KeysOfUnion<HttpMethod>>;
 
-export type SampleData = Record<string, unknown>;
+export type SampleData = Record<string, Record<NodeSourceType | PinSourceType, unknown>>;

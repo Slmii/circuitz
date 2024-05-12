@@ -8,6 +8,9 @@ import { Dialog } from 'components/Dialog';
 import { useState } from 'react';
 import { Alert } from 'components/Alert';
 import { LookupNodeHttpRequestForm } from './LookupNodeHttpRequestForm.component';
+import { Stack } from '@mui/material';
+import { H3, H5 } from 'components/Typography';
+import { getNodeMetaData } from 'lib/utils';
 
 export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDrawerProps) => {
 	const [formData, setFormData] = useState<NodeType | null>(null);
@@ -49,7 +52,12 @@ export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDr
 				onSubmit={submitter}
 				isOpen={open}
 				isLoading={isAddNodePending || isEditNodePending}
-				title={nodeType === 'LookupCanister' ? 'Lookup Canister' : 'Lookup HTTP Request'}
+				title={
+					<Stack>
+						<H3>{nodeType === 'LookupCanister' ? 'Lookup Canister' : 'Lookup HTTP Request'}</H3>
+						{node && <H5 fontWeight="bold">{getNodeMetaData(node).name}</H5>}
+					</Stack>
+				}
 				fullWidth
 			>
 				{open && (

@@ -1,24 +1,37 @@
 import { useAddPin, useEditPin, useFormSubmit, useModal } from 'lib/hooks';
 import { Drawer } from 'components/Drawer';
-import { DeletePinModalProps, Node } from 'lib/types';
+import { DeletePinModalProps, Node, PinSourceType } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
 import { MapperPinDrawerForm } from './MapperPinDrawerForm.component';
+import { Stack } from '@mui/material';
+import { H3, H5 } from 'components/Typography';
+import { getNodeMetaData } from 'lib/utils';
 
-export const PreMapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
+export const MapperPinDrawer = ({
+	open,
+	pinType,
+	node,
+	onClose
+}: {
+	open: boolean;
+	pinType: PinSourceType;
+	node?: Node;
+	onClose: () => void;
+}) => {
 	const { formRef, submitter } = useFormSubmit();
 	const { openModal } = useModal<DeletePinModalProps>('DELETE_PIN');
 
 	const { mutateAsync: addPin, isPending: isAddPinPending } = useAddPin();
 	const { mutateAsync: editPin, isPending: isEditPinPending } = useEditPin();
 
-	const preMapperPin = node?.pins.find(pin => 'PreMapperPin' in pin.pin_type);
+	const mapperPin = node?.pins.find(pin => pinType in pin.pin_type);
 
 	const handleOnSubmit = async (pin: Pin) => {
 		if (!node) {
 			return;
 		}
 
-		if (!preMapperPin) {
+		if (!mapperPin) {
 			await addPin({
 				nodeId: node.id,
 				data: pin
@@ -39,10 +52,15 @@ export const PreMapperPinDrawer = ({ open, node, onClose }: { open: boolean; nod
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinPending || isEditPinPending}
-			title="PreMapper Pin"
+			title={
+				<Stack>
+					<H3>{pinType} Pin</H3>
+					{node && <H5 fontWeight="bold">{getNodeMetaData(node).name}</H5>}
+				</Stack>
+			}
 			fullWidth
 			onDeletePin={
-				preMapperPin
+				mapperPin
 					? () => {
 							if (!node) {
 								return;
@@ -51,7 +69,7 @@ export const PreMapperPinDrawer = ({ open, node, onClose }: { open: boolean; nod
 							openModal(
 								{
 									nodeId: node.id,
-									pin: preMapperPin
+									pin: mapperPin
 								},
 								{
 									onSuccess: () => onClose()
@@ -62,7 +80,12 @@ export const PreMapperPinDrawer = ({ open, node, onClose }: { open: boolean; nod
 			}
 		>
 			{!!node && open && (
-				<MapperPinDrawerForm mapperType="PreMapperPin" formRef={formRef} node={node} onProcessMapper={handleOnSubmit} />
+				<MapperPinDrawerForm
+					mapperType={pinType as 'PreMapperPin' | 'PostMapperPin'}
+					formRef={formRef}
+					node={node}
+					onProcessMapper={handleOnSubmit}
+				/>
 			)}
 		</Drawer>
 	);

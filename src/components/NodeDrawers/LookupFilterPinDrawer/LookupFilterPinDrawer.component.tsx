@@ -3,6 +3,9 @@ import { Drawer } from 'components/Drawer';
 import { DeletePinModalProps, Node } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
 import { FilterPinDrawerForm } from '../FilterPinDrawer/FilterPinDrawerForm.component';
+import { Stack } from '@mui/material';
+import { H3, H5 } from 'components/Typography';
+import { getNodeMetaData } from 'lib/utils';
 
 export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
@@ -41,7 +44,12 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinPending || isEditPinPending}
-			title="Lookup Filter Pin"
+			title={
+				<Stack>
+					<H3>Lookup Filter Pin</H3>
+					{node && <H5 fontWeight="bold">{getNodeMetaData(node).name}</H5>}
+				</Stack>
+			}
 			fullWidth
 			onDeletePin={
 				lookupFilterPin

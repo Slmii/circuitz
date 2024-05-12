@@ -9,8 +9,9 @@ import type {
 import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import {
+	generateNodeIndexKey,
 	getFilterPinFormValues,
-	getMapperPinSampleData,
+	getMapperPinOuput,
 	getPin,
 	httpRequest,
 	isFilterTrue,
@@ -18,7 +19,7 @@ import {
 	toPrincipal,
 	unwrapResult
 } from 'lib/utils';
-import { Node, SampleData } from 'lib/types';
+import { Node, NodeSourceType, PinSourceType, SampleData } from 'lib/types';
 import { createActor } from './actor.api';
 
 // TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
@@ -112,11 +113,14 @@ export async function editOrder({
 	return unwrapResult(unwrapped);
 }
 
-export async function getSampleData(nodes: Node[]) {
+export async function getSampleData(
+	nodes: Node[],
+	options?: { skipNodes?: Array<NodeSourceType>; skipPins?: Array<PinSourceType> }
+) {
 	let sampleData: SampleData = {};
 
 	for (const [index, node] of nodes.entries()) {
-		const nodeIndex = index + 1;
+		const nodeIndex = generateNodeIndexKey(index + 1);
 
 		// Skip disabled nodes
 		if (!node.isEnabled) {
@@ -138,7 +142,7 @@ export async function getSampleData(nodes: Node[]) {
 
 		// Pin that executes before the node and checks if the node should be executed
 		const filterPin = getPin<FilterPin>(node, 'FilterPin');
-		if (filterPin) {
+		if (!options?.skipPins?.includes('FilterPin') && filterPin) {
 			const filterPinFormValues = getFilterPinFormValues(filterPin);
 
 			// If the filter is not true, skip the node
@@ -148,11 +152,19 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
-		sampleData = getMapperPinSampleData({ index: nodeIndex, node, sampleData, sourceType: 'PreMapperPin' });
+		if (!options?.skipPins?.includes('PreMapperPin')) {
+			const output = getMapperPinOuput({ node, sourceType: 'PreMapperPin' });
+			if (output) {
+				sampleData[nodeIndex] = {
+					...sampleData[nodeIndex],
+					PreMapperPin: output
+				};
+			}
+		}
 
 		// Lookup Nodes
-		if ('LookupCanister' in node.nodeType) {
-			sampleData[`Node:${nodeIndex}`] = await previewLookupCanister({
+		if (!options?.skipNodes?.includes('LookupCanister') && 'LookupCanister' in node.nodeType) {
+			sampleData[nodeIndex].LookupCanister = await previewLookupCanister({
 				args: node.nodeType.LookupCanister.args.map(arg => {
 					if ('String' in arg) {
 						return arg.String;
@@ -184,26 +196,34 @@ export async function getSampleData(nodes: Node[]) {
 				cycles: node.nodeType.LookupCanister.cycles,
 				method: node.nodeType.LookupCanister.method
 			});
-		} else if ('LookupHttpRequest' in node.nodeType) {
-			sampleData[`Node:${nodeIndex}`] = await httpRequest(node.nodeType.LookupHttpRequest);
+		} else if (!options?.skipNodes?.includes('LookupHttpRequest') && 'LookupHttpRequest' in node.nodeType) {
+			sampleData[nodeIndex].LookupHttpRequest = await httpRequest(node.nodeType.LookupHttpRequest);
 		}
 
 		// Pin that executes after the node and checks if the node should pass the data to the next node
 		const lookupfilterPin = getPin<FilterPin>(node, 'LookupFilterPin');
-		if (lookupfilterPin) {
+		if (!options?.skipPins?.includes('LookupFilterPin') && lookupfilterPin) {
 			const filterPinFormValues = getFilterPinFormValues(lookupfilterPin);
 
 			// If the lookup filter is not true, skip the merge data node
 			const isTrue = isFilterTrue(filterPinFormValues);
 			if (!isTrue) {
 				// Remove the lookup data from the sample data
-				delete sampleData[`Node:${nodeIndex}`];
+				delete sampleData[nodeIndex];
 
 				continue;
 			}
 		}
 
-		sampleData = getMapperPinSampleData({ index: nodeIndex, node, sampleData, sourceType: 'PostMapperPin' });
+		if (!options?.skipPins?.includes('PostMapperPin')) {
+			const output = getMapperPinOuput({ node, sourceType: 'PostMapperPin' });
+			if (output) {
+				sampleData[nodeIndex] = {
+					...sampleData[nodeIndex],
+					PostMapperPin: output
+				};
+			}
+		}
 	}
 
 	return sampleData;
