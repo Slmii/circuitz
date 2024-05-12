@@ -3,7 +3,7 @@ import { Form } from 'components/Form';
 import { Node } from 'lib/types';
 import { RefObject, useState } from 'react';
 import { MapperPinFormValues } from '../NodeDrawers.types';
-import { getMapperPinFormValues, getNodeMetaData, getPin, stringifyJson } from 'lib/utils';
+import { getMapperPinFormValues, getMapperPinSampleData, getNodeMetaData, getPin, stringifyJson } from 'lib/utils';
 import { MapperPin, Pin } from 'declarations/nodes.declarations';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { H5 } from 'components/Typography';
@@ -71,25 +71,36 @@ export const MapperPinDrawerForm = ({
 		<Form<MapperPinFormValues>
 			action={handleOnSubmit}
 			defaultValues={() => {
-				const filterPin = getPin<MapperPin>(node, mapperType);
-				const formValues = getMapperPinFormValues(filterPin);
+				const mapperPin = getPin<MapperPin>(node, mapperType);
+				const formValues = getMapperPinFormValues(mapperPin);
 				let inputSampleData = formValues.inputSampleData;
 
-				// TODO: test and make Lookup fetch PreMapperPin inputSampleData, if there is a PreMApper
-				if (!inputSampleData.length && node) {
+				const nodes = circuitNodes ?? [];
+				const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
+
+				// If there is no inputSampleData, collect it
+				if (!inputSampleData.length) {
 					if (mapperType === 'PostMapperPin') {
 						const metadata = getNodeMetaData(node);
-						inputSampleData = metadata.inputSampleData;
-					} else {
-						const nodes = circuitNodes ?? [];
-						const currentNodeIndex = nodes.findIndex(({ id }) => id === node.id);
+						const nodeInputSampleData = JSON.parse(metadata.inputSampleData);
 
-						if (currentNodeIndex !== -1) {
-							const previousNode = nodes[currentNodeIndex - 1];
-							if (previousNode) {
-								const metadata = getNodeMetaData(previousNode);
-								inputSampleData = metadata.inputSampleData;
-							}
+						// Get the PostMapperPin output
+						const outputPostMapperPin = getMapperPinSampleData({
+							index: currentNodeIndex,
+							node,
+							sampleData: nodeInputSampleData,
+							sourceType: 'PostMapperPin'
+						});
+
+						// Merge the PostMapperPin output with node's inputSampleData
+						const merged = lodashMerge(nodeInputSampleData, outputPostMapperPin);
+						inputSampleData = stringifyJson(merged);
+					} else if (currentNodeIndex !== -1) {
+						// If PreMapperPin, get the inputSampleData from the previous node
+						const previousNode = nodes[currentNodeIndex - 1];
+						if (previousNode) {
+							const metadata = getNodeMetaData(previousNode);
+							inputSampleData = metadata.inputSampleData;
 						}
 					}
 				}
@@ -106,8 +117,8 @@ export const MapperPinDrawerForm = ({
 					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
 							{mapperType === 'PreMapperPin'
-								? 'A PreMapper Pin allows you to map a value from the input to a value in the output, before the Node"s execution.'
-								: 'A PostMapper Pin allows you to map a value from the input to a value in the output, after the Node"s execution'}
+								? "A PreMapper Pin allows you to map a value from the input to a value in the output, before the Node's execution."
+								: "A PostMapper Pin allows you to map a value from the input to a value in the output, after the Node's execution"}
 						</Alert>
 						<H5 fontWeight="bold">Fields</H5>
 						<Paper sx={{ p: 2 }}>

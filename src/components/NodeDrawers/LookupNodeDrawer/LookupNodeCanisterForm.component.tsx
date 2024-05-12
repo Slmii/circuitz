@@ -15,7 +15,7 @@ import {
 	getLookupCanisterFormValues,
 	getLookupCanisterValuesAsArg,
 	getLookupCanisterValuesAsPreviewArg,
-	getNodeMetaData,
+	getLookupInputSampleData,
 	isHandlebarsTemplate,
 	parseIDL,
 	parseJson,
@@ -67,27 +67,7 @@ export const LookupNodeCanisterForm = ({
 			action={handleOnSubmit}
 			defaultValues={() => {
 				const formValues = getLookupCanisterFormValues(node);
-				let inputSampleData = formValues.inputSampleData;
-
-				if (!inputSampleData.length) {
-					const nodes = circuitNodes ?? [];
-
-					if (!node) {
-						const previousNode = nodes[nodes.length - 1];
-						const metadata = getNodeMetaData(previousNode);
-						inputSampleData = metadata.inputSampleData;
-					} else {
-						const currentNodeIndex = nodes.findIndex(({ id }) => id === node?.id);
-
-						if (currentNodeIndex !== -1) {
-							const previousNode = nodes[currentNodeIndex - 1];
-							if (previousNode) {
-								const metadata = getNodeMetaData(previousNode);
-								inputSampleData = metadata.inputSampleData;
-							}
-						}
-					}
-				}
+				const inputSampleData = getLookupInputSampleData({ data: formValues, node, nodes: circuitNodes ?? [] });
 
 				return {
 					...formValues,

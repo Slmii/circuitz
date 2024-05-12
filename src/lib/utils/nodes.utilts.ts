@@ -38,6 +38,9 @@ import { toPrincipal } from './identity.utils';
 import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
 import { getHandlebars, isHandlebarsTemplate } from './handlebars.utils';
+import createMapper from 'map-factory';
+import lodashMerge from 'lodash/merge';
+import { stringifyJson } from './string.utils';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -765,4 +768,85 @@ const evaluateRule = (rule: FilterRule, data: Record<string, unknown>, condition
 export const extractDynamicKey = (str: string) => {
 	const match = str.match(/{{\s*(.*?)\s*}}/);
 	return match ? match[1] : null;
+};
+
+export const getLookupInputSampleData = <T extends { inputSampleData: string }>({
+	data,
+	node,
+	nodes
+}: {
+	data: T;
+	node?: Node;
+	nodes: Node[];
+}) => {
+	let inputSampleData = data.inputSampleData;
+	const currentNodeIndex = nodes.findIndex(({ id }) => id === node?.id);
+
+	// If there is no inputSampleData, collect it
+	if (!inputSampleData.length) {
+		// If there is no node we are in 'node creation' mode, so we need to get the inputSampleData from recent node
+		if (!node) {
+			const recentNode = nodes[nodes.length - 1];
+			const metadata = getNodeMetaData(recentNode);
+			inputSampleData = metadata.inputSampleData;
+		} else if (currentNodeIndex !== -1) {
+			// If the node exists, get the inputSampleData from the previous node
+			const previousNode = nodes[currentNodeIndex - 1];
+			if (previousNode) {
+				const metadata = getNodeMetaData(previousNode);
+				inputSampleData = metadata.inputSampleData;
+			}
+		}
+	}
+	// If the node exists, merge the PreMapperPin output with the inputSampleData
+	else if (node) {
+		const outputPreMapperPin = getMapperPinSampleData({
+			index: currentNodeIndex,
+			node,
+			sampleData: data,
+			sourceType: 'PreMapperPin'
+		});
+
+		const merged = lodashMerge(JSON.parse(inputSampleData), outputPreMapperPin);
+		inputSampleData = stringifyJson(merged);
+	}
+
+	return inputSampleData;
+};
+
+/**
+ * Get the output sample data for the MapperPin, based on the configured fields
+ */
+export const getMapperPinSampleData = ({
+	node,
+	sampleData,
+	sourceType,
+	index
+}: {
+	node: Node;
+	sampleData: SampleData;
+	sourceType: PinSourceType;
+	index: number;
+}) => {
+	const json: SampleData = {};
+
+	const mapperPin = getPin<MapperPin>(node, sourceType);
+	if (mapperPin) {
+		const mapperPinFormValues = getMapperPinFormValues(mapperPin);
+
+		const mapper = createMapper();
+		mapperPinFormValues.fields.forEach(field => {
+			if (field.input.length && field.output.length) {
+				const inputField = field.input.replace('[*]', '[]');
+				const outputField = field.output.replace('[*]', '[]');
+
+				mapper.map(inputField).to(outputField);
+			}
+		});
+
+		const output = mapper.execute(JSON.parse(mapperPinFormValues.inputSampleData));
+		json[`Node:${index}:${sourceType}`] = lodashMerge(output, sampleData[`Node:${index}:${sourceType}`]);
+	}
+
+	return json;
 };

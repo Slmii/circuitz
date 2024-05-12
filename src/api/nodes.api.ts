@@ -2,7 +2,6 @@ import type {
 	FilterPin,
 	LookupCanisterPreview,
 	LookupHttpRequestPreview,
-	MapperPin,
 	NodeType,
 	Pin,
 	_SERVICE
@@ -11,7 +10,7 @@ import { ENV } from 'lib/constants';
 import { nodesCanisterId } from './canisterIds';
 import {
 	getFilterPinFormValues,
-	getMapperPinFormValues,
+	getMapperPinSampleData,
 	getPin,
 	httpRequest,
 	isFilterTrue,
@@ -21,8 +20,6 @@ import {
 } from 'lib/utils';
 import { Node, SampleData } from 'lib/types';
 import { createActor } from './actor.api';
-import createMapper from 'map-factory';
-import lodashMerge from 'lodash/merge';
 
 // TODO: replace hardcoded nodesCanisterId[ENV] id with a dynamic one
 
@@ -151,23 +148,7 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
-		const preMapperPin = getPin<MapperPin>(node, 'PreMapperPin');
-		if (preMapperPin) {
-			const mapperPinFormValues = getMapperPinFormValues(preMapperPin);
-
-			const mapper = createMapper();
-			mapperPinFormValues.fields.forEach(field => {
-				if (field.input.length && field.output.length) {
-					const inputField = field.input.replace('[*]', '[]');
-					const outputField = field.output.replace('[*]', '[]');
-
-					mapper.map(inputField).to(outputField);
-				}
-			});
-
-			const output = mapper.execute(sampleData);
-			sampleData[`Node:${nodeIndex}:PreMapperPin`] = lodashMerge(sampleData[`Node:${nodeIndex}:PreMapperPin`], output);
-		}
+		sampleData = getMapperPinSampleData({ index: nodeIndex, node, sampleData, sourceType: 'PreMapperPin' });
 
 		// Lookup Nodes
 		if ('LookupCanister' in node.nodeType) {
@@ -222,23 +203,7 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
-		const postMapperPin = getPin<MapperPin>(node, 'PostMapperPin');
-		if (postMapperPin) {
-			const mapperPinFormValues = getMapperPinFormValues(postMapperPin);
-
-			const mapper = createMapper();
-			mapperPinFormValues.fields.forEach(field => {
-				if (field.input.length && field.output.length) {
-					const inputField = field.input.replace('[*]', '[]');
-					const outputField = field.output.replace('[*]', '[]');
-
-					mapper.map(inputField).to(outputField);
-				}
-			});
-
-			const output = mapper.execute(sampleData);
-			sampleData[`Node:${nodeIndex}:PostMapper`] = lodashMerge(sampleData[`Node:${nodeIndex}:PostMapper`], output);
-		}
+		sampleData = getMapperPinSampleData({ index: nodeIndex, node, sampleData, sourceType: 'PostMapperPin' });
 	}
 
 	return sampleData;
