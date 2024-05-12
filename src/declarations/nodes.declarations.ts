@@ -126,9 +126,10 @@ export interface Pin {
 	order: number;
 }
 export type PinType =
+	| { PreMapperPin: MapperPin }
 	| { LookupTransformPin: LookupTransformPin }
 	| { FilterPin: FilterPin }
-	| { MapperPin: MapperPin }
+	| { PostMapperPin: MapperPin }
 	| { PrePin: CustomPinLogic }
 	| { PostPin: CustomPinLogic }
 	| { LookupFilterPin: FilterPin };
@@ -236,6 +237,10 @@ export const idlFactory = ({ IDL }: any) => {
 		Canister: Canister,
 		LookupHttpRequest: HttpRequest
 	});
+	const MapperPin = IDL.Record({
+		sample_data: IDL.Text,
+		fields: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
+	});
 	const LookupTransformPin = IDL.Record({
 		output: IDL.Text,
 		input: IDL.Text
@@ -275,18 +280,15 @@ export const idlFactory = ({ IDL }: any) => {
 		rules: IDL.Vec(Rule),
 		condition: Condition
 	});
-	const MapperPin = IDL.Record({
-		sample_data: IDL.Text,
-		fields: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
-	});
 	const CustomPinLogic = IDL.Record({
 		function: IDL.Opt(IDL.Text),
 		script: IDL.Opt(IDL.Text)
 	});
 	const PinType = IDL.Variant({
+		PreMapperPin: MapperPin,
 		LookupTransformPin: LookupTransformPin,
 		FilterPin: FilterPin,
-		MapperPin: MapperPin,
+		PostMapperPin: MapperPin,
 		PrePin: CustomPinLogic,
 		PostPin: CustomPinLogic,
 		LookupFilterPin: FilterPin

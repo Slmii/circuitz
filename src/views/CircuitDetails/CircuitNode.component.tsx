@@ -149,7 +149,8 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 	const navigate = useNavigate();
 
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
-	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
+	const hasPreMapperPin = !!getPin<FilterPin>(node, 'PreMapperPin');
+	const hasPostMapperPin = !!getPin<FilterPin>(node, 'PostMapperPin');
 	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
 
 	return (
@@ -184,14 +185,25 @@ const ExistingPins = ({ node, isShowPins }: { node: Node; isShowPins: boolean })
 					})}
 				/>
 			)}
-			{hasMapperPin && (
-				// Show only if MapperPin is present
+			{hasPreMapperPin && (
+				// Show only if PreMapperPin is present
 				<IconButton
 					icon="mapper"
-					tooltip="MapperPin"
+					tooltip="PreMapperPin"
 					color="primary"
 					{...stopPropagation({
-						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/MapperPin/edit`)
+						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/PreMapperPin/edit`)
+					})}
+				/>
+			)}
+			{hasPostMapperPin && (
+				// Show only if PostMapperPin is present
+				<IconButton
+					icon="mapper"
+					tooltip="PostMapperPin"
+					color="primary"
+					{...stopPropagation({
+						onClick: () => navigate(`/circuits/${node.circuitId}/nodes/${node.id}/PostMapperPin/edit`)
 					})}
 				/>
 			)}
@@ -212,7 +224,8 @@ const NodePins = ({
 	const setDeleteNode = useSetRecoilState(deleteNodeState);
 
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
-	const hasMapperPin = !!getPin<FilterPin>(node, 'MapperPin');
+	const hasPreMapperPin = !!getPin<FilterPin>(node, 'PreMapperPin');
+	const hasPostMapperPin = !!getPin<FilterPin>(node, 'PostMapperPin');
 	const hasLookupFilterPin = !!getPin<FilterPin>(node, 'LookupFilterPin');
 
 	const metadata = getNodeMetaData(node);
@@ -263,15 +276,28 @@ const NodePins = ({
 							)}
 						</>
 					)}
-					{!hasMapperPin && (
-						// Show only if MapperPin is not present
+					{!hasPreMapperPin && (
+						// Show only if PreMapperPin is not present
 						<IconButton
 							icon="mapper"
-							tooltip="MapperPin"
+							tooltip="PreMapperPin"
 							{...stopPropagation({
 								onClick: () => {
 									onClosePins();
-									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/MapperPin/add`);
+									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/PreMapperPin/add`);
+								}
+							})}
+						/>
+					)}
+					{!hasPostMapperPin && (
+						// Show only if PostMapperPin is not present
+						<IconButton
+							icon="mapper"
+							tooltip="PostMapperPin"
+							{...stopPropagation({
+								onClick: () => {
+									onClosePins();
+									navigate(`/circuits/${node.circuitId}/nodes/${node.id}/PostMapperPin/add`);
 								}
 							})}
 						/>

@@ -20,10 +20,12 @@ import { mapperPinSchema } from 'lib/schemas';
 export const MapperPinDrawerForm = ({
 	formRef,
 	node,
+	mapperType,
 	onProcessMapper
 }: {
 	formRef: RefObject<HTMLFormElement>;
 	node: Node;
+	mapperType: 'PreMapperPin' | 'PostMapperPin';
 	onProcessMapper: (data: Pin) => void;
 }) => {
 	const [outputSampleData, setOutputSampleData] = useState('');
@@ -50,14 +52,14 @@ export const MapperPinDrawerForm = ({
 	};
 
 	const handleOnSubmit = (data: MapperPinFormValues) => {
+		const values: MapperPin = {
+			sample_data: data.inputSampleData,
+			fields: data.fields.map(field => [field.input, field.output])
+		};
+
 		onProcessMapper({
 			order: 0,
-			pin_type: {
-				MapperPin: {
-					sample_data: data.inputSampleData,
-					fields: data.fields.map(field => [field.input, field.output])
-				}
-			}
+			pin_type: mapperType === 'PostMapperPin' ? { PostMapperPin: values } : { PreMapperPin: values }
 		});
 	};
 
@@ -65,7 +67,7 @@ export const MapperPinDrawerForm = ({
 		<Form<MapperPinFormValues>
 			action={handleOnSubmit}
 			defaultValues={() => {
-				const filterPin = getPin<MapperPin>(node, 'MapperPin');
+				const filterPin = getPin<MapperPin>(node, mapperType);
 				const formValues = getMapperPinFormValues(filterPin);
 				let inputSampleData = formValues.inputSampleData;
 
@@ -85,7 +87,9 @@ export const MapperPinDrawerForm = ({
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
 					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
-							A Mapper Pin allows you to map a value from the input to a value in the output.
+							{mapperType === 'PreMapperPin'
+								? 'A PreMapper Pin allows you to map a value from the input to a value in the output, before the Node"s execution.'
+								: 'A PostMapper Pin allows you to map a value from the input to a value in the output, after the Node"s execution'}
 						</Alert>
 						<H5 fontWeight="bold">Fields</H5>
 						<Paper sx={{ p: 2 }}>

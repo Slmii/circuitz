@@ -4,7 +4,14 @@ import { useMemo, useState } from 'react';
 import { Node, NodeSourceType, PinSourceType } from 'lib/types';
 import { IconButton } from 'components/IconButton';
 import { AddNodeButton } from 'components/Button';
-import { LookupNodeDrawer, InputNodeDrawer, FilterPinDrawer, LookupFilterPinDrawer } from 'components/NodeDrawers';
+import {
+	LookupNodeDrawer,
+	InputNodeDrawer,
+	FilterPinDrawer,
+	LookupFilterPinDrawer,
+	PreMapperPinDrawer,
+	PostMapperPinDrawer
+} from 'components/NodeDrawers';
 import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
 import { useRecoilState } from 'recoil';
@@ -13,7 +20,6 @@ import { useDeleteNode, useGetCircuitTraces, useGetParam, useOnClickOutside, use
 import { Icon } from 'components/Icon';
 import { Dialog } from 'components/Dialog';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MapperPinDrawer } from 'components/NodeDrawers/MapperPinDrawer/MapperPinDrawer.component';
 
 // const navigate = useNavigate();
 // 	const circuitId = useGetParam('circuitId');
@@ -67,8 +73,16 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return nodes.find(node => node.id === Number(nodeId));
 	}, [pinType, nodeId, nodes]);
 
-	const mapperPin = useMemo(() => {
-		if (pinType !== 'MapperPin' || !nodeId) {
+	const preMapperPin = useMemo(() => {
+		if (pinType !== 'PreMapperPin' || !nodeId) {
+			return;
+		}
+
+		return nodes.find(node => node.id === Number(nodeId));
+	}, [pinType, nodeId, nodes]);
+
+	const postMapperPin = useMemo(() => {
+		if (pinType !== 'PostMapperPin' || !nodeId) {
 			return;
 		}
 
@@ -172,9 +186,14 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				node={lookupFilterPin}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
-			<MapperPinDrawer
-				open={!!mapperPin}
-				node={mapperPin}
+			<PreMapperPinDrawer
+				open={!!preMapperPin}
+				node={preMapperPin}
+				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
+			/>
+			<PostMapperPinDrawer
+				open={!!postMapperPin}
+				node={postMapperPin}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<Dialog

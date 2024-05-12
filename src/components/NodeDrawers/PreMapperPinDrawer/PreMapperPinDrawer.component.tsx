@@ -4,21 +4,21 @@ import { DeletePinModalProps, Node } from 'lib/types';
 import { Pin } from 'declarations/nodes.declarations';
 import { MapperPinDrawerForm } from './MapperPinDrawerForm.component';
 
-export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
+export const PreMapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?: Node; onClose: () => void }) => {
 	const { formRef, submitter } = useFormSubmit();
 	const { openModal } = useModal<DeletePinModalProps>('DELETE_PIN');
 
 	const { mutateAsync: addPin, isPending: isAddPinPending } = useAddPin();
 	const { mutateAsync: editPin, isPending: isEditPinPending } = useEditPin();
 
-	const mapperPin = node?.pins.find(pin => 'MapperPin' in pin.pin_type);
+	const preMapperPin = node?.pins.find(pin => 'PreMapperPin' in pin.pin_type);
 
 	const handleOnSubmit = async (pin: Pin) => {
 		if (!node) {
 			return;
 		}
 
-		if (!mapperPin) {
+		if (!preMapperPin) {
 			await addPin({
 				nodeId: node.id,
 				data: pin
@@ -39,10 +39,10 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinPending || isEditPinPending}
-			title="Mapper Pin"
+			title="PreMapper Pin"
 			fullWidth
 			onDeletePin={
-				mapperPin
+				preMapperPin
 					? () => {
 							if (!node) {
 								return;
@@ -51,7 +51,7 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 							openModal(
 								{
 									nodeId: node.id,
-									pin: mapperPin
+									pin: preMapperPin
 								},
 								{
 									onSuccess: () => onClose()
@@ -61,7 +61,9 @@ export const MapperPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 					: undefined
 			}
 		>
-			{!!node && open && <MapperPinDrawerForm formRef={formRef} node={node} onProcessMapper={handleOnSubmit} />}
+			{!!node && open && (
+				<MapperPinDrawerForm mapperType="PreMapperPin" formRef={formRef} node={node} onProcessMapper={handleOnSubmit} />
+			)}
 		</Drawer>
 	);
 };
