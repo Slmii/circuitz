@@ -28,6 +28,9 @@ export const StandaloneEditor = ({
 	value: string;
 	mode: string;
 	isReadOnly?: boolean;
+	/**
+	 * Resizable only works with number type
+	 */
 	height?: number | string;
 	errorMessage?: string;
 	ignoreInvalidJSON?: boolean;
@@ -42,7 +45,15 @@ export const StandaloneEditor = ({
 	}, [theme.palette.mode]);
 
 	return (
-		<Stack direction="column" spacing={0.25} height={typeof height === 'number' ? `${height}px` : height}>
+		<Stack
+			direction="column"
+			spacing={0.25}
+			sx={{
+				resize: 'vertical',
+				overflow: 'auto',
+				height: typeof height === 'number' ? `${height}px` : height
+			}}
+		>
 			<AceEditor
 				mode={mode}
 				theme={aceEditorTheme}

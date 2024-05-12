@@ -151,6 +151,24 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
+		const preMapperPin = getPin<MapperPin>(node, 'PreMapperPin');
+		if (preMapperPin) {
+			const mapperPinFormValues = getMapperPinFormValues(preMapperPin);
+
+			const mapper = createMapper();
+			mapperPinFormValues.fields.forEach(field => {
+				if (field.input.length && field.output.length) {
+					const inputField = field.input.replace('[*]', '[]');
+					const outputField = field.output.replace('[*]', '[]');
+
+					mapper.map(inputField).to(outputField);
+				}
+			});
+
+			const output = mapper.execute(sampleData);
+			sampleData[`Node:${nodeIndex}:PreMapperPin`] = lodashMerge(sampleData[`Node:${nodeIndex}:PreMapperPin`], output);
+		}
+
 		// Lookup Nodes
 		if ('LookupCanister' in node.nodeType) {
 			sampleData[`Node:${nodeIndex}`] = await previewLookupCanister({
@@ -204,9 +222,9 @@ export async function getSampleData(nodes: Node[]) {
 			}
 		}
 
-		const mapperPin = getPin<MapperPin>(node, 'MapperPin');
-		if (mapperPin) {
-			const mapperPinFormValues = getMapperPinFormValues(mapperPin);
+		const postMapperPin = getPin<MapperPin>(node, 'PostMapperPin');
+		if (postMapperPin) {
+			const mapperPinFormValues = getMapperPinFormValues(postMapperPin);
 
 			const mapper = createMapper();
 			mapperPinFormValues.fields.forEach(field => {
@@ -219,7 +237,7 @@ export async function getSampleData(nodes: Node[]) {
 			});
 
 			const output = mapper.execute(sampleData);
-			sampleData[`Node:${nodeIndex}`] = lodashMerge(sampleData[`Node:${nodeIndex}`], output);
+			sampleData[`Node:${nodeIndex}:PostMapper`] = lodashMerge(sampleData[`Node:${nodeIndex}:PostMapper`], output);
 		}
 	}
 
