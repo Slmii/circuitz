@@ -178,9 +178,9 @@ const FormValuesUpdater = () => {
 			const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
 			const previousNodes = circuitNodes.slice(0, pinType === 'FilterPin' ? index : index + 1);
 
-			// TODO: include PostMapper from previous node when FilterPin
 			const collectedSampleData = await getSampleData(previousNodes, {
-				skipNodes: ['LookupCanister', 'LookupHttpRequest']
+				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
+				includePostMapper: pinType === 'FilterPin'
 			});
 
 			setValue('inputSampleData', stringifyJson(collectedSampleData));
