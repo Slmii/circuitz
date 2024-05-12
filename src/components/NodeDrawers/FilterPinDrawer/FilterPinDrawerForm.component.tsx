@@ -4,7 +4,7 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select } from 'components/Form/Select';
 import { H5 } from 'components/Typography';
-import { Node } from 'lib/types';
+import { Node, PinSourceType } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -14,7 +14,14 @@ import { Button } from 'components/Button';
 import { IconButton } from 'components/IconButton';
 import { Dialog } from 'components/Dialog';
 import { useGetCircuitNodes, useGetParam } from 'lib/hooks';
-import { getFilterPinValuesAsArg, getFilterPinFormValues, isFilterTrue, getPin, getNodeMetaData } from 'lib/utils';
+import {
+	getFilterPinValuesAsArg,
+	getFilterPinFormValues,
+	isFilterTrue,
+	getPin,
+	getNodeMetaData,
+	stringifyJson
+} from 'lib/utils';
 import { FilterPin, Pin } from 'declarations/nodes.declarations';
 import { filterPinSchema } from 'lib/schemas';
 import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
@@ -22,6 +29,8 @@ import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { HandlebarsInfo } from 'components/Shared';
 import { Icon } from 'components/Icon';
+import { useParams } from 'react-router-dom';
+import { getSampleData } from 'api/nodes.api';
 
 export const FilterPinDrawerForm = ({
 	formRef,
@@ -105,11 +114,12 @@ export const FilterPinDrawerForm = ({
 			myRef={formRef}
 			render={({ getValues }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
+					<FormValuesUpdater />
 					<Stack direction="column" spacing={2} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Alert severity="info">
 							{filterType === 'FilterPin'
 								? "A Filter Pin filters the node according to the specified rules below. If these rules are met, the node's execution can be triggered."
-								: 'A Lookup Filter Pin filters the node according to the specified rules below. If these rules are met, the Lookup values will be merged into the next Node.'}
+								: 'A Lookup Filter Pin filters the node according to the specified rules below. If these rules are met, the Lookup values will be merged into the next Node or Pin.'}
 						</Alert>
 						<H5 fontWeight="bold">Rules</H5>
 						<Rules />
@@ -146,6 +156,40 @@ export const FilterPinDrawerForm = ({
 			)}
 		/>
 	);
+};
+const FormValuesUpdater = () => {
+	const { circuitId, nodeId, pinType } = useParams<{
+		circuitId: string;
+		nodeId: string;
+		pinType: PinSourceType;
+	}>();
+
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+	const { setValue } = useFormContext<FilterPinFormValues>();
+
+	useEffect(() => {
+		if (!circuitNodes || !nodeId || !pinType) {
+			return;
+		}
+
+		const init = async () => {
+			// Get previous nodes before the current node
+			// In case of LookupFilterPin, we need to include the current node
+			const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
+			const previousNodes = circuitNodes.slice(0, pinType === 'FilterPin' ? index : index + 1);
+
+			// TODO: include PostMapper from previous node when FilterPin
+			const collectedSampleData = await getSampleData(previousNodes, {
+				skipNodes: ['LookupCanister', 'LookupHttpRequest']
+			});
+
+			setValue('inputSampleData', stringifyJson(collectedSampleData));
+		};
+
+		init();
+	}, [circuitNodes, pinType, nodeId, setValue]);
+
+	return null;
 };
 
 const Rules = () => {

@@ -103,7 +103,7 @@ export const LookupNodeHttpRequestForm = ({
 						<Stack direction="column" spacing={2}>
 							<Alert severity="info">
 								A Lookup HTTP Request Node queries data from an external Web2 API and forwards it to the subsequent Node
-								in the Circuit
+								in the Circuit.
 							</Alert>
 							<H5 fontWeight="bold">General</H5>
 							<Stack direction="column" spacing={4}>

@@ -82,7 +82,7 @@ export const LookupNodeCanisterForm = ({
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
 							A Lookup Canister Node queries data from an external Canister and forwards it to the subsequent Node in
-							the Circuit
+							the Circuit.
 						</Alert>
 						<H5 fontWeight="bold">General</H5>
 						<Stack direction="column" spacing={4}>

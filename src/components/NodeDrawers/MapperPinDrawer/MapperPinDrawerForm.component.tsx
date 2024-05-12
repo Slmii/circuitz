@@ -94,7 +94,7 @@ export const MapperPinDrawerForm = ({
 						<Alert severity="info">
 							{mapperType === 'PreMapperPin'
 								? "A PreMapper Pin allows you to map a value from the input to a value in the output, before the Node's execution."
-								: "A PostMapper Pin allows you to map a value from the input to a value in the output, after the Node's execution"}
+								: "A PostMapper Pin allows you to map a value from the input to a value in the output, after the Node's execution. A PostMapper Pin will be executed after a LookupFilter Pin, if it exists."}
 						</Alert>
 						<H5 fontWeight="bold">Fields</H5>
 						<Paper sx={{ p: 2 }}>
