@@ -184,32 +184,14 @@ const Preview = () => {
 		const key = generateNodeIndexKey(index ?? 0);
 		const inputSampleData = parseJson<SampleData>(getValues('inputSampleData'));
 
-		if (error) {
-			setValue(
-				'inputSampleData',
-				stringifyJson({
-					...inputSampleData,
-					[key]: {
-						...inputSampleData[key],
-						LookupCanister: error
-					}
-				})
-			);
-			return;
-		}
+		let values = {};
 
-		if ('Ok' in data) {
-			setValue(
-				'inputSampleData',
-				stringifyJson({
-					...inputSampleData,
-					[key]: {
-						...inputSampleData[key],
-						LookupCanister: JSON.parse(data.Ok)
-					}
-				})
-			);
-			return;
+		if (error) {
+			values = error;
+		} else if ('Ok' in data) {
+			values = JSON.parse(data.Ok);
+		} else {
+			values = data;
 		}
 
 		setValue(
@@ -218,7 +200,7 @@ const Preview = () => {
 				...inputSampleData,
 				[key]: {
 					...inputSampleData[key],
-					LookupCanister: data
+					LookupCanister: values
 				}
 			})
 		);
