@@ -12,6 +12,7 @@ import {
 	generateNodeIndexKey,
 	getFilterPinFormValues,
 	getMapperPinOuput,
+	getNodeMetaData,
 	getPin,
 	httpRequest,
 	isFilterTrue,
@@ -115,7 +116,13 @@ export async function editOrder({
 
 export async function getSampleData(
 	nodes: Node[],
-	options?: { skipNodes?: Array<NodeSourceType>; includePostMapper?: boolean }
+	options?: {
+		/**
+		 * Skip execution of specified nodes. Instead use the sample data provided in the node.
+		 */
+		skipNodes?: Array<NodeSourceType>;
+		includePostMapper?: boolean;
+	}
 ) {
 	let sampleData: SampleData = {};
 
@@ -124,6 +131,15 @@ export async function getSampleData(
 
 	for (const [index, node] of nodes.entries()) {
 		const nodeIndex = generateNodeIndexKey(index);
+
+		// Prefill nodeIndex key with types
+		const metadata = getNodeMetaData(node);
+		sampleData[nodeIndex] = {
+			...(metadata.type === 'LookupCanister' && { LookupCanister: {} }),
+			...(metadata.type === 'LookupHttpRequest' && { LookupHttpRequest: {} }),
+			PreMapperPin: {},
+			...(options?.includePostMapper && { PostMapperPin: {} })
+		};
 
 		// Skip disabled nodes
 		if (!node.isEnabled) {
@@ -164,41 +180,51 @@ export async function getSampleData(
 		}
 
 		// Lookup Nodes
-		if (!options?.skipNodes?.includes('LookupCanister') && 'LookupCanister' in node.nodeType) {
-			sampleData[nodeIndex].LookupCanister = await previewLookupCanister({
-				args: node.nodeType.LookupCanister.args.map(arg => {
-					if ('String' in arg) {
-						return arg.String;
-					}
+		if ('LookupCanister' in node.nodeType) {
+			if (!options?.skipNodes?.includes('LookupCanister')) {
+				sampleData[nodeIndex] = {
+					...sampleData[nodeIndex],
+					LookupCanister: await previewLookupCanister({
+						args: node.nodeType.LookupCanister.args.map(arg => {
+							if ('String' in arg) {
+								return arg.String;
+							}
 
-					if ('Number' in arg) {
-						return Number(arg.Number);
-					}
+							if ('Number' in arg) {
+								return Number(arg.Number);
+							}
 
-					if ('Boolean' in arg) {
-						return arg.Boolean === 'true';
-					}
+							if ('Boolean' in arg) {
+								return arg.Boolean === 'true';
+							}
 
-					if ('Principal' in arg) {
-						return toPrincipal(arg.Principal);
-					}
+							if ('Principal' in arg) {
+								return toPrincipal(arg.Principal);
+							}
 
-					if ('Array' in arg) {
-						return JSON.parse(arg.Array);
-					}
+							if ('Array' in arg) {
+								return JSON.parse(arg.Array);
+							}
 
-					if ('Object' in arg) {
-						return JSON.parse(arg.Object);
-					}
+							if ('Object' in arg) {
+								return JSON.parse(arg.Object);
+							}
 
-					return BigInt(arg.BigInt);
-				}),
-				canister: node.nodeType.LookupCanister.canister,
-				cycles: node.nodeType.LookupCanister.cycles,
-				method: node.nodeType.LookupCanister.method
-			});
-		} else if (!options?.skipNodes?.includes('LookupHttpRequest') && 'LookupHttpRequest' in node.nodeType) {
-			sampleData[nodeIndex].LookupHttpRequest = await httpRequest(node.nodeType.LookupHttpRequest);
+							return BigInt(arg.BigInt);
+						}),
+						canister: node.nodeType.LookupCanister.canister,
+						cycles: node.nodeType.LookupCanister.cycles,
+						method: node.nodeType.LookupCanister.method
+					})
+				};
+			}
+		} else if ('LookupHttpRequest' in node.nodeType) {
+			if (!options?.skipNodes?.includes('LookupHttpRequest')) {
+				sampleData[nodeIndex] = {
+					...sampleData[nodeIndex],
+					LookupHttpRequest: await httpRequest(node.nodeType.LookupHttpRequest)
+				};
+			}
 		}
 
 		// Pin that executes after the node and checks if the node should pass the data to the next node

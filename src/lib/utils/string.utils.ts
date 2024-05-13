@@ -6,11 +6,11 @@ export const stringifyJson = (value: unknown) => {
 	return JSON.stringify(value, null, 4);
 };
 
-export const parseJson = <T extends object>(value: string) => {
+export const parseJson = <T extends object>(value: string): T => {
 	try {
 		return JSON.parse(value) as T;
 	} catch (e) {
 		console.log('Error parsing JSON: ', e);
-		return {};
+		return {} as T;
 	}
 };

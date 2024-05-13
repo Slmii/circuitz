@@ -46,4 +46,7 @@ export type OperandType = KeysOfUnion<OldOperandType>;
 export type DataType = KeysOfUnion<OldDataType>;
 export type HeaderRequestMethodType = Uppercase<KeysOfUnion<HttpMethod>>;
 
-export type SampleData = Record<string, Record<NodeSourceType | PinSourceType, unknown>>;
+export type SampleData = Record<
+	string,
+	Partial<Record<'LookupCanister' | 'LookupHttpRequest' | 'PreMapperPin' | 'PostMapperPin', unknown>>
+>;

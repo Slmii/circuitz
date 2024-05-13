@@ -14,11 +14,11 @@ export const SPINNER_ANIMATION = {
 };
 
 export const OVERFLOW = {
-	maxHeight: 'calc(100vh - 205px)',
+	maxHeight: 'calc(100vh - 220px)',
 	overflowY: 'auto'
 };
 
 export const OVERFLOW_FIELDS = {
 	overflowY: 'auto',
-	minHeight: 'calc(100vh - 205px)'
+	minHeight: 'calc(100vh - 220px)'
 };

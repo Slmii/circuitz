@@ -157,6 +157,7 @@ export const FilterPinDrawerForm = ({
 		/>
 	);
 };
+
 const FormValuesUpdater = () => {
 	const { circuitId, nodeId, pinType } = useParams<{
 		circuitId: string;

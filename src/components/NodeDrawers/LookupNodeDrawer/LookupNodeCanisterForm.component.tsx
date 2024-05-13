@@ -3,7 +3,7 @@ import { RefObject, useEffect, useState } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
-import { Node } from 'lib/types';
+import { Node, NodeSourceType, SampleData } from 'lib/types';
 import { NodeType } from 'declarations/nodes.declarations';
 import { lookupCanisterSchema } from 'lib/schemas';
 import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.types';
@@ -11,11 +11,11 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
 import {
+	generateNodeIndexKey,
 	getHandlebars,
 	getLookupCanisterFormValues,
 	getLookupCanisterValuesAsArg,
 	getLookupCanisterValuesAsPreviewArg,
-	getLookupInputSampleData,
 	isHandlebarsTemplate,
 	parseIDL,
 	parseJson,
@@ -28,13 +28,15 @@ import { DATA_TYPES, ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA, QUERY
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor, StandaloneEditor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
-import { useGetCircuitNodes, useGetParam, useLookupCanisterPreview } from 'lib/hooks';
+import { useGetCircuitNodes, useLookupCanisterPreview } from 'lib/hooks';
 import { HandlebarsInfo } from 'components/Shared';
 import { api } from 'api/index';
 import { useQuery } from '@tanstack/react-query';
 import { CircularProgress } from 'components/Progress';
 import { SelectAutocomplete, Option } from 'components/Form/SelectAutocomplete';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
+import { useParams } from 'react-router-dom';
+import { getSampleData } from 'api/nodes.api';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -45,9 +47,6 @@ export const LookupNodeCanisterForm = ({
 	node?: Node;
 	onProcessNode: (data: NodeType) => void;
 }) => {
-	const circuitId = useGetParam('circuitId');
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
-
 	const handleOnSubmit = (data: LookupCanisterFormValues) => {
 		onProcessNode({
 			LookupCanister: {
@@ -65,19 +64,12 @@ export const LookupNodeCanisterForm = ({
 	return (
 		<Form<LookupCanisterFormValues>
 			action={handleOnSubmit}
-			defaultValues={() => {
-				const formValues = getLookupCanisterFormValues(node);
-				const inputSampleData = getLookupInputSampleData({ data: formValues, node, nodes: circuitNodes ?? [] });
-
-				return {
-					...formValues,
-					inputSampleData
-				};
-			}}
+			defaultValues={() => getLookupCanisterFormValues(node)}
 			myRef={formRef}
 			schema={lookupCanisterSchema}
 		>
 			<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
+				<FormValuesUpdater />
 				<Stack spacing={4} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
@@ -124,7 +116,7 @@ export const LookupNodeCanisterForm = ({
 				</Stack>
 				<Divider orientation="vertical" flexItem />
 				<Stack direction="column" spacing={2} width="50%">
-					<Preview nodesLength={circuitNodes?.length ?? 0} />
+					<Preview />
 					<B2>
 						Before querying the desired canister, ensure Canister ID{' '}
 						<CopyTextButton textToCopy={canisterId[ENV]}>{canisterId[ENV]}</CopyTextButton> is authorized.
@@ -138,30 +130,99 @@ export const LookupNodeCanisterForm = ({
 	);
 };
 
-const Preview = ({ nodesLength }: { nodesLength: number }) => {
-	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
-	const { mutate: preview, data, error, isPending: isPreviewPending } = useLookupCanisterPreview();
+const FormValuesUpdater = () => {
+	const { circuitId, nodeId, nodeType } = useParams<{
+		circuitId: string;
+		nodeId: string;
+		nodeType: NodeSourceType;
+	}>();
+
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+	const { setValue } = useFormContext<LookupCanisterFormValues>();
 
 	useEffect(() => {
-		if (!data) {
+		if (!circuitNodes || !nodeId || !nodeType) {
 			return;
 		}
 
-		const key = `Node:${nodesLength}`;
-		const inputSampleData = parseJson(getValues('inputSampleData'));
+		const init = async () => {
+			// Get previous nodes before the current node
+			// In case of PostMapperPin, we need to include the current node
+			const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
+			const previousNodes = circuitNodes.slice(0, index + 1);
+
+			const collectedSampleData = await getSampleData(previousNodes, {
+				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
+				includePostMapper: false
+			});
+
+			setValue('inputSampleData', stringifyJson(collectedSampleData));
+		};
+
+		init();
+	}, [circuitNodes, nodeId, setValue, nodeType]);
+
+	return null;
+};
+
+const Preview = () => {
+	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
+	const { mutate: preview, data, error, isPending: isPreviewPending } = useLookupCanisterPreview();
+
+	const { circuitId, nodeId } = useParams<{
+		circuitId: string;
+		nodeId: string;
+	}>();
+	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
+
+	useEffect(() => {
+		if (!data || !nodeId || !circuitNodes) {
+			return;
+		}
+
+		const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
+		const key = generateNodeIndexKey(index ?? 0);
+		const inputSampleData = parseJson<SampleData>(getValues('inputSampleData'));
 
 		if (error) {
-			setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: error }));
+			setValue(
+				'inputSampleData',
+				stringifyJson({
+					...inputSampleData,
+					[key]: {
+						...inputSampleData[key],
+						LookupCanister: error
+					}
+				})
+			);
 			return;
 		}
 
 		if ('Ok' in data) {
-			setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: JSON.parse(data.Ok) }));
+			setValue(
+				'inputSampleData',
+				stringifyJson({
+					...inputSampleData,
+					[key]: {
+						...inputSampleData[key],
+						LookupCanister: JSON.parse(data.Ok)
+					}
+				})
+			);
 			return;
 		}
 
-		setValue('inputSampleData', stringifyJson({ ...inputSampleData, [key]: data }));
-	}, [data, error, getValues, nodesLength, setValue]);
+		setValue(
+			'inputSampleData',
+			stringifyJson({
+				...inputSampleData,
+				[key]: {
+					...inputSampleData[key],
+					LookupCanister: data
+				}
+			})
+		);
+	}, [circuitNodes, data, error, getValues, nodeId, setValue]);
 
 	return (
 		<>
