@@ -69,7 +69,7 @@ export const LookupNodeCanisterForm = ({
 			schema={lookupCanisterSchema}
 		>
 			<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
-				<FormValuesUpdater />
+				<LookupNodeFormValuesUpdater />
 				<Stack spacing={4} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 					<Stack direction="column" spacing={2}>
 						<Alert severity="info">
@@ -130,7 +130,7 @@ export const LookupNodeCanisterForm = ({
 	);
 };
 
-const FormValuesUpdater = () => {
+export const LookupNodeFormValuesUpdater = () => {
 	const { circuitId, nodeId, nodeType } = useParams<{
 		circuitId: string;
 		nodeId: string;
@@ -157,10 +157,7 @@ const FormValuesUpdater = () => {
 			const index = nodeId ? circuitNodes.findIndex(({ id }) => id === Number(nodeId)) : circuitNodes.length + 1;
 			const previousNodes: Node[] = nodeId
 				? circuitNodes.slice(0, index + 1)
-				: [
-						...circuitNodes,
-						{ ...getPlaceholderNode({ circuitId: Number(circuitId), nodeId: index, nodeType: 'LookupCanister' }) }
-				  ];
+				: [...circuitNodes, { ...getPlaceholderNode({ circuitId: Number(circuitId), nodeId: index, nodeType }) }];
 
 			const collectedSampleData = await getSampleData(previousNodes, {
 				skipNodes: ['LookupCanister', 'LookupHttpRequest'],

@@ -1,9 +1,9 @@
 import { Box, Divider, FormLabel, Paper, Stack } from '@mui/material';
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useState } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { H5 } from 'components/Typography';
-import { Node, NodeSourceType } from 'lib/types';
+import { Node } from 'lib/types';
 import { HttpMethod, NodeType } from 'declarations/nodes.declarations';
 import { LookupHttpRequestFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -12,23 +12,20 @@ import {
 	extractDynamicKey,
 	getHandlebars,
 	getLookupHTTRequestFormValues,
-	getPlaceholderNode,
 	isHandlebarsTemplate,
-	parseJson,
-	stringifyJson
+	parseJson
 } from 'lib/utils';
 import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { HTTP_METHODS, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor, StandaloneEditor } from 'components/Editor';
-import { useGetCircuitNodes, useLookupHttpRequestPreview, useLookupNodePreview } from 'lib/hooks';
+import { useLookupHttpRequestPreview, useLookupNodePreview } from 'lib/hooks';
 import { lookupHttpRequestSchema } from 'lib/schemas';
 import { Icon } from 'components/Icon';
 import { HandlebarsInfo } from 'components/Shared';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
-import { useParams } from 'react-router-dom';
-import { getSampleData } from 'api/nodes.api';
+import { LookupNodeFormValuesUpdater } from './LookupNodeCanisterForm.component';
 
 const getUrlValue = (values: LookupHttpRequestFormValues) => {
 	const dynamicKey = extractDynamicKey(values.url);
@@ -91,7 +88,7 @@ export const LookupNodeHttpRequestForm = ({
 			schema={lookupHttpRequestSchema}
 			render={({ watch, getValues }) => (
 				<Stack direction="row" spacing={4} sx={OVERFLOW_FIELDS}>
-					<FormValuesUpdater />
+					<LookupNodeFormValuesUpdater />
 					<Stack spacing={4} width="50%" sx={{ ...OVERFLOW, pr: 1 }}>
 						<Stack direction="column" spacing={2}>
 							<Alert severity="info">
@@ -186,52 +183,6 @@ export const LookupNodeHttpRequestForm = ({
 			)}
 		/>
 	);
-};
-
-const FormValuesUpdater = () => {
-	const { circuitId, nodeId, nodeType } = useParams<{
-		circuitId: string;
-		nodeId: string;
-		nodeType: NodeSourceType;
-	}>();
-
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
-	const { setValue } = useFormContext<LookupHttpRequestFormValues>();
-
-	useEffect(() => {
-		if (!circuitNodes || !nodeType) {
-			return;
-		}
-
-		const init = async () => {
-			// In case of a new node
-			// 1. set index to the length of current nodes + 1
-			// 2. add a placeholder node and populate the sample data
-
-			// In case of an existing node
-			// 1. set index to the index of the node in the array
-			// 2. get all the nodes before and including the current node
-
-			const index = nodeId ? circuitNodes.findIndex(({ id }) => id === Number(nodeId)) : circuitNodes.length + 1;
-			const previousNodes: Node[] = nodeId
-				? circuitNodes.slice(0, index + 1)
-				: [
-						...circuitNodes,
-						{ ...getPlaceholderNode({ circuitId: Number(circuitId), nodeId: index, nodeType: 'LookupHttpRequest' }) }
-				  ];
-
-			const collectedSampleData = await getSampleData(previousNodes, {
-				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
-				includePostMapper: false
-			});
-
-			setValue('inputSampleData', stringifyJson(collectedSampleData));
-		};
-
-		init();
-	}, [circuitNodes, nodeId, setValue, nodeType, circuitId]);
-
-	return null;
 };
 
 const HttpRequestHeaders = () => {
