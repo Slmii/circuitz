@@ -130,6 +130,11 @@ export async function getSampleData(
 	const lastNodeIndex = nodes.length - 1;
 
 	for (const [index, node] of nodes.entries()) {
+		// Skip disabled nodes
+		if (!node.isEnabled) {
+			continue;
+		}
+
 		const nodeIndex = generateNodeIndexKey(index);
 
 		// Prefill nodeIndex key with types
@@ -140,11 +145,6 @@ export async function getSampleData(
 			PreMapperPin: {},
 			...(options?.includePostMapper && { PostMapperPin: {} })
 		};
-
-		// Skip disabled nodes
-		if (!node.isEnabled) {
-			continue;
-		}
 
 		// Input Nodes (Starting point)
 		if ('Canister' in node.nodeType) {
