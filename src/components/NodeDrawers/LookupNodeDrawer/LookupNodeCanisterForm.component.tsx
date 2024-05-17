@@ -16,6 +16,7 @@ import {
 	getLookupCanisterFormValues,
 	getLookupCanisterValuesAsArg,
 	getLookupCanisterValuesAsPreviewArg,
+	getPlaceholderNode,
 	isHandlebarsTemplate,
 	parseIDL,
 	parseJson,
@@ -141,14 +142,23 @@ const FormValuesUpdater = () => {
 	const { setValue } = useFormContext<LookupCanisterFormValues>();
 
 	useEffect(() => {
-		if (!circuitNodes || !nodeId || !nodeType) {
+		if (!circuitNodes || !nodeType) {
 			return;
 		}
 
 		const init = async () => {
-			// Get previous nodes before the current node
-			const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
-			const previousNodes = circuitNodes.slice(0, index + 1);
+			// In case of a new node
+			// 1. set index to the length of current nodes + 1
+			// 2. add a placeholder node and populate the sample data
+
+			// In case of an existing node
+			// 1. set index to the index of the node in the array
+			// 2. get all the nodes before and including the current node
+
+			const index = nodeId ? circuitNodes.findIndex(({ id }) => id === Number(nodeId)) : circuitNodes.length + 1;
+			const previousNodes: Node[] = nodeId
+				? circuitNodes.slice(0, index + 1)
+				: [...circuitNodes, { ...getPlaceholderNode(Number(circuitId), index) }];
 
 			const collectedSampleData = await getSampleData(previousNodes, {
 				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
@@ -159,7 +169,7 @@ const FormValuesUpdater = () => {
 		};
 
 		init();
-	}, [circuitNodes, nodeId, setValue, nodeType]);
+	}, [circuitNodes, nodeId, setValue, nodeType, circuitId]);
 
 	return null;
 };

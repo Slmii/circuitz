@@ -39,6 +39,7 @@ import { Option } from 'components/Form/Select';
 import { Icons } from 'components/icons';
 import { getHandlebars, isHandlebarsTemplate } from './handlebars.utils';
 import createMapper from 'map-factory';
+import { Principal } from '@dfinity/principal';
 
 export const mapToNode = (node: OldNode): Node => {
 	return {
@@ -843,3 +844,29 @@ export const getMapperPinOuput = <T extends object>({
 };
 
 export const generateNodeIndexKey = (index: number) => `Node:${index + 1}`;
+
+export const getPlaceholderNode = (circuitId: number, nodeId: number): Node => {
+	return {
+		circuitId: circuitId,
+		createdAt: new Date(),
+		id: nodeId,
+		isEnabled: true,
+		isError: false,
+		isRunning: false,
+		nodeType: {
+			LookupCanister: {
+				name: '',
+				description: [],
+				canister: Principal.anonymous(),
+				method: '',
+				cycles: BigInt(0),
+				args: [],
+				sample_data: '{}'
+			}
+		},
+		order: 0,
+		pins: [],
+		updatedAt: new Date(),
+		userId: Principal.anonymous()
+	};
+};
