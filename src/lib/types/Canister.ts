@@ -13,7 +13,7 @@ type BasicIDLType =
 	| 'IDL.Float32';
 export type IDLType = BasicIDLType | IDLOpt<BasicIDLType> | IDLVec<BasicIDLType>;
 
-type BasicIDLTypeValue = 'Number' | 'String' | 'Boolean' | 'Null' | 'Principal';
+type BasicIDLTypeValue = 'Number' | 'String' | 'Boolean' | 'Null' | 'Principal' | 'BigInt';
 export type IDLTypeValue = BasicIDLTypeValue | `Array(${BasicIDLTypeValue})`;
 
 export interface ExtractedIDLFunction {

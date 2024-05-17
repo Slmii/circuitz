@@ -2,7 +2,7 @@ import { IDLType, ExctractedIDLType, ExtractedIDLFunction, IsRequiredIDLType, ID
 
 const basicTypesMap: Record<IDLType, IDLTypeValue> = {
 	'IDL.Nat32': 'Number',
-	'IDL.Nat64': 'Number',
+	'IDL.Nat64': 'BigInt',
 	'IDL.Text': 'String',
 	'IDL.Bool': 'Boolean',
 	'IDL.Nat': 'Number',
@@ -12,7 +12,7 @@ const basicTypesMap: Record<IDLType, IDLTypeValue> = {
 	'IDL.Opt(IDL.Bool)': 'Boolean',
 	'IDL.Opt(IDL.Nat)': 'Number',
 	'IDL.Opt(IDL.Nat32)': 'Number',
-	'IDL.Opt(IDL.Nat64)': 'Number',
+	'IDL.Opt(IDL.Nat64)': 'BigInt',
 	'IDL.Opt(IDL.Principal)': 'Principal',
 	'IDL.Opt(IDL.Text)': 'String',
 	'IDL.Opt(IDL.Null)': 'Null',
@@ -20,7 +20,7 @@ const basicTypesMap: Record<IDLType, IDLTypeValue> = {
 	'IDL.Vec(IDL.Bool)': 'Array(Boolean)',
 	'IDL.Vec(IDL.Nat)': 'Array(Number)',
 	'IDL.Vec(IDL.Nat32)': 'Array(Number)',
-	'IDL.Vec(IDL.Nat64)': 'Array(Number)',
+	'IDL.Vec(IDL.Nat64)': 'Array(BigInt)',
 	'IDL.Vec(IDL.Null)': 'Array(Null)',
 	'IDL.Vec(IDL.Principal)': 'Array(Principal)',
 	'IDL.Vec(IDL.Text)': 'Array(String)',
@@ -182,6 +182,7 @@ export function parseServiceFunctions(serviceBlock: string, typeDefs: Exctracted
 }
 
 export const parseIDL = (did: string) => {
+	console.log({ did });
 	const idlServiceBlock = extractIDLServiceBlock(did);
 	const typeDefinitions = extractTypeDefinitions(did);
 	return parseServiceFunctions(idlServiceBlock, typeDefinitions);
