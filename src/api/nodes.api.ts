@@ -231,6 +231,13 @@ export async function getSampleData(
 					...sampleData[nodeIndex],
 					LookupHttpRequest: await httpRequest(node.nodeType.LookupHttpRequest)
 				};
+			} else {
+				const parsed = JSON.parse(node.nodeType.LookupHttpRequest.sample_data);
+
+				sampleData[nodeIndex] = {
+					...sampleData[nodeIndex],
+					LookupHttpRequest: parsed[nodeIndex]?.LookupHttpRequest ?? {}
+				};
 			}
 		}
 
