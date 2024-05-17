@@ -16,3 +16,4 @@ export * from './useQueryParams';
 export * from './useFormSubmit';
 export * from './useDraggable';
 export * from './useModal';
+export * from './useLookupNodePreview';

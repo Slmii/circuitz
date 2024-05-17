@@ -3,7 +3,7 @@ import { RefObject, useEffect, useState } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
-import { Node, NodeSourceType, SampleData } from 'lib/types';
+import { Node, NodeSourceType } from 'lib/types';
 import { NodeType } from 'declarations/nodes.declarations';
 import { lookupCanisterSchema } from 'lib/schemas';
 import { LookupCanisterArg, LookupCanisterFormValues } from '../NodeDrawers.types';
@@ -11,7 +11,6 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
 import { Principal } from '@dfinity/principal';
 import {
-	generateNodeIndexKey,
 	getHandlebars,
 	getLookupCanisterFormValues,
 	getLookupCanisterValuesAsArg,
@@ -29,7 +28,7 @@ import { DATA_TYPES, ENV, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA, QUERY
 import { Alert, TipAlert } from 'components/Alert';
 import { Editor, StandaloneEditor } from 'components/Editor';
 import { canisterId } from 'api/canisterIds';
-import { useGetCircuitNodes, useLookupCanisterPreview } from 'lib/hooks';
+import { useGetCircuitNodes, useLookupCanisterPreview, useLookupNodePreview } from 'lib/hooks';
 import { HandlebarsInfo } from 'components/Shared';
 import { api } from 'api/index';
 import { useQuery } from '@tanstack/react-query';
@@ -158,7 +157,10 @@ const FormValuesUpdater = () => {
 			const index = nodeId ? circuitNodes.findIndex(({ id }) => id === Number(nodeId)) : circuitNodes.length + 1;
 			const previousNodes: Node[] = nodeId
 				? circuitNodes.slice(0, index + 1)
-				: [...circuitNodes, { ...getPlaceholderNode(Number(circuitId), index) }];
+				: [
+						...circuitNodes,
+						{ ...getPlaceholderNode({ circuitId: Number(circuitId), nodeId: index, nodeType: 'LookupCanister' }) }
+				  ];
 
 			const collectedSampleData = await getSampleData(previousNodes, {
 				skipNodes: ['LookupCanister', 'LookupHttpRequest'],
@@ -175,45 +177,9 @@ const FormValuesUpdater = () => {
 };
 
 const Preview = () => {
-	const { getValues, setValue, trigger } = useFormContext<LookupCanisterFormValues>();
+	const { getValues, trigger } = useFormContext<LookupCanisterFormValues>();
 	const { mutate: preview, data, error, isPending: isPreviewPending } = useLookupCanisterPreview();
-
-	const { circuitId, nodeId } = useParams<{
-		circuitId: string;
-		nodeId: string;
-	}>();
-	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
-
-	useEffect(() => {
-		if (!data || !nodeId || !circuitNodes) {
-			return;
-		}
-
-		const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
-		const key = generateNodeIndexKey(index ?? 0);
-		const inputSampleData = parseJson<SampleData>(getValues('inputSampleData'));
-
-		let values = {};
-
-		if (error) {
-			values = error;
-		} else if ('Ok' in data) {
-			values = JSON.parse(data.Ok);
-		} else {
-			values = data;
-		}
-
-		setValue(
-			'inputSampleData',
-			stringifyJson({
-				...inputSampleData,
-				[key]: {
-					...inputSampleData[key],
-					LookupCanister: values
-				}
-			})
-		);
-	}, [circuitNodes, data, error, getValues, nodeId, setValue]);
+	useLookupNodePreview({ nodeType: 'LookupCanister', data, error });
 
 	return (
 		<>

@@ -10,7 +10,8 @@ import type {
 	Token,
 	MapperPin,
 	HttpMethod,
-	PreviewArg
+	PreviewArg,
+	NodeType
 } from 'declarations/nodes.declarations';
 import type {
 	LookCanisterArgType,
@@ -769,50 +770,6 @@ export const extractDynamicKey = (str: string) => {
 	return match ? match[1] : null;
 };
 
-export const getLookupInputSampleData = <T extends { inputSampleData: string }>({
-	data,
-	node,
-	nodes
-}: {
-	data: T;
-	node?: Node;
-	nodes: Node[];
-}) => {
-	let inputSampleData = data.inputSampleData;
-	const currentNodeIndex = nodes.findIndex(({ id }) => id === node?.id);
-
-	// If there is no inputSampleData, collect it
-	if (!inputSampleData.length) {
-		// If there is no node we are in 'node creation' mode, so we need to get the inputSampleData from recent node
-		if (!node) {
-			const recentNode = nodes[nodes.length - 1];
-			const metadata = getNodeMetaData(recentNode);
-			inputSampleData = metadata.inputSampleData;
-		} else if (currentNodeIndex !== -1) {
-			// If the node exists, get the inputSampleData from the previous node
-			const previousNode = nodes[currentNodeIndex - 1];
-			if (previousNode) {
-				const metadata = getNodeMetaData(previousNode);
-				inputSampleData = metadata.inputSampleData;
-			}
-		}
-	}
-	// If the node exists, merge the PreMapperPin output with the inputSampleData
-	// else if (node) {
-	// 	const outputPreMapperPin = getMapperPinOuput({
-	// 		index: currentNodeIndex,
-	// 		node,
-	// 		sampleData: data,
-	// 		sourceType: 'PreMapperPin'
-	// 	});
-
-	// 	const merged = lodashMerge(JSON.parse(inputSampleData), outputPreMapperPin);
-	// 	inputSampleData = stringifyJson(merged);
-	// }
-
-	return inputSampleData;
-};
-
 /**
  * Get the output sample data for the MapperPin, based on the configured fields
  */
@@ -845,7 +802,42 @@ export const getMapperPinOuput = <T extends object>({
 
 export const generateNodeIndexKey = (index: number) => `Node:${index + 1}`;
 
-export const getPlaceholderNode = (circuitId: number, nodeId: number): Node => {
+export const getPlaceholderNode = ({
+	circuitId,
+	nodeId,
+	nodeType
+}: {
+	circuitId: number;
+	nodeId: number;
+	nodeType: NodeSourceType;
+}): Node => {
+	let node: NodeType = {
+		LookupCanister: {
+			name: '',
+			description: [],
+			canister: Principal.anonymous(),
+			method: '',
+			cycles: BigInt(0),
+			args: [],
+			sample_data: '{}'
+		}
+	};
+
+	if (nodeType === 'LookupHttpRequest') {
+		node = {
+			LookupHttpRequest: {
+				name: '',
+				description: [],
+				cycles: BigInt(0),
+				sample_data: '{}',
+				headers: [],
+				method: { get: null },
+				request_body: [],
+				url: ''
+			}
+		};
+	}
+
 	return {
 		circuitId: circuitId,
 		createdAt: new Date(),
@@ -853,17 +845,7 @@ export const getPlaceholderNode = (circuitId: number, nodeId: number): Node => {
 		isEnabled: true,
 		isError: false,
 		isRunning: false,
-		nodeType: {
-			LookupCanister: {
-				name: '',
-				description: [],
-				canister: Principal.anonymous(),
-				method: '',
-				cycles: BigInt(0),
-				args: [],
-				sample_data: '{}'
-			}
-		},
+		nodeType: node,
 		order: 0,
 		pins: [],
 		updatedAt: new Date(),
