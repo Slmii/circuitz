@@ -217,6 +217,13 @@ export async function getSampleData(
 						method: node.nodeType.LookupCanister.method
 					})
 				};
+			} else {
+				const parsed = JSON.parse(node.nodeType.LookupCanister.sample_data);
+
+				sampleData[nodeIndex] = {
+					...sampleData[nodeIndex],
+					LookupCanister: parsed[nodeIndex]?.LookupCanister ?? {}
+				};
 			}
 		} else if ('LookupHttpRequest' in node.nodeType) {
 			if (!options?.skipNodes?.includes('LookupHttpRequest')) {

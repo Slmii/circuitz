@@ -147,7 +147,6 @@ const FormValuesUpdater = () => {
 
 		const init = async () => {
 			// Get previous nodes before the current node
-			// In case of PostMapperPin, we need to include the current node
 			const index = circuitNodes.findIndex(({ id }) => id === Number(nodeId));
 			const previousNodes = circuitNodes.slice(0, index + 1);
 
