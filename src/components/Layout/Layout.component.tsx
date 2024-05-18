@@ -3,7 +3,7 @@ import { Header } from 'components/Header';
 import { Providers } from 'lib/providers/Providers.provider';
 import Container from '@mui/material/Container';
 import { useMemo } from 'react';
-import { DeletePinDialog } from 'components/Shared';
+import { DeleteNodeDialog, DeletePinDialog } from 'components/Shared';
 
 export const Layout = () => {
 	const { pathname } = useLocation();
@@ -25,6 +25,7 @@ export const Layout = () => {
 					<Outlet />
 				</Container>
 				<DeletePinDialog />
+				<DeleteNodeDialog />
 			</Providers>
 		</>
 	);

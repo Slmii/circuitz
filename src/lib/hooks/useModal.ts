@@ -7,11 +7,11 @@ type ModalClientDefinedProps<T> = Omit<ModalClient<T>, 'props'> & { props: T };
 export const useModal = <T = ModalClient>(type: ModalType) => {
 	const [state, setState] = useRecoilState(modalState<T>(type));
 
-	const openModal = (props?: T, rest?: { onSuccess?: () => void }) => {
+	const openModal = (props?: T & { onSuccess?: () => void }) => {
 		setState({
 			isOpen: true,
 			props,
-			onSuccess: rest?.onSuccess
+			onSuccess: props?.onSuccess
 		});
 	};
 

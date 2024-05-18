@@ -5,10 +5,15 @@ export interface DeletePinModalProps {
 	pin: Pin;
 }
 
-export type ModalStateProps = DeletePinModalProps;
+export interface DeleteNodeModalProps {
+	nodeId: number;
+}
+
+export type ModalStateProps = DeletePinModalProps | DeleteNodeModalProps;
 
 export enum ModalTypes {
-	DELETE_PIN = 'DELETE_PIN'
+	DELETE_PIN = 'DELETE_PIN',
+	DELETE_NODE = 'DELETE_NODE'
 }
 
 export type ModalType = keyof typeof ModalTypes;

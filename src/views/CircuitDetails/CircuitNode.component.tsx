@@ -6,8 +6,6 @@ import { Node } from 'lib/types';
 import pluralize from 'pluralize';
 import { useMemo, useState } from 'react';
 import { CircuitNodeProps } from './CircuitDetails.types';
-import { useSetRecoilState } from 'recoil';
-import { deleteNodeState } from 'lib/recoil';
 import { Icon } from 'components/Icon';
 import { StandaloneSwitch } from 'components/Form/Switch';
 import { CircularProgress } from 'components/Progress';
@@ -221,7 +219,6 @@ const NodePins = ({
 	onClosePins: () => void;
 }) => {
 	const navigate = useNavigate();
-	const setDeleteNode = useSetRecoilState(deleteNodeState);
 
 	const hasFilterPin = !!getPin<FilterPin>(node, 'FilterPin');
 	const hasPreMapperPin = !!getPin<FilterPin>(node, 'PreMapperPin');
@@ -232,17 +229,6 @@ const NodePins = ({
 
 	return (
 		<>
-			<IconButton
-				icon="trash"
-				color="error"
-				tooltip="Delete Pin"
-				{...stopPropagation({
-					onClick: () => {
-						onClosePins();
-						setDeleteNode({ open: true, nodeId: node.id });
-					}
-				})}
-			/>
 			{!isInputNode && (
 				<>
 					{!hasFilterPin && (

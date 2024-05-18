@@ -8,5 +8,5 @@ export interface NodeDrawerProps {
 	fullWidth?: boolean;
 	onClose: () => void;
 	onSubmit: () => void;
-	onDeletePin?: () => void;
+	onDelete?: () => void;
 }

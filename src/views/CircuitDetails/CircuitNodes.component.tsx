@@ -1,5 +1,5 @@
 import { Stack, Fade, ButtonBase } from '@mui/material';
-import { B1, H5 } from 'components/Typography';
+import { H5 } from 'components/Typography';
 import { useMemo, useState } from 'react';
 import { Node, NodeSourceType, PinSourceType } from 'lib/types';
 import { IconButton } from 'components/IconButton';
@@ -13,18 +13,8 @@ import {
 } from 'components/NodeDrawers';
 import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
-import { useRecoilState } from 'recoil';
-import { deleteNodeState } from 'lib/recoil';
-import {
-	useDeleteNode,
-	useGetCircuit,
-	useGetCircuitTraces,
-	useGetParam,
-	useOnClickOutside,
-	useToggleNodeStatus
-} from 'lib/hooks';
+import { useGetCircuit, useGetCircuitTraces, useGetParam, useOnClickOutside, useToggleNodeStatus } from 'lib/hooks';
 import { Icon } from 'components/Icon';
-import { Dialog } from 'components/Dialog';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // const navigate = useNavigate();
@@ -38,23 +28,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 // 	}
 
 export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
-	const [isAddNode, setIsAddNode] = useState(false);
-
-	const ref = useOnClickOutside(() => setIsAddNode(false));
-	const [{ open: isDeleteNodeModalOpen, nodeId: deleteNodeId }, setDeleteNodeState] = useRecoilState(deleteNodeState);
-
-	const circuitId = useGetParam('circuitId');
-	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
-	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
-	const { mutateAsync: deleteNode, isPending: isDeleteNodePending } = useDeleteNode();
-	const { mutate: toggleStatus } = useToggleNodeStatus();
-
 	const navigate = useNavigate();
+	const [isAddNode, setIsAddNode] = useState(false);
 	const { nodeId, pinType, nodeType } = useParams<{
 		nodeId: string;
 		pinType: PinSourceType;
 		nodeType: NodeSourceType;
 	}>();
+
+	const circuitId = useGetParam('circuitId');
+	const ref = useOnClickOutside(() => setIsAddNode(false));
+	const { data: circuit, isLoading: isCircuitLoading } = useGetCircuit(Number(circuitId));
+	const { data: circuitTraces, isLoading: isCircuitTracesLoading } = useGetCircuitTraces(Number(circuitId));
+	const { mutate: toggleStatus } = useToggleNodeStatus();
 
 	const node = useMemo(() => {
 		if (!nodeId) {
@@ -192,24 +178,6 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				pinType={pinType as PinSourceType}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
-			<Dialog
-				title="Delete node"
-				open={isDeleteNodeModalOpen}
-				onConfirm={async () => {
-					if (deleteNodeId) {
-						await deleteNode(deleteNodeId);
-						setDeleteNodeState({ open: false });
-					}
-				}}
-				onConfirmText="Delete"
-				onConfirmColor="error"
-				onConfirmLoading={isDeleteNodePending}
-				onClose={() => setDeleteNodeState({ open: false })}
-				onCancelText="Cancel"
-				onCancelDisabled={isDeleteNodePending}
-			>
-				<B1>Are you sure you want to delete this node? This action cannot be undone.</B1>
-			</Dialog>
 		</>
 	);
 };

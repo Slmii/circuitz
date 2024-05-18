@@ -13,7 +13,7 @@ export const Drawer = ({
 	fullWidth,
 	onClose,
 	onSubmit,
-	onDeletePin,
+	onDelete,
 	children
 }: PropsWithChildren<NodeDrawerProps>) => {
 	return (
@@ -80,8 +80,8 @@ export const Drawer = ({
 				<Button variant="outlined" disabled={isDisabled || isLoading} onClick={onClose}>
 					Cancel
 				</Button>
-				{onDeletePin && (
-					<Button variant="contained" color="error" disabled={isDisabled || isLoading} onClick={onDeletePin}>
+				{onDelete && (
+					<Button variant="contained" color="error" disabled={isDisabled || isLoading} onClick={onDelete}>
 						Delete
 					</Button>
 				)}

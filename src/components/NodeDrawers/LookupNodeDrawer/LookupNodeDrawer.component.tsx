@@ -1,5 +1,5 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
+import { useAddNode, useEditNode, useGetParam, useModal } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { LookupNodeCanisterForm } from './LookupNodeCanisterForm.component';
 import { LookupNodeDrawerProps } from '../NodeDrawers.types';
@@ -11,11 +11,13 @@ import { LookupNodeHttpRequestForm } from './LookupNodeHttpRequestForm.component
 import { Stack } from '@mui/material';
 import { H3, H5 } from 'components/Typography';
 import { getNodeMetaData } from 'lib/utils';
+import { DeleteNodeModalProps } from 'lib/types';
 
 export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDrawerProps) => {
 	const [formData, setFormData] = useState<NodeType | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
+	const { openModal } = useModal<DeleteNodeModalProps>('DELETE_NODE');
 
 	const { mutateAsync: addNode, isPending: isAddNodePending } = useAddNode();
 	const { mutateAsync: editNode, isPending: isEditNodePending } = useEditNode();
@@ -59,6 +61,16 @@ export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDr
 					</Stack>
 				}
 				fullWidth
+				onDelete={() => {
+					if (!node) {
+						return;
+					}
+
+					openModal({
+						nodeId: node.id,
+						onSuccess: () => onClose()
+					});
+				}}
 			>
 				{open && (
 					<>
