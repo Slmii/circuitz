@@ -182,7 +182,6 @@ export function parseServiceFunctions(serviceBlock: string, typeDefs: Exctracted
 }
 
 export const parseIDL = (did: string) => {
-	console.log({ did });
 	const idlServiceBlock = extractIDLServiceBlock(did);
 	const typeDefinitions = extractTypeDefinitions(did);
 	return parseServiceFunctions(idlServiceBlock, typeDefinitions);

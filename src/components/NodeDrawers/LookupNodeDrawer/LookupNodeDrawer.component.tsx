@@ -43,8 +43,6 @@ export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDr
 				data: formData
 			});
 		}
-
-		onClose();
 	};
 
 	return (

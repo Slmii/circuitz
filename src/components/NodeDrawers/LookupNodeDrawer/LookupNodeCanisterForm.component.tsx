@@ -37,6 +37,8 @@ import { SelectAutocomplete, Option } from 'components/Form/SelectAutocomplete';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { useParams } from 'react-router-dom';
 import { getSampleData } from 'api/nodes.api';
+import { useSetRecoilState } from 'recoil';
+import { isFormDirtyState } from 'lib/recoil';
 
 export const LookupNodeCanisterForm = ({
 	formRef,
@@ -138,7 +140,13 @@ export const LookupNodeFormValuesUpdater = () => {
 	}>();
 
 	const { data: circuitNodes } = useGetCircuitNodes(Number(circuitId));
-	const { setValue } = useFormContext<LookupCanisterFormValues>();
+	const { setValue, formState } = useFormContext<LookupCanisterFormValues>();
+
+	const setisFormDirtyState = useSetRecoilState(isFormDirtyState);
+
+	useEffect(() => {
+		setisFormDirtyState(formState.isDirty);
+	}, [formState.isDirty, setisFormDirtyState]);
 
 	useEffect(() => {
 		if (!circuitNodes || !nodeType) {

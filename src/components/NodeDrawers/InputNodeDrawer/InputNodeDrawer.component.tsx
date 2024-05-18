@@ -52,8 +52,6 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 				data
 			});
 		}
-
-		onClose();
 	};
 
 	return (

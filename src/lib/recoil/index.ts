@@ -1,2 +1,2 @@
-export * from './sample-data.atom';
+export * from './form.atom';
 export * from './modal.atom';

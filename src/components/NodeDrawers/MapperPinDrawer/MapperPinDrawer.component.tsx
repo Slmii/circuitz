@@ -42,8 +42,6 @@ export const MapperPinDrawer = ({
 				data: pin
 			});
 		}
-
-		onClose();
 	};
 
 	return (

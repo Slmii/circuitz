@@ -32,8 +32,6 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 				data: pin
 			});
 		}
-
-		onClose();
 	};
 
 	return (

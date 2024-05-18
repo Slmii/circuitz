@@ -32,15 +32,11 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 				data: pin
 			});
 		}
-
-		onClose();
 	};
 
 	return (
 		<Drawer
-			onClose={() => {
-				onClose();
-			}}
+			onClose={onClose}
 			onSubmit={submitter}
 			isOpen={open}
 			isLoading={isAddPinPending || isEditPinPending}
