@@ -14,6 +14,7 @@ export const Drawer = ({
 	isDisabled,
 	isLoading,
 	fullWidth,
+	disableHandlebarsHelpers,
 	onClose,
 	onSubmit,
 	onDelete,
@@ -54,25 +55,35 @@ export const Drawer = ({
 					}}
 				>
 					{typeof title === 'string' ? <H3>{title}</H3> : title}
-					<Button
-						sx={{ ml: 'auto', minWidth: 'fit-content' }}
-						variant="contained"
-						color="secondary"
-						href="https://handlebarsjs.com/guide/expressions.html#basic-usage"
-						target="_blank"
-					>
-						Handlebars guide
-					</Button>
-					<Button
-						sx={{ minWidth: 'fit-content' }}
-						variant="outlined"
-						color="secondary"
-						href="https://www.npmjs.com/package/just-handlebars-helpers#helpers"
-						target="_blank"
-					>
-						Handlebars helpers
-					</Button>
-					<IconButton tooltip="Close" icon="close-linear" onClick={onClose} />
+					{!disableHandlebarsHelpers && (
+						<>
+							<Button
+								sx={{ ml: 'auto', minWidth: 'fit-content' }}
+								variant="contained"
+								color="secondary"
+								href="https://handlebarsjs.com/guide/expressions.html#basic-usage"
+								target="_blank"
+							>
+								Handlebars guide
+							</Button>
+							<Button
+								sx={{ minWidth: 'fit-content' }}
+								variant="outlined"
+								color="secondary"
+								href="https://www.npmjs.com/package/just-handlebars-helpers#helpers"
+								target="_blank"
+							>
+								Handlebars helpers
+							</Button>
+						</>
+					)}
+
+					<IconButton
+						tooltip="Close"
+						icon="close-linear"
+						onClick={onClose}
+						sx={disableHandlebarsHelpers ? { ml: 'auto' } : undefined}
+					/>
 				</Stack>
 				<Box sx={{ p: 4, height: '100%', overflowY: 'auto' }}>{children}</Box>
 				<Stack
@@ -87,7 +98,7 @@ export const Drawer = ({
 						borderTop: theme => `1px solid ${theme.palette.divider}`
 					}}
 				>
-					<Button onClick={onSubmit} loading={isLoading} disabled={isDisabled || !isFormDirty} variant="contained">
+					<Button onClick={onSubmit} loading={isLoading} disabled={isDisabled} variant="contained">
 						Save
 					</Button>
 					<Button variant="outlined" disabled={isDisabled || isLoading} onClick={onClose}>

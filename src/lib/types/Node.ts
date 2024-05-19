@@ -9,7 +9,7 @@ import {
 	Operator,
 	Pin,
 	PinType,
-	HttpMethod
+	HttpRequestMethod
 } from 'declarations/nodes.declarations';
 
 export interface Node {
@@ -35,7 +35,7 @@ export interface NodeSource {
 	disabled: boolean;
 }
 
-type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type NodeSourceType = KeysOfUnion<NodeType>;
 export type PinSourceType = KeysOfUnion<PinType>;
 export type LookCanisterArgType = KeysOfUnion<Arg>;
@@ -44,7 +44,7 @@ export type ConditionGroupType = KeysOfUnion<ConditionGroup>;
 export type ConditionType = KeysOfUnion<Condition>;
 export type OperandType = KeysOfUnion<OldOperandType>;
 export type DataType = KeysOfUnion<OldDataType>;
-export type HeaderRequestMethodType = Uppercase<KeysOfUnion<HttpMethod>>;
+export type HeaderRequestMethodType = Uppercase<KeysOfUnion<HttpRequestMethod>>;
 
 export type SampleData = Record<
 	string,

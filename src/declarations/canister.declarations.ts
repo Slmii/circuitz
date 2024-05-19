@@ -6,6 +6,7 @@ export type ApiError =
 	| { Unauthorized: string }
 	| { AlreadyExists: string }
 	| { InterCanister: string };
+export type Authentication = { JWT: JWTConfig } | { None: null } | { Basic: [string, string] } | { Token: TokenConfig };
 export interface Circuit {
 	id: number;
 	updated_at: bigint;
@@ -19,16 +20,74 @@ export interface Circuit {
 	node_canister_id: Principal;
 	is_running: boolean;
 }
+export interface Connector {
+	id: number;
+	updated_at: bigint;
+	connector_type: ConnectorType;
+	name: string;
+	created_at: bigint;
+	user_id: Principal;
+}
+export type ConnectorType = { Http: HttpConnector } | { Canister: string };
+export interface HttpConnector {
+	authentication: Authentication;
+	base_url: string;
+	headers: Array<[string, string]>;
+}
+export type HttpRequestMethod = { GET: null } | { PUT: null } | { DELETE: null } | { POST: null };
+export interface JWTConfig {
+	signature_method: SignatureMethod;
+	test_connection: [] | [TestConnection];
+	secret: string;
+	secret_key: string;
+	location: TokenLocation;
+	payload: JWTPayload;
+}
+export interface JWTPayload {
+	aud: [] | [string];
+	exp: string;
+	iss: [] | [string];
+	sub: [] | [string];
+	others: Array<[string, string]>;
+}
 export interface PostCircuit {
 	name: string;
 	description: [] | [string];
 }
+export interface PostConnector {
+	connector_type: ConnectorType;
+	name: string;
+}
 export type Result = { Ok: Circuit } | { Err: ApiError };
-export type Result_1 = { Ok: User } | { Err: ApiError };
-export type Result_2 = { Ok: Array<Trace> } | { Err: ApiError };
-export type Result_3 = { Ok: Principal } | { Err: ApiError };
-export type Result_4 = { Ok: Array<Circuit> } | { Err: ApiError };
-export type Result_5 = { Ok: Array<User> } | { Err: ApiError };
+export type Result_1 = { Ok: Connector } | { Err: ApiError };
+export type Result_2 = { Ok: User } | { Err: ApiError };
+export type Result_3 = { Ok: Array<Trace> } | { Err: ApiError };
+export type Result_4 = { Ok: Principal } | { Err: ApiError };
+export type Result_5 = { Ok: Array<Circuit> } | { Err: ApiError };
+export type Result_6 = { Ok: Array<Connector> } | { Err: ApiError };
+export type Result_7 = { Ok: Array<User> } | { Err: ApiError };
+export type SignatureMethod =
+	| { ECDSASHA256: null }
+	| { ECDSASHA384: null }
+	| { ECDSASHA512: null }
+	| { RSASHA256: null }
+	| { RSASHA384: null }
+	| { RSASHA512: null }
+	| { HMACSHA256: null }
+	| { HMACSHA384: null }
+	| { HMACSHA512: null };
+export interface TestConnection {
+	method: HttpRequestMethod;
+	error: [] | [[string, string]];
+	success: [] | [[string, string]];
+	relative_url: string;
+}
+export interface TokenConfig {
+	token: string;
+	test_connection: [] | [TestConnection];
+	location: TokenLocation;
+}
+export type TokenLocation = { HTTPHeader: [string, string] } | { Query: string };
 export interface Trace {
 	id: number;
 	status: TraceStatus;
@@ -61,16 +120,19 @@ export interface User {
 export interface _SERVICE {
 	__get_candid_interface_tmp_hack: ActorMethod<[], string>;
 	add_circuit: ActorMethod<[PostCircuit], Result>;
-	create_user: ActorMethod<[[] | [string]], Result_1>;
+	add_connector: ActorMethod<[PostConnector], Result_1>;
+	create_user: ActorMethod<[[] | [string]], Result_2>;
 	disable_circuit: ActorMethod<[number], Result>;
 	edit_circuit: ActorMethod<[number, PostCircuit], Result>;
+	edit_connector: ActorMethod<[number, PostConnector], Result_1>;
 	enable_circuit: ActorMethod<[number], Result>;
 	get_circuit: ActorMethod<[number], Result>;
-	get_circuit_traces: ActorMethod<[number], Result_2>;
-	get_node_canister_id: ActorMethod<[number], Result_3>;
-	get_user: ActorMethod<[], Result_1>;
-	get_user_circuits: ActorMethod<[], Result_4>;
-	get_users: ActorMethod<[], Result_5>;
+	get_circuit_traces: ActorMethod<[number], Result_3>;
+	get_node_canister_id: ActorMethod<[number], Result_4>;
+	get_user: ActorMethod<[], Result_2>;
+	get_user_circuits: ActorMethod<[], Result_5>;
+	get_user_connectors: ActorMethod<[], Result_6>;
+	get_users: ActorMethod<[], Result_7>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,13 +161,88 @@ export const idlFactory = ({ IDL }: any) => {
 		InterCanister: IDL.Text
 	});
 	const Result = IDL.Variant({ Ok: Circuit, Err: ApiError });
+	const SignatureMethod = IDL.Variant({
+		ECDSASHA256: IDL.Null,
+		ECDSASHA384: IDL.Null,
+		ECDSASHA512: IDL.Null,
+		RSASHA256: IDL.Null,
+		RSASHA384: IDL.Null,
+		RSASHA512: IDL.Null,
+		HMACSHA256: IDL.Null,
+		HMACSHA384: IDL.Null,
+		HMACSHA512: IDL.Null
+	});
+	const HttpRequestMethod = IDL.Variant({
+		GET: IDL.Null,
+		PUT: IDL.Null,
+		DELETE: IDL.Null,
+		POST: IDL.Null
+	});
+	const TestConnection = IDL.Record({
+		method: HttpRequestMethod,
+		error: IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
+		success: IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
+		relative_url: IDL.Text
+	});
+	const TokenLocation = IDL.Variant({
+		HTTPHeader: IDL.Tuple(IDL.Text, IDL.Text),
+		Query: IDL.Text
+	});
+	const JWTPayload = IDL.Record({
+		aud: IDL.Opt(IDL.Text),
+		exp: IDL.Text,
+		iss: IDL.Opt(IDL.Text),
+		sub: IDL.Opt(IDL.Text),
+		others: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
+	});
+	const JWTConfig = IDL.Record({
+		signature_method: SignatureMethod,
+		test_connection: IDL.Opt(TestConnection),
+		secret: IDL.Text,
+		secret_key: IDL.Text,
+		location: TokenLocation,
+		payload: JWTPayload
+	});
+	const TokenConfig = IDL.Record({
+		token: IDL.Text,
+		test_connection: IDL.Opt(TestConnection),
+		location: TokenLocation
+	});
+	const Authentication = IDL.Variant({
+		JWT: JWTConfig,
+		None: IDL.Null,
+		Basic: IDL.Tuple(IDL.Text, IDL.Text),
+		Token: TokenConfig
+	});
+	const HttpConnector = IDL.Record({
+		authentication: Authentication,
+		base_url: IDL.Text,
+		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
+	});
+	const ConnectorType = IDL.Variant({
+		Http: HttpConnector,
+		Canister: IDL.Text
+	});
+	const PostConnector = IDL.Record({
+		connector_type: ConnectorType,
+		name: IDL.Text
+	});
+	const Connector = IDL.Record({
+		id: IDL.Nat32,
+		updated_at: IDL.Nat64,
+		connector_type: ConnectorType,
+		name: IDL.Text,
+		created_at: IDL.Nat64,
+		user_id: IDL.Principal
+	});
+	const Result_1 = IDL.Variant({ Ok: Connector, Err: ApiError });
 	const User = IDL.Record({
 		circuits: IDL.Vec(IDL.Nat32),
 		username: IDL.Opt(IDL.Text),
 		created_at: IDL.Nat64,
 		user_id: IDL.Principal
 	});
-	const Result_1 = IDL.Variant({ Ok: User, Err: ApiError });
+	const Result_2 = IDL.Variant({ Ok: User, Err: ApiError });
 	const TraceStatus = IDL.Variant({
 		Failed: IDL.Null,
 		Success: IDL.Null,
@@ -134,22 +271,26 @@ export const idlFactory = ({ IDL }: any) => {
 		started_at: IDL.Nat64,
 		circuit_id: IDL.Nat32
 	});
-	const Result_2 = IDL.Variant({ Ok: IDL.Vec(Trace), Err: ApiError });
-	const Result_3 = IDL.Variant({ Ok: IDL.Principal, Err: ApiError });
-	const Result_4 = IDL.Variant({ Ok: IDL.Vec(Circuit), Err: ApiError });
-	const Result_5 = IDL.Variant({ Ok: IDL.Vec(User), Err: ApiError });
+	const Result_3 = IDL.Variant({ Ok: IDL.Vec(Trace), Err: ApiError });
+	const Result_4 = IDL.Variant({ Ok: IDL.Principal, Err: ApiError });
+	const Result_5 = IDL.Variant({ Ok: IDL.Vec(Circuit), Err: ApiError });
+	const Result_6 = IDL.Variant({ Ok: IDL.Vec(Connector), Err: ApiError });
+	const Result_7 = IDL.Variant({ Ok: IDL.Vec(User), Err: ApiError });
 	return IDL.Service({
 		__get_candid_interface_tmp_hack: IDL.Func([], [IDL.Text], ['query']),
 		add_circuit: IDL.Func([PostCircuit], [Result], []),
-		create_user: IDL.Func([IDL.Opt(IDL.Text)], [Result_1], []),
+		add_connector: IDL.Func([PostConnector], [Result_1], []),
+		create_user: IDL.Func([IDL.Opt(IDL.Text)], [Result_2], []),
 		disable_circuit: IDL.Func([IDL.Nat32], [Result], []),
 		edit_circuit: IDL.Func([IDL.Nat32, PostCircuit], [Result], []),
+		edit_connector: IDL.Func([IDL.Nat32, PostConnector], [Result_1], []),
 		enable_circuit: IDL.Func([IDL.Nat32], [Result], []),
 		get_circuit: IDL.Func([IDL.Nat32], [Result], ['query']),
-		get_circuit_traces: IDL.Func([IDL.Nat32], [Result_2], ['query']),
-		get_node_canister_id: IDL.Func([IDL.Nat32], [Result_3], ['query']),
-		get_user: IDL.Func([], [Result_1], ['query']),
-		get_user_circuits: IDL.Func([], [Result_4], ['query']),
-		get_users: IDL.Func([], [Result_5], ['query'])
+		get_circuit_traces: IDL.Func([IDL.Nat32], [Result_3], ['query']),
+		get_node_canister_id: IDL.Func([IDL.Nat32], [Result_4], ['query']),
+		get_user: IDL.Func([], [Result_2], ['query']),
+		get_user_circuits: IDL.Func([], [Result_5], ['query']),
+		get_user_connectors: IDL.Func([], [Result_6], ['query']),
+		get_users: IDL.Func([], [Result_7], ['query'])
 	});
 };

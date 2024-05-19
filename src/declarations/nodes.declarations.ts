@@ -37,10 +37,9 @@ export interface HttpHeader {
 	value: string;
 	name: string;
 }
-export type HttpMethod = { get: null } | { head: null } | { post: null };
 export interface HttpRequest {
 	url: string;
-	method: HttpMethod;
+	method: HttpRequestMethod;
 	name: string;
 	description: [] | [string];
 	headers: Array<[string, string]>;
@@ -48,6 +47,7 @@ export interface HttpRequest {
 	cycles: bigint;
 	request_body: [] | [string];
 }
+export type HttpRequestMethod = { GET: null } | { PUT: null } | { DELETE: null } | { POST: null };
 export interface HttpResponse {
 	status: bigint;
 	body: Uint8Array | number[];
@@ -70,7 +70,7 @@ export interface LookupCanisterPreview {
 }
 export interface LookupHttpRequestPreview {
 	url: string;
-	method: HttpMethod;
+	method: HttpRequestMethod;
 	headers: Array<[string, string]>;
 	cycles: bigint;
 	request_body: [] | [string];
@@ -197,14 +197,15 @@ export const idlFactory = ({ IDL }: any) => {
 		cycles: IDL.Nat,
 		canister: IDL.Principal
 	});
-	const HttpMethod = IDL.Variant({
-		get: IDL.Null,
-		head: IDL.Null,
-		post: IDL.Null
+	const HttpRequestMethod = IDL.Variant({
+		GET: IDL.Null,
+		PUT: IDL.Null,
+		DELETE: IDL.Null,
+		POST: IDL.Null
 	});
 	const HttpRequest = IDL.Record({
 		url: IDL.Text,
-		method: HttpMethod,
+		method: HttpRequestMethod,
 		name: IDL.Text,
 		description: IDL.Opt(IDL.Text),
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
@@ -336,7 +337,7 @@ export const idlFactory = ({ IDL }: any) => {
 	const Result_2 = IDL.Variant({ Ok: IDL.Text, Err: ApiError });
 	const LookupHttpRequestPreview = IDL.Record({
 		url: IDL.Text,
-		method: HttpMethod,
+		method: HttpRequestMethod,
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
 		cycles: IDL.Nat,
 		request_body: IDL.Opt(IDL.Text)

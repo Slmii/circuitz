@@ -4,7 +4,7 @@ import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { H5 } from 'components/Typography';
 import { Node } from 'lib/types';
-import { HttpMethod, NodeType } from 'declarations/nodes.declarations';
+import { HttpRequestMethod, NodeType } from 'declarations/nodes.declarations';
 import { LookupHttpRequestFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { IconButton } from 'components/IconButton';
@@ -61,9 +61,13 @@ export const LookupNodeHttpRequestForm = ({
 	const [isLivePreview, setIsLivePreview] = useState(false);
 
 	const handleOnSubmit = (data: LookupHttpRequestFormValues) => {
-		let method: HttpMethod = { get: null };
+		let method: HttpRequestMethod = { GET: null };
 		if (data.method === 'POST') {
-			method = { post: null };
+			method = { POST: null };
+		} else if (data.method === 'PUT') {
+			method = { PUT: null };
+		} else if (data.method === 'DELETE') {
+			method = { DELETE: null };
 		}
 
 		onProcessNode({
@@ -243,11 +247,14 @@ const Preview = () => {
 
 					const values = getValues();
 
-					let method: HttpMethod = { get: null };
+					let method: HttpRequestMethod = { GET: null };
 					if (values.method === 'POST') {
-						method = { post: null };
+						method = { POST: null };
+					} else if (values.method === 'PUT') {
+						method = { PUT: null };
+					} else if (values.method === 'DELETE') {
+						method = { DELETE: null };
 					}
-
 					const requestBody = getRequestBodyValue(values);
 					const url = getUrlValue(values);
 

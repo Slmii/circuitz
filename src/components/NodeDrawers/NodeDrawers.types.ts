@@ -8,10 +8,18 @@ import {
 	ConditionGroupType,
 	OperandType,
 	DataType,
-	HeaderRequestMethodType
+	HeaderRequestMethodType,
+	ConnectorType
 } from 'lib/types';
 
 export interface InputNodeDrawerProps {
+	open: boolean;
+	nodeType?: NodeSourceType;
+	node?: Node;
+	onClose: () => void;
+}
+
+export interface OutputNodeDrawerProps {
 	open: boolean;
 	nodeType?: NodeSourceType;
 	node?: Node;
@@ -33,6 +41,13 @@ export interface InputNodeFormValues {
 	verificationTypeTokenField: string;
 	verificationTypeWhitelist: { principal: string }[];
 	inputSampleData: string;
+}
+
+export interface OutputNodeFormValues {
+	name: string;
+	description: string;
+	applcation: ConnectorType;
+	connector: string;
 }
 
 export interface LookupCanisterFormValues {

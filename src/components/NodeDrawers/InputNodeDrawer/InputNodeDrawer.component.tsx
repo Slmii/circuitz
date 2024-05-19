@@ -70,6 +70,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 			isLoading={isAddNodePending || isEditNodePending}
 			isDisabled={!nodeSource}
 			title={`Input Node${nodeSource ? ` - ${nodeSource.toUpperCase()}` : ''}`}
+			disableHandlebarsHelpers
 		>
 			{open && (
 				<>

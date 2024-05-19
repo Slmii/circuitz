@@ -9,7 +9,8 @@ import {
 	InputNodeDrawer,
 	FilterPinDrawer,
 	LookupFilterPinDrawer,
-	MapperPinDrawer
+	MapperPinDrawer,
+	OutputNodeDrawer
 } from 'components/NodeDrawers';
 import { getNodeMetaData } from 'lib/utils';
 import { CircuitNode } from './CircuitNode.component';
@@ -50,7 +51,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return nodes.find(node => node.id === Number(nodeId));
 	}, [nodeId, nodes]);
 
-	const filterPin = useMemo(() => {
+	const filterPinNode = useMemo(() => {
 		if (pinType !== 'FilterPin' || !nodeId) {
 			return;
 		}
@@ -58,7 +59,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return nodes.find(node => node.id === Number(nodeId));
 	}, [pinType, nodeId, nodes]);
 
-	const lookupFilterPin = useMemo(() => {
+	const lookupFilterPinNode = useMemo(() => {
 		if (pinType !== 'LookupFilterPin' || !nodeId) {
 			return;
 		}
@@ -66,7 +67,7 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 		return nodes.find(node => node.id === Number(nodeId));
 	}, [pinType, nodeId, nodes]);
 
-	const mapperPin = useMemo(() => {
+	const mapperPinNode = useMemo(() => {
 		if ((pinType !== 'PreMapperPin' && pinType !== 'PostMapperPin') || !nodeId) {
 			return;
 		}
@@ -146,7 +147,14 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 												navigate(`/circuits/${circuitId}/nodes/LookupHttpRequest`);
 											}}
 										/>
-										<AddNodeButton icon="output-linear" label="Output" onClick={() => {}} />
+										<AddNodeButton
+											icon="output-linear"
+											label="Output"
+											onClick={() => {
+												setIsAddNode(false);
+												navigate(`/circuits/${circuitId}/nodes/Output`);
+											}}
+										/>
 									</Stack>
 								</Stack>
 							</Fade>
@@ -166,15 +174,21 @@ export const CircuitNodes = ({ nodes }: { nodes: Node[] }) => {
 				node={node}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
-			<FilterPinDrawer open={!!filterPin} node={filterPin} onClose={() => navigate(`/circuits/${circuitId}`)} />
+			<OutputNodeDrawer
+				open={nodeType === 'Output'}
+				nodeType={nodeType as NodeSourceType}
+				node={node}
+				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
+			/>
+			<FilterPinDrawer open={!!filterPinNode} node={filterPinNode} onClose={() => navigate(`/circuits/${circuitId}`)} />
 			<LookupFilterPinDrawer
-				open={!!lookupFilterPin}
-				node={lookupFilterPin}
+				open={!!lookupFilterPinNode}
+				node={lookupFilterPinNode}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>
 			<MapperPinDrawer
 				open={pinType === 'PreMapperPin' || pinType === 'PostMapperPin'}
-				node={mapperPin}
+				node={mapperPinNode}
 				pinType={pinType as PinSourceType}
 				onClose={() => navigate(`/circuits/${circuitId}`, { replace: true })}
 			/>

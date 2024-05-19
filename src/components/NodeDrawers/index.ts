@@ -5,4 +5,5 @@ export * from './LookupNodeDrawer/LookupNodeCanisterForm.component';
 export * from './FilterPinDrawer/FilterPinDrawer.component';
 export * from './LookupFilterPinDrawer/LookupFilterPinDrawer.component';
 export * from './MapperPinDrawer/MapperPinDrawer.component';
+export * from './OutputNodeDrawer/OutputNodeDrawer.component';
 export * from './NodeDrawers.types';

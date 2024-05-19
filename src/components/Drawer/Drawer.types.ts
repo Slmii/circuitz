@@ -6,6 +6,7 @@ export interface NodeDrawerProps {
 	isLoading: boolean;
 	isDisabled?: boolean;
 	fullWidth?: boolean;
+	disableHandlebarsHelpers?: boolean;
 	onClose: () => void;
 	onSubmit: () => void;
 	onDelete?: () => void;
