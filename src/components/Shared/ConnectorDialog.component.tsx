@@ -155,14 +155,7 @@ const Authentication = () => {
 								label="Signature Method"
 								options={JWT_SIGNATURE_OPTIONS}
 							/>
-							<Stack
-								spacing={0.5}
-								sx={{
-									p: 2,
-									borderRadius: 1,
-									backgroundColor: 'background.paper'
-								}}
-							>
+							<Stack spacing={0.5}>
 								<B2>
 									<HandlebarsInfo />
 								</B2>

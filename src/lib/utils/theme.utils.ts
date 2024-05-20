@@ -269,6 +269,11 @@ export const components: Readonly<Components<Omit<Theme, 'components'>>> = {
 			})
 		}
 	},
+	MuiPaper: {
+		defaultProps: {
+			elevation: 5
+		}
+	},
 	MuiDialogTitle: {
 		styleOverrides: {
 			root: ({ theme }) => ({
