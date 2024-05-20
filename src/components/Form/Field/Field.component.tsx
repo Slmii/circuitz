@@ -8,8 +8,9 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import slugify from 'slugify';
-import React from 'react';
+import React, { useState } from 'react';
 import { formatTokenAmount } from 'lib/utils';
+import { IconButton } from 'components/IconButton';
 
 export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFieldProps>(
 	(
@@ -36,6 +37,7 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 		},
 		ref
 	) => {
+		const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 		const labelId = `${slugify(field.name)}-label`;
 
 		return (
@@ -50,7 +52,7 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 				<TextField
 					required={required}
 					id={labelId}
-					type={type}
+					type={type === 'password' ? (isPasswordVisible ? 'text' : 'password') : type}
 					label={label}
 					placeholder={placeholder}
 					disabled={disabled}
@@ -108,6 +110,14 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 									size: 'small',
 									fontSize: 'small'
 								})}
+							</InputAdornment>
+						) : type === 'password' ? (
+							<InputAdornment position="end">
+								<IconButton
+									icon={isPasswordVisible ? 'visible-off' : 'visible'}
+									onClick={() => setIsPasswordVisible(prevState => !prevState)}
+									tooltip={isPasswordVisible ? 'Hide' : 'Show'}
+								/>
 							</InputAdornment>
 						) : null
 					}}

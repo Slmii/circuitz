@@ -17,7 +17,7 @@ import { CanisterConnectorFormValues, HttpConnectorFormValues } from 'components
 import { useFormContext } from 'react-hook-form';
 import { Editor } from 'components/Editor';
 import { useEffect, useState } from 'react';
-import { stringifyJson } from 'lib/utils';
+import { stringifyJson, getHttpConnectorFormValues } from 'lib/utils';
 import { getSampleData } from 'api/nodes.api';
 import { HandlebarsInfo } from './HandlebarsInfo.component';
 import { useParams } from 'react-router-dom';
@@ -68,7 +68,6 @@ export const CanisterConnectorDialog = () => {
 };
 
 export const HttpConnectorDialog = () => {
-	const [isLivePreview, setIsLivePreview] = useState(false);
 	const { formRef, submitter } = useFormSubmit();
 	const { closeModal, state } = useModal<ConnectorModalProps | undefined>('CONNECTOR');
 
@@ -98,167 +97,105 @@ export const HttpConnectorDialog = () => {
 						// closeModal();
 					}}
 					schema={canisterConnectorSchema}
-					defaultValues={{
-						name: '',
-						baseUrl: '',
-						headers: [{ key: 'Content-Type', value: 'application/json' }],
-						authentication: {
-							selected: 'None',
-							basic: {
-								username: '',
-								password: ''
-							},
-							token: {
-								token: '',
-								location: {
-									selected: 'HTTPHeader',
-									header: {
-										name: '',
-										scheme: ''
-									},
-									queryParam: ''
-								}
-							},
-							jwt: {
-								signatureMethod: 'HMACSHA256',
-								payload: `{
-	"iss": "", 
-	"sub": "", 
-	"aud": "", 
-	"exp": ""
-}
-`,
-								secret: '',
-								location: {
-									selected: 'HTTPHeader',
-									header: {
-										name: '',
-										scheme: ''
-									},
-									queryParam: ''
-								},
-								inputSampleData: ''
-							}
-						},
-						testConnection: {
-							error: {
-								field: '',
-								value: ''
-							},
-							success: {
-								field: '',
-								value: ''
-							},
-							method: 'GET',
-							relativeUrl: ''
-						}
-					}}
+					defaultValues={getHttpConnectorFormValues()}
 					myRef={formRef}
-					render={({ watch }) => (
-						<>
-							<OutputNodeFormValuesUpdater />
-							<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
-							<Field
-								name="baseUrl"
-								label="Base URL"
-								placeholder="https://api.example.com"
-								helperText="This part of an API’s URL is used across all of the HTTP endpoints you invoke. A Base URL makes it easier to configure Nodes."
-							/>
-							<HttpRequestHeaders />
-							<Paper sx={{ p: 2 }}>
-								<Stack direction="column" spacing={1}>
-									<FormLabel>Authentication</FormLabel>
-									<Stack direction="column" spacing={2}>
-										<Select
-											name="authentication.selected"
-											label="Method"
-											options={APPLICATION_AUTHENTICATION_OPTIONS}
-										/>
-										{watch('authentication.selected') === 'Basic' && (
-											<>
-												<Divider />
-												<Field name="authentication.basic.username" label="Username" placeholder="Enter a usename" />
-												<Field
-													name="authentication.basic.password"
-													label="Password"
-													type="password"
-													placeholder="Enter a password"
-												/>
-											</>
-										)}
-										{watch('authentication.selected') === 'Token' && (
-											<>
-												<Divider />
-												<Field
-													name="authentication.token.token"
-													type="password"
-													label="Token"
-													placeholder="Enter a token"
-												/>
-												<TokenLocation />
-											</>
-										)}
-										{watch('authentication.selected') === 'JWT' && (
-											<>
-												<Divider />
-												<Select
-													name="authentication.jwt.signatureMethod"
-													label="Signature Method"
-													options={JWT_SIGNATURE_OPTIONS}
-												/>
-												<Stack
-													spacing={0.5}
-													sx={{
-														p: 2,
-														borderRadius: 1,
-														backgroundColor: 'background.paper'
-													}}
-												>
-													<B2>
-														<HandlebarsInfo />
-													</B2>
-													<StandaloneCheckbox
-														label="Live Preview"
-														name="livePreview"
-														checked={isLivePreview}
-														onChange={setIsLivePreview}
-													/>
-													<Stack direction="column" spacing={1}>
-														<WithLiveEditor
-															input={watch('authentication.jwt.payload')}
-															context={watch('authentication.jwt.inputSampleData')}
-															isLivePreview={isLivePreview}
-															editorProps={{
-																name: 'authentication.jwt.payload',
-																height: 200,
-																mode: 'json'
-															}}
-															liveEditorProps={{
-																name: 'jwtPayloadLivePreview',
-																height: 200,
-																mode: 'json'
-															}}
-														/>
-														<Editor mode="json" name="authentication.jwt.inputSampleData" height={200} />
-													</Stack>
-												</Stack>
-												<Field
-													name="authentication.jwt.secret"
-													type="password"
-													label="Secret"
-													placeholder="Enter a secret"
-												/>
-												<TokenLocation />
-											</>
-										)}
-									</Stack>
-								</Stack>
-							</Paper>
-						</>
-					)}
-				/>
+				>
+					<OutputNodeFormValuesUpdater />
+					<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
+					<Field
+						name="baseUrl"
+						label="Base URL"
+						placeholder="https://api.example.com"
+						helperText="This part of an API’s URL is used across all of the HTTP endpoints you invoke. A Base URL makes it easier to configure Nodes."
+					/>
+					<HttpRequestHeaders />
+					<Authentication />
+				</Form>
 			</Stack>
 		</Drawer>
+	);
+};
+
+const Authentication = () => {
+	const [isLivePreview, setIsLivePreview] = useState(false);
+	const { watch } = useFormContext<HttpConnectorFormValues>();
+
+	return (
+		<Paper sx={{ p: 2 }}>
+			<Stack direction="column" spacing={1}>
+				<FormLabel>Authentication</FormLabel>
+				<Stack direction="column" spacing={2}>
+					<Select name="authentication.selected" label="Method" options={APPLICATION_AUTHENTICATION_OPTIONS} />
+					{watch('authentication.selected') === 'Basic' && (
+						<>
+							<Divider />
+							<Field name="authentication.basic.username" label="Username" placeholder="Enter a usename" />
+							<Field
+								name="authentication.basic.password"
+								label="Password"
+								type="password"
+								placeholder="Enter a password"
+							/>
+						</>
+					)}
+					{watch('authentication.selected') === 'Token' && (
+						<>
+							<Divider />
+							<Field name="authentication.token.token" type="password" label="Token" placeholder="Enter a token" />
+							<TokenLocation />
+						</>
+					)}
+					{watch('authentication.selected') === 'JWT' && (
+						<>
+							<Divider />
+							<Select
+								name="authentication.jwt.signatureMethod"
+								label="Signature Method"
+								options={JWT_SIGNATURE_OPTIONS}
+							/>
+							<Stack
+								spacing={0.5}
+								sx={{
+									p: 2,
+									borderRadius: 1,
+									backgroundColor: 'background.paper'
+								}}
+							>
+								<B2>
+									<HandlebarsInfo />
+								</B2>
+								<StandaloneCheckbox
+									label="Live Preview"
+									name="livePreview"
+									checked={isLivePreview}
+									onChange={setIsLivePreview}
+								/>
+								<Stack direction="column" spacing={1}>
+									<WithLiveEditor
+										input={watch('authentication.jwt.payload')}
+										context={watch('authentication.jwt.inputSampleData')}
+										isLivePreview={isLivePreview}
+										editorProps={{
+											name: 'authentication.jwt.payload',
+											height: 200,
+											mode: 'json'
+										}}
+										liveEditorProps={{
+											name: 'jwtPayloadLivePreview',
+											height: 200,
+											mode: 'json'
+										}}
+									/>
+									<Editor mode="json" name="authentication.jwt.inputSampleData" height={200} />
+								</Stack>
+							</Stack>
+							<Field name="authentication.jwt.secret" type="password" label="Secret" placeholder="Enter a secret" />
+							<TokenLocation />
+						</>
+					)}
+				</Stack>
+			</Stack>
+		</Paper>
 	);
 };
 
