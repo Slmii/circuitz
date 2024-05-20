@@ -39,10 +39,10 @@ export const getHttpConnectorFormValues = (): HttpConnectorFormValues => {
 			jwt: {
 				signatureMethod: 'HMACSHA256',
 				payload: `{
-"iss": "", 
-"sub": "", 
-"aud": "", 
-"exp": ""
+	"iss": "", 
+	"sub": "", 
+	"aud": "", 
+	"exp": ""
 }
 `,
 				secret: '',
