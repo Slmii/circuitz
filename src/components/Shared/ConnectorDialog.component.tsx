@@ -11,6 +11,7 @@ import { Select } from 'components/Form/Select';
 import {
 	APPLICATION_AUTHENTICATION_LOCATION_OPTIONS,
 	APPLICATION_AUTHENTICATION_OPTIONS,
+	HTTP_METHODS,
 	JWT_SIGNATURE_OPTIONS
 } from 'lib/constants';
 import { CanisterConnectorFormValues, HttpConnectorFormValues } from 'components/NodeDrawers';
@@ -110,6 +111,7 @@ export const HttpConnectorDialog = () => {
 					/>
 					<HttpRequestHeaders />
 					<Authentication />
+					<TestConnection />
 				</Form>
 			</Stack>
 		</Drawer>
@@ -234,7 +236,32 @@ const TokenLocation = () => {
 	);
 };
 
-export const OutputNodeFormValuesUpdater = () => {
+const TestConnection = () => {
+	const { watch } = useFormContext<HttpConnectorFormValues>();
+
+	return (
+		<Paper sx={{ p: 2 }}>
+			<Stack direction="column" spacing={1}>
+				<FormLabel>Test Connection</FormLabel>
+				<Stack direction="column" spacing={2}>
+					<Field
+						name="testConnection.relativeUrl"
+						label="Relative URL"
+						placeholder="/path/to/endpoint"
+						helperText={`Relative to ${watch('baseUrl')}`}
+					/>
+					<Select
+						label="Method"
+						name="testConnection.method"
+						options={HTTP_METHODS.map(method => ({ id: method, label: method }))}
+					/>
+				</Stack>
+			</Stack>
+		</Paper>
+	);
+};
+
+const OutputNodeFormValuesUpdater = () => {
 	const { circuitId } = useParams<{ circuitId: string }>();
 	const { setValue } = useFormContext<HttpConnectorFormValues>();
 
