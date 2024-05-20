@@ -1,4 +1,4 @@
-import { Box, Divider, FormLabel, Paper, Stack } from '@mui/material';
+import { Box, Divider, FormLabel, Stack } from '@mui/material';
 import { RefObject, useState } from 'react';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
@@ -6,8 +6,7 @@ import { H5 } from 'components/Typography';
 import { Node } from 'lib/types';
 import { HttpRequestMethod, NodeType } from 'declarations/nodes.declarations';
 import { LookupHttpRequestFormValues } from '../NodeDrawers.types';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { IconButton } from 'components/IconButton';
+import { useFormContext } from 'react-hook-form';
 import {
 	extractDynamicKey,
 	getHandlebars,
@@ -19,11 +18,11 @@ import { Button } from 'components/Button';
 import { Select } from 'components/Form/Select';
 import { HTTP_METHODS, OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { Alert, TipAlert } from 'components/Alert';
-import { Editor, StandaloneEditor } from 'components/Editor';
+import { Editor } from 'components/Editor';
 import { useLookupHttpRequestPreview, useLookupNodePreview } from 'lib/hooks';
 import { lookupHttpRequestSchema } from 'lib/schemas';
 import { Icon } from 'components/Icon';
-import { HandlebarsInfo } from 'components/Shared';
+import { HandlebarsInfo, HttpRequestHeaders, WithLiveEditor } from 'components/Shared';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { LookupNodeFormValuesUpdater } from './LookupNodeCanisterForm.component';
 
@@ -136,35 +135,33 @@ export const LookupNodeHttpRequestForm = ({
 										</Stack>
 										<Box sx={{ ml: 'auto' }}>
 											<StandaloneCheckbox
-												label="Live preview"
+												label="Live Preview"
 												name="livePreview"
 												checked={isLivePreview}
 												onChange={setIsLivePreview}
 											/>
 										</Box>
 									</Stack>
-									<Stack
-										direction="column"
-										spacing={1}
-										alignItems="center"
-										width="100%"
-										sx={{
-											'& *': {
-												width: '100%'
-											}
+									<WithLiveEditor
+										input={watch('requestBody')}
+										context={watch('inputSampleData')}
+										isLivePreview={isLivePreview}
+										editorProps={{
+											name: 'requestBody',
+											mode: 'handlebars',
+											height: 150,
+											ignoreInvalidJSON: true
 										}}
-									>
-										<Editor name="requestBody" mode="handlebars" height={150} ignoreInvalidJSON />
-										{isLivePreview && (
-											<StandaloneEditor
-												isReadOnly
-												id="requestBodyPreview"
-												value={getHandlebars(watch('requestBody'), parseJson(watch('inputSampleData')))}
-												mode="javascript"
-												height={150}
-											/>
-										)}
-									</Stack>
+										liveEditorProps={{
+											name: 'requestBodyLivePreview',
+											mode: 'javascript',
+											height: 150,
+											isReadOnly: true
+										}}
+										stackProps={{
+											direction: 'column'
+										}}
+									/>
 								</Stack>
 								<HttpRequestHeaders />
 								<Field
@@ -186,43 +183,6 @@ export const LookupNodeHttpRequestForm = ({
 				</Stack>
 			)}
 		/>
-	);
-};
-
-const HttpRequestHeaders = () => {
-	const { fields, append, remove } = useFieldArray<LookupHttpRequestFormValues>({
-		name: 'headers'
-	});
-
-	return (
-		<Paper sx={{ p: 2 }}>
-			<Stack direction="column" spacing={1}>
-				<FormLabel>HTTP Headers</FormLabel>
-				<Stack direction="column" spacing={2}>
-					{fields.map((config, index) => (
-						<Stack direction="row" spacing={1} key={config.id} alignItems="center">
-							<Field fullWidth name={`headers.${index}.key`} label="Header" placeholder="Content-Type" />
-							<Field fullWidth name={`headers.${index}.value`} label="Value" placeholder="application/json" />
-							<IconButton
-								icon="close-linear"
-								tooltip="Remove HTTP Header"
-								color="error"
-								onClick={() => remove(index)}
-							/>
-						</Stack>
-					))}
-					<Button
-						startIcon="add-linear"
-						sx={{ width: 'fit-content' }}
-						variant="outlined"
-						size="large"
-						onClick={() => append({ key: '', value: '' }, { shouldFocus: false })}
-					>
-						{!fields.length ? 'Add first HTTP Header' : 'Add HTTP Header'}
-					</Button>
-				</Stack>
-			</Stack>
-		</Paper>
 	);
 };
 

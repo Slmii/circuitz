@@ -9,7 +9,7 @@ import type {
 	Rule,
 	Token,
 	MapperPin,
-	HttpMethod,
+	HttpRequestMethod,
 	PreviewArg,
 	NodeType
 } from 'declarations/nodes.declarations';
@@ -642,8 +642,8 @@ const getRuleOperator = (rule: Rule): OperatorType => {
 	return 'Equal';
 };
 
-const getHttpRequestMethod = (method: HttpMethod): HeaderRequestMethodType => {
-	if ('get' in method) {
+const getHttpRequestMethod = (method: HttpRequestMethod): HeaderRequestMethodType => {
+	if ('GET' in method) {
 		return 'GET';
 	}
 
@@ -831,7 +831,7 @@ export const getPlaceholderNode = ({
 				cycles: BigInt(0),
 				sample_data: '{}',
 				headers: [],
-				method: { get: null },
+				method: { GET: null },
 				request_body: [],
 				url: ''
 			}

@@ -1,17 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from 'api/index';
 import { QUERY_KEYS, MUTATE_ERROR } from 'lib/constants';
-import { Node } from 'lib/types';
+import { CustomUseQueryOptions, Node } from 'lib/types';
 import { useSnackbar } from './useSnackbar';
 import { useGetCircuit } from './useCircuits';
 import { Principal } from '@dfinity/principal';
 import { useGetParam } from './useGetParam';
 
-export const useGetCircuitNodes = (circuitId: number) => {
+export const useGetCircuitNodes = (circuitId: number, options?: CustomUseQueryOptions<Node[]>) => {
 	return useQuery({
 		queryKey: [QUERY_KEYS.CIRCUIT_NODES, circuitId],
 		enabled: !!circuitId,
-		queryFn: () => api.Nodes.getNodes(circuitId)
+		queryFn: () => api.Nodes.getNodes(circuitId),
+		...options
 	});
 };
 

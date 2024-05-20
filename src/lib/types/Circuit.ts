@@ -1,6 +1,4 @@
 import { Principal } from '@dfinity/principal';
-import { KeysOfUnion } from './Node';
-import { ConnectorType as ConnectorTypeOld } from 'declarations/canister.declarations';
 
 export interface Circuit {
 	id: number;
@@ -14,5 +12,3 @@ export interface Circuit {
 	createdAt: Date;
 	updatedAt: Date;
 }
-
-export type ConnectorType = KeysOfUnion<ConnectorTypeOld>;

@@ -33,40 +33,52 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 					defaultValues={{
 						name: '',
 						description: '',
-						applcation: 'Canister',
+						application: 'Canister',
 						connector: ''
 					}}
 					myRef={formRef}
 					// schema={inputCanisterSchema}
-				>
-					<Stack direction="column" spacing={2}>
-						<Alert severity="info">An Ouput Node sends data to the outside world.</Alert>
-						<Select disabled={!!node} name="applcation" label="Application" options={APPLICATION_OPTIONS} />
-					</Stack>
-					<Divider />
-					<Stack direction="column" spacing={2}>
-						<H5 fontWeight="bold">General</H5>
-						<Stack direction="column" spacing={4}>
-							<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
-							<Field
-								name="description"
-								label="Description"
-								multiline
-								multilineRows={5}
-								placeholder="Enter a description"
-								maxLength={500}
-							/>
-							<SelectAutocomplete
-								name="connector"
-								label="Connector"
-								isOptionsLoading={!!connectors && isConnectorsLoading}
-								options={(connectors ?? []).map(connector => ({ id: connector.id.toString(), label: connector.name }))}
-								endElement={<IconButton icon="add-linear" tooltip="Create new connector" onClick={() => openModal()} />}
-								helperText={CONNECTOR_HELP_TEXT}
-							/>
-						</Stack>
-					</Stack>
-				</Form>
+					render={({ watch }) => (
+						<>
+							<Stack direction="column" spacing={2}>
+								<Alert severity="info">An Ouput Node sends data to the outside world.</Alert>
+								<Select disabled={!!node} name="application" label="Application" options={APPLICATION_OPTIONS} />
+							</Stack>
+							<Divider />
+							<Stack direction="column" spacing={2}>
+								<H5 fontWeight="bold">General</H5>
+								<Stack direction="column" spacing={4}>
+									<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
+									<Field
+										name="description"
+										label="Description"
+										multiline
+										multilineRows={5}
+										placeholder="Enter a description"
+										maxLength={500}
+									/>
+									<SelectAutocomplete
+										name="connector"
+										label="Connector"
+										isOptionsLoading={!!connectors && isConnectorsLoading}
+										options={(connectors ?? []).map(connector => ({
+											id: connector.id.toString(),
+											label: connector.name
+										}))}
+										endElement={
+											<IconButton
+												icon="add-linear"
+												tooltip="Create new connector"
+												onClick={() => openModal({ type: watch('application'), node })}
+											/>
+										}
+										helperText={CONNECTOR_HELP_TEXT}
+									/>
+								</Stack>
+							</Stack>
+						</>
+					)}
+				/>
 			)}
 		</Drawer>
 	);

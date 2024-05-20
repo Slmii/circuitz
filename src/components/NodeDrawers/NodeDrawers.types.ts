@@ -9,7 +9,10 @@ import {
 	OperandType,
 	DataType,
 	HeaderRequestMethodType,
-	ConnectorType
+	ConnectorType,
+	AuthenticationType,
+	SignatureMethodType,
+	TokenLocationType
 } from 'lib/types';
 
 export interface InputNodeDrawerProps {
@@ -46,7 +49,7 @@ export interface InputNodeFormValues {
 export interface OutputNodeFormValues {
 	name: string;
 	description: string;
-	applcation: ConnectorType;
+	application: ConnectorType;
 	connector: string;
 }
 
@@ -97,4 +100,59 @@ export interface MapperPinFormValues {
 		input: string;
 		output: string;
 	}[];
+}
+
+export interface CanisterConnectorFormValues {
+	name: string;
+	canisterId: string;
+}
+
+export interface HttpConnectorFormValues {
+	name: string;
+	baseUrl: string;
+	headers: Array<{ key: string; value: string }>;
+
+	authentication: {
+		selected: AuthenticationType;
+
+		basic: {
+			username: string;
+			password: string;
+		};
+
+		token: {
+			token: string;
+			location: AuthenticationLocation;
+		};
+
+		jwt: {
+			signatureMethod: SignatureMethodType;
+			secret: string;
+			payload: string;
+			location: AuthenticationLocation;
+			inputSampleData: string;
+		};
+	};
+
+	testConnection: {
+		relativeUrl: string;
+		method: HeaderRequestMethodType;
+		error: {
+			field: string;
+			value: string;
+		};
+		success: {
+			field: string;
+			value: string;
+		};
+	};
+}
+
+interface AuthenticationLocation {
+	selected: TokenLocationType;
+	header: {
+		name: string;
+		scheme: string;
+	};
+	queryParam: string;
 }

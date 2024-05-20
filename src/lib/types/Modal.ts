@@ -1,5 +1,7 @@
 import { Connector } from 'declarations/canister.declarations';
 import { Pin } from 'declarations/nodes.declarations';
+import { ConnectorType } from './Connector';
+import { Node } from 'lib/types';
 
 export interface DeletePinModalProps {
 	nodeId: number;
@@ -11,6 +13,8 @@ export interface DeleteNodeModalProps {
 }
 
 export interface ConnectorModalProps {
+	type: ConnectorType;
+	node?: Node;
 	connector?: Connector;
 }
 

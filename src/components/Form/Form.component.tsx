@@ -2,6 +2,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormGroup from '@mui/material/FormGroup';
 import { DefaultValues, FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { FormProps } from './Form.types';
+import { useSetRecoilState } from 'recoil';
+import { isFormDirtyState } from 'lib/recoil';
+import { useEffect } from 'react';
 
 export function Form<T extends FieldValues>({
 	children,
@@ -17,6 +20,12 @@ export function Form<T extends FieldValues>({
 		defaultValues: getDefaultValues(defaultValues),
 		mode
 	});
+
+	const setisFormDirtyState = useSetRecoilState(isFormDirtyState);
+
+	useEffect(() => {
+		setisFormDirtyState(methods.formState.isDirty);
+	}, [methods.formState.isDirty, setisFormDirtyState]);
 
 	return (
 		<FormProvider {...methods}>

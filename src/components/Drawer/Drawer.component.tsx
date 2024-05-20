@@ -7,6 +7,7 @@ import { NodeDrawerProps } from './Drawer.types';
 import { useRecoilState } from 'recoil';
 import { isFormDirtyState } from 'lib/recoil';
 import { Dialog } from 'components/Dialog';
+import { useDevice } from 'lib/hooks';
 
 export const Drawer = ({
 	title,
@@ -20,13 +21,15 @@ export const Drawer = ({
 	onDelete,
 	children
 }: PropsWithChildren<NodeDrawerProps>) => {
+	const { isMdDown } = useDevice();
+
 	const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 	const [isFormDirty, setIsFormDirty] = useRecoilState(isFormDirtyState);
 
 	return (
 		<>
 			<MuiDrawer
-				anchor="right"
+				anchor={isMdDown ? 'bottom' : 'right'}
 				open={isOpen}
 				onClose={() => {
 					if (isFormDirty) {
@@ -41,9 +44,26 @@ export const Drawer = ({
 						borderLeft: theme => `1px solid ${theme.palette.divider}`
 					}
 				}}
+				sx={
+					isMdDown
+						? {
+								position: 'relative',
+								'& .MuiDrawer-paper': {
+									borderTopLeftRadius: 8,
+									borderTopRightRadius: 8,
+									borderTop: theme => `1px solid ${theme.palette.divider}`,
+									borderLeft: 'none',
+									borderRight: 'none',
+									borderRadius: 0,
+									width: '100%',
+									height: '100%'
+								}
+						  }
+						: undefined
+				}
 			>
 				<Stack
-					direction="row"
+					direction={['column', 'row']}
 					alignItems="center"
 					sx={{
 						gap: 2,
@@ -55,35 +75,31 @@ export const Drawer = ({
 					}}
 				>
 					{typeof title === 'string' ? <H3>{title}</H3> : title}
-					{!disableHandlebarsHelpers && (
-						<>
-							<Button
-								sx={{ ml: 'auto', minWidth: 'fit-content' }}
-								variant="contained"
-								color="secondary"
-								href="https://handlebarsjs.com/guide/expressions.html#basic-usage"
-								target="_blank"
-							>
-								Handlebars guide
-							</Button>
-							<Button
-								sx={{ minWidth: 'fit-content' }}
-								variant="outlined"
-								color="secondary"
-								href="https://www.npmjs.com/package/just-handlebars-helpers#helpers"
-								target="_blank"
-							>
-								Handlebars helpers
-							</Button>
-						</>
-					)}
-
-					<IconButton
-						tooltip="Close"
-						icon="close-linear"
-						onClick={onClose}
-						sx={disableHandlebarsHelpers ? { ml: 'auto' } : undefined}
-					/>
+					<Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
+						{!disableHandlebarsHelpers && (
+							<>
+								<Button
+									sx={{ minWidth: 'fit-content' }}
+									variant="contained"
+									color="secondary"
+									href="https://handlebarsjs.com/guide/expressions.html#basic-usage"
+									target="_blank"
+								>
+									Handlebars guide
+								</Button>
+								<Button
+									sx={{ minWidth: 'fit-content' }}
+									variant="outlined"
+									color="secondary"
+									href="https://www.npmjs.com/package/just-handlebars-helpers#helpers"
+									target="_blank"
+								>
+									Handlebars helpers
+								</Button>
+							</>
+						)}
+						<IconButton tooltip="Close" icon="close-linear" onClick={onClose} />
+					</Stack>
 				</Stack>
 				<Box sx={{ p: 4, height: '100%', overflowY: 'auto' }}>{children}</Box>
 				<Stack
@@ -98,7 +114,16 @@ export const Drawer = ({
 						borderTop: theme => `1px solid ${theme.palette.divider}`
 					}}
 				>
-					<Button onClick={onSubmit} loading={isLoading} disabled={isDisabled} variant="contained">
+					<Button
+						onClick={() => {
+							setIsFormDirty(false);
+							setIsUnsavedChangesDialogOpen(false);
+							onSubmit();
+						}}
+						loading={isLoading}
+						disabled={isDisabled}
+						variant="contained"
+					>
 						Save
 					</Button>
 					<Button variant="outlined" disabled={isDisabled || isLoading} onClick={onClose}>

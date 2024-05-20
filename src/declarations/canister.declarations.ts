@@ -32,23 +32,17 @@ export type ConnectorType = { Http: HttpConnector } | { Canister: string };
 export interface HttpConnector {
 	authentication: Authentication;
 	base_url: string;
+	test_connection: [] | [TestConnection];
 	headers: Array<[string, string]>;
 }
 export type HttpRequestMethod = { GET: null } | { PUT: null } | { DELETE: null } | { POST: null };
 export interface JWTConfig {
 	signature_method: SignatureMethod;
-	test_connection: [] | [TestConnection];
 	secret: string;
+	sample_data: string;
 	secret_key: string;
 	location: TokenLocation;
-	payload: JWTPayload;
-}
-export interface JWTPayload {
-	aud: [] | [string];
-	exp: string;
-	iss: [] | [string];
-	sub: [] | [string];
-	others: Array<[string, string]>;
+	payload: string;
 }
 export interface PostCircuit {
 	name: string;
@@ -84,7 +78,6 @@ export interface TestConnection {
 }
 export interface TokenConfig {
 	token: string;
-	test_connection: [] | [TestConnection];
 	location: TokenLocation;
 }
 export type TokenLocation = { HTTPHeader: [string, string] } | { Query: string };
@@ -172,6 +165,28 @@ export const idlFactory = ({ IDL }: any) => {
 		HMACSHA384: IDL.Null,
 		HMACSHA512: IDL.Null
 	});
+	const TokenLocation = IDL.Variant({
+		HTTPHeader: IDL.Tuple(IDL.Text, IDL.Text),
+		Query: IDL.Text
+	});
+	const JWTConfig = IDL.Record({
+		signature_method: SignatureMethod,
+		secret: IDL.Text,
+		sample_data: IDL.Text,
+		secret_key: IDL.Text,
+		location: TokenLocation,
+		payload: IDL.Text
+	});
+	const TokenConfig = IDL.Record({
+		token: IDL.Text,
+		location: TokenLocation
+	});
+	const Authentication = IDL.Variant({
+		JWT: JWTConfig,
+		None: IDL.Null,
+		Basic: IDL.Tuple(IDL.Text, IDL.Text),
+		Token: TokenConfig
+	});
 	const HttpRequestMethod = IDL.Variant({
 		GET: IDL.Null,
 		PUT: IDL.Null,
@@ -184,39 +199,10 @@ export const idlFactory = ({ IDL }: any) => {
 		success: IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
 		relative_url: IDL.Text
 	});
-	const TokenLocation = IDL.Variant({
-		HTTPHeader: IDL.Tuple(IDL.Text, IDL.Text),
-		Query: IDL.Text
-	});
-	const JWTPayload = IDL.Record({
-		aud: IDL.Opt(IDL.Text),
-		exp: IDL.Text,
-		iss: IDL.Opt(IDL.Text),
-		sub: IDL.Opt(IDL.Text),
-		others: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
-	});
-	const JWTConfig = IDL.Record({
-		signature_method: SignatureMethod,
-		test_connection: IDL.Opt(TestConnection),
-		secret: IDL.Text,
-		secret_key: IDL.Text,
-		location: TokenLocation,
-		payload: JWTPayload
-	});
-	const TokenConfig = IDL.Record({
-		token: IDL.Text,
-		test_connection: IDL.Opt(TestConnection),
-		location: TokenLocation
-	});
-	const Authentication = IDL.Variant({
-		JWT: JWTConfig,
-		None: IDL.Null,
-		Basic: IDL.Tuple(IDL.Text, IDL.Text),
-		Token: TokenConfig
-	});
 	const HttpConnector = IDL.Record({
 		authentication: Authentication,
 		base_url: IDL.Text,
+		test_connection: IDL.Opt(TestConnection),
 		headers: IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))
 	});
 	const ConnectorType = IDL.Variant({
