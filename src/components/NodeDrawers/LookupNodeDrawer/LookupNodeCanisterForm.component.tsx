@@ -89,20 +89,7 @@ export const LookupNodeCanisterForm = ({
 						</Stack>
 					</Stack>
 					<Divider />
-					<Stack direction="column" spacing={2}>
-						<H5 fontWeight="bold">Canister</H5>
-						<Stack direction="column" spacing={4}>
-							<Field name="canisterId" label="Canister ID" placeholder="aaaaa-aa" />
-							<CanisterMethod />
-							<Field
-								name="cycles"
-								type="number"
-								label="Cycles (T)"
-								placeholder="10_000_000_000"
-								helperText="To determine the required cycles, use the Preview request feature. The cycles count varies based on the number of arguments."
-							/>
-						</Stack>
-					</Stack>
+					<Canister />
 					<Divider />
 					<Stack direction="column" spacing={2}>
 						<H5 fontWeight="bold">Arguments</H5>
@@ -250,7 +237,7 @@ const response = await canister.call("${watch('methodName')}"${
 	);
 };
 
-const CanisterMethod = () => {
+const Canister = () => {
 	const [canShowArgs, setCanShowArgs] = useState(false);
 	const { watch, setValue, clearErrors } = useFormContext<LookupCanisterFormValues>();
 	const [canisterId, methodName] = watch(['canisterId', 'methodName']);
@@ -278,40 +265,53 @@ const CanisterMethod = () => {
 	const isDisabled = isLoading || isRefetching;
 
 	return (
-		<Stack>
-			<SelectAutocomplete
-				options={options}
-				name="methodName"
-				label="Method name"
-				placeholder="get_name"
-				disabled={isDisabled}
-				isOptionsLoading={isDisabled}
-				outsideElement={
-					<IconButton
+		<Stack direction="column" spacing={2}>
+			<H5 fontWeight="bold">Canister</H5>
+			<Stack direction="column" spacing={4}>
+				<Field name="canisterId" label="Canister ID" placeholder="aaaaa-aa" />
+				<Stack>
+					<SelectAutocomplete
+						options={options}
+						name="methodName"
+						label="Method name"
+						placeholder="get_name"
 						disabled={isDisabled}
-						icon="refresh-linear"
-						size="small"
-						onClick={() => refetch()}
-						tooltip="Refresh"
+						isOptionsLoading={isDisabled}
+						outsideElement={
+							<IconButton
+								disabled={isDisabled}
+								icon="refresh-linear"
+								size="small"
+								onClick={() => refetch()}
+								tooltip="Refresh"
+							/>
+						}
 					/>
-				}
-			/>
-			<StandaloneCheckbox
-				checked={canShowArgs}
-				label="Show arguments preview"
-				name="argumentsPreview"
-				onChange={setCanShowArgs}
-			/>
-			{canShowArgs && method ? (
-				<StandaloneEditor
-					isReadOnly
-					id="methodDescription"
-					mode="json"
-					value={stringifyJson(method)}
-					height={150}
-					options={{ wrap: false }}
+					<StandaloneCheckbox
+						checked={canShowArgs}
+						label="Show arguments preview"
+						name="argumentsPreview"
+						onChange={setCanShowArgs}
+					/>
+					{canShowArgs && method ? (
+						<StandaloneEditor
+							isReadOnly
+							id="methodDescription"
+							mode="json"
+							value={stringifyJson(method)}
+							height={150}
+							options={{ wrap: false }}
+						/>
+					) : undefined}
+				</Stack>
+				<Field
+					name="cycles"
+					type="number"
+					label="Cycles (T)"
+					placeholder="10_000_000_000"
+					helperText="To determine the required cycles, use the Preview request feature. The cycles count varies based on the number of arguments."
 				/>
-			) : undefined}
+			</Stack>
 		</Stack>
 	);
 };

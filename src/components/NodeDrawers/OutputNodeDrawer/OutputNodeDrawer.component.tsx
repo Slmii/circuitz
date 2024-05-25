@@ -1,22 +1,17 @@
 import { Divider, Stack } from '@mui/material';
 import { OutputNodeDrawerProps, OutputNodeFormValues } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
-import { ConnectorModalProps } from 'lib/types';
 import { Alert } from 'components/Alert';
 import { H5 } from 'components/Typography';
 import { Field } from 'components/Form/Field';
 import { Form } from 'components/Form';
-import { useFormSubmit, useGetConnectors, useModal } from 'lib/hooks';
+import { useFormSubmit } from 'lib/hooks';
 import { Select } from 'components/Form/Select';
-import { IconButton } from 'components/IconButton';
-import { APPLICATION_OPTIONS, CONNECTOR_HELP_TEXT } from 'lib/constants';
-import { SelectAutocomplete } from 'components/Form/SelectAutocomplete';
+import { APPLICATION_OPTIONS } from 'lib/constants';
+import { ConnectorField } from 'components/Shared';
 
 export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps) => {
 	const { formRef, submitter } = useFormSubmit();
-	const { openModal } = useModal<ConnectorModalProps, string>('CONNECTOR');
-
-	const { data: connectors, isLoading: isConnectorsLoading } = useGetConnectors();
 
 	return (
 		<Drawer
@@ -38,7 +33,7 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 					}}
 					myRef={formRef}
 					// schema={inputCanisterSchema}
-					render={({ watch, setValue }) => (
+					render={({ watch }) => (
 						<>
 							<Stack direction="column" spacing={2}>
 								<Alert severity="info">An Ouput Node sends data to the outside world.</Alert>
@@ -57,52 +52,7 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 										placeholder="Enter a description"
 										maxLength={500}
 									/>
-									<SelectAutocomplete
-										name="connector"
-										label="Connector"
-										isOptionsLoading={!!connectors && isConnectorsLoading}
-										options={(connectors ?? []).map(connector => ({
-											id: connector.id.toString(),
-											label: connector.name
-										}))}
-										outsideElement={
-											<Stack direction="row">
-												{watch('connector') && (
-													<IconButton
-														icon="edit-linear"
-														tooltip="Edit Connector"
-														onClick={() => {
-															const connector = connectors?.find(
-																connector => connector.id === Number(watch('connector'))
-															);
-
-															if (!connector) {
-																return;
-															}
-
-															openModal({
-																type: 'Http' in connector.connectorType ? 'Http' : 'Canister',
-																node,
-																connector
-															});
-														}}
-													/>
-												)}
-												<IconButton
-													icon="add-linear"
-													tooltip="New Connector"
-													onClick={() =>
-														openModal({
-															type: watch('application'),
-															node,
-															onSuccess: connectorId => connectorId && setValue('connector', connectorId)
-														})
-													}
-												/>
-											</Stack>
-										}
-										helperText={CONNECTOR_HELP_TEXT}
-									/>
+									<ConnectorField node={node} newConnectorType={watch('application')} />
 								</Stack>
 							</Stack>
 						</>
