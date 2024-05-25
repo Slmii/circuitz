@@ -325,7 +325,7 @@ const LookupCanisterArgs = () => {
 		<Paper sx={{ p: 2 }}>
 			<Stack direction="column" spacing={2}>
 				{fields.map((config, index) => (
-					<Stack direction="row" spacing={1} key={config.id} alignItems="center">
+					<Stack direction="row" spacing={1} key={config.id}>
 						<Select
 							fullWidth
 							name={`args.${index}.dataType`}
@@ -333,8 +333,15 @@ const LookupCanisterArgs = () => {
 							label="Data type"
 							placeholder="String"
 						/>
-						<Field fullWidth name={`args.${index}.value`} label="Value" placeholder="5" />
-						<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
+						<Field
+							fullWidth
+							name={`args.${index}.value`}
+							label="Value"
+							placeholder="5"
+							outsideElement={
+								<IconButton icon="close-linear" tooltip="Remove argument" color="error" onClick={() => remove(index)} />
+							}
+						/>
 					</Stack>
 				))}
 				<Button

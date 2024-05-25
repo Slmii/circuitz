@@ -22,14 +22,21 @@ export const HttpRequestHeaders = () => {
 				<FormLabel>HTTP Headers</FormLabel>
 				<Stack direction="column" spacing={2}>
 					{fields.map((config, index) => (
-						<Stack direction="row" spacing={1} key={config.id} alignItems="center">
+						<Stack direction="row" spacing={1} key={config.id}>
 							<Field fullWidth name={`headers.${index}.key`} label="Header" placeholder="Content-Type" />
-							<Field fullWidth name={`headers.${index}.value`} label="Value" placeholder="application/json" />
-							<IconButton
-								icon="close-linear"
-								tooltip="Remove HTTP Header"
-								color="error"
-								onClick={() => remove(index)}
+							<Field
+								fullWidth
+								name={`headers.${index}.value`}
+								label="Value"
+								placeholder="application/json"
+								outsideElement={
+									<IconButton
+										icon="close-linear"
+										tooltip="Remove HTTP Header"
+										color="error"
+										onClick={() => remove(index)}
+									/>
+								}
 							/>
 						</Stack>
 					))}

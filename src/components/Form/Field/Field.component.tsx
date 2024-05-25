@@ -146,7 +146,6 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 					/>
 					{!!outsideElement && outsideElement}
 				</Stack>
-
 				{errorMessage ? <FormHelperText error>{errorMessage}</FormHelperText> : null}
 				{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
 			</Stack>

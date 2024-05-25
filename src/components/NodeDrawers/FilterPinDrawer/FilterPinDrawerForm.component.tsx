@@ -3,9 +3,9 @@ import { StandaloneEditor, Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select } from 'components/Form/Select';
-import { Caption, H5 } from 'components/Typography';
+import { H5 } from 'components/Typography';
 import { Node, PinSourceType } from 'lib/types';
-import { RefObject, useEffect, useState } from 'react';
+import { Fragment, RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
@@ -254,34 +254,34 @@ const Rules = () => {
 						Add rule
 					</Button>
 				</Stack>
-				<Caption>
-					<HandlebarsInfo />
-				</Caption>
 				<Stack spacing={2}>
 					{fields.map((field, index) => (
-						<Stack
-							key={field.id}
-							direction="row"
-							spacing={1}
-							alignItems="center"
-							onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
-							onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
-						>
-							<Field fullWidth name={`rules.${index}.field`} label="Field" />
-							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
-							<Field fullWidth name={`rules.${index}.value`} label="Value" />
-							<IconButton
-								icon="settings"
-								onClick={() => setFieldSettingsIndex(index)}
-								disabled={!isFieldHover[index]}
-							/>
-							<IconButton
-								disabled={fields.length === 1}
-								icon="close-linear"
-								color="error"
-								onClick={() => remove(index)}
-							/>
-						</Stack>
+						<Fragment key={field.id}>
+							<Stack
+								spacing={1}
+								onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
+								onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
+							>
+								<Field fullWidth name={`rules.${index}.field`} label="Field" helperText={<HandlebarsInfo />} />
+								<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
+								<Field
+									fullWidth
+									name={`rules.${index}.value`}
+									label="Value"
+									outsideElement={
+										<IconButton
+											disabled={!isFieldHover[index]}
+											icon="settings"
+											onClick={() => setFieldSettingsIndex(index)}
+										/>
+									}
+								/>
+								<Button disabled={fields.length === 1} color="error" onClick={() => remove(index)}>
+									Remove rule
+								</Button>
+							</Stack>
+							{index !== fields.length - 1 && <Divider />}
+						</Fragment>
 					))}
 				</Stack>
 			</Stack>

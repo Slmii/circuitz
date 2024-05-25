@@ -183,10 +183,21 @@ const Fields = ({ onClearError }: { onClearError: () => void }) => {
 	return (
 		<Stack spacing={2}>
 			{fields.map((field, index) => (
-				<Stack key={field.id} direction="row" spacing={1} alignItems="center">
+				<Stack key={field.id} direction="row" spacing={1}>
 					<Field fullWidth name={`fields.${index}.input`} label="Input" />
-					<Field fullWidth name={`fields.${index}.output`} label="Ouput" />
-					<IconButton disabled={fields.length === 1} icon="close-linear" color="error" onClick={() => remove(index)} />
+					<Field
+						fullWidth
+						name={`fields.${index}.output`}
+						label="Ouput"
+						outsideElement={
+							<IconButton
+								disabled={fields.length === 1}
+								icon="close-linear"
+								color="error"
+								onClick={() => remove(index)}
+							/>
+						}
+					/>
 				</Stack>
 			))}
 			<Button
