@@ -196,7 +196,7 @@ const response = await actor.input_node(JSON.stingify(address));
 };
 
 const InputNodeVerficationType = () => {
-	const { watch, setValue } = useFormContext<InputNodeFormValues>();
+	const { watch, setValue, clearErrors } = useFormContext<InputNodeFormValues>();
 	const { fields, append, remove } = useFieldArray({
 		name: 'verificationTypeWhitelist'
 	});
@@ -212,11 +212,14 @@ const InputNodeVerficationType = () => {
 						helperText="This is the field that will be used to verify the Input Node."
 					/>
 					<Field
-						endElement={
+						outsideElement={
 							<IconButton
 								tooltip="Generate token"
 								icon="refresh-linear"
-								onClick={() => setValue('verificationTypeToken', uuidv4())}
+								onClick={() => {
+									setValue('verificationTypeToken', uuidv4());
+									clearErrors('verificationTypeToken');
+								}}
 							/>
 						}
 						name="verificationTypeToken"
@@ -234,7 +237,7 @@ const InputNodeVerficationType = () => {
 							name={`verificationTypeWhitelist.${index}.principal`}
 							label="Principal"
 							placeholder="aaaaa-aa"
-							endElement={
+							outsideElement={
 								<>
 									{fields.length - 1 === index && (
 										<IconButton

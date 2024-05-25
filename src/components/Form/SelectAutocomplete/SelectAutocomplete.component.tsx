@@ -13,8 +13,8 @@ import TextField from '@mui/material/TextField';
 import FormHelperText from '@mui/material/FormHelperText';
 import Chip from '@mui/material/Chip';
 import { Icon } from 'components/Icon';
-import Skeleton from '@mui/material/Skeleton';
 import { InputAdornment, Popper } from '@mui/material';
+import { CircularProgress } from 'components/Progress';
 
 export const StandaloneAutocomplete = ({
 	name,
@@ -29,15 +29,11 @@ export const StandaloneAutocomplete = ({
 	placeholder,
 	required,
 	isOptionsLoading,
-	endElement,
+	outsideElement,
 	endIcon,
 	startIcon
 }: StandaloneAutocompleteProps) => {
 	const [inputValue, setInputValue] = useState('');
-
-	if (isOptionsLoading) {
-		return <Skeleton variant="rounded" height={32} />;
-	}
 
 	return (
 		<Autocomplete
@@ -67,53 +63,55 @@ export const StandaloneAutocomplete = ({
 						width: fullWidth ? '100%' : undefined
 					}}
 				>
-					<TextField
-						{...params}
-						placeholder={placeholder}
-						variant="outlined"
-						error={Boolean(error)}
-						name={name}
-						label={label}
-						required={required}
-						inputProps={{
-							...params.inputProps,
-							autoComplete: 'new-password' // disable autocomplete and autofill
-						}}
-						InputProps={{
-							...params.InputProps,
-							startAdornment: startIcon ? (
-								<>
-									{params.InputProps?.startAdornment}
-									<InputAdornment
-										position="start"
-										sx={{
-											padding: 0.5
-										}}
-									>
-										<Icon icon={startIcon} fontSize="small" />
-									</InputAdornment>
-								</>
-							) : null,
-							endAdornment: endIcon ? (
-								<>
-									<InputAdornment
-										position="end"
-										sx={{
-											padding: 0.5
-										}}
-									>
-										<Icon icon={endIcon} fontSize="small" />
-									</InputAdornment>
-									{params.InputProps?.endAdornment}
-								</>
-							) : endElement ? (
-								<>
-									<InputAdornment position="end">{endElement}</InputAdornment>
-									{params.InputProps?.endAdornment}
-								</>
-							) : null
-						}}
-					/>
+					<Stack direction="row" alignItems="center" spacing={1}>
+						<TextField
+							{...params}
+							placeholder={placeholder}
+							variant="outlined"
+							error={Boolean(error)}
+							name={name}
+							label={label}
+							required={required}
+							inputProps={{
+								...params.inputProps,
+								autoComplete: 'new-password' // disable autocomplete and autofill
+							}}
+							InputProps={{
+								...params.InputProps,
+								startAdornment: startIcon ? (
+									<>
+										{params.InputProps?.startAdornment}
+										<InputAdornment
+											position="start"
+											sx={{
+												padding: 0.5
+											}}
+										>
+											<Icon icon={startIcon} fontSize="small" />
+										</InputAdornment>
+									</>
+								) : null,
+								endAdornment: isOptionsLoading ? (
+									<CircularProgress />
+								) : endIcon ? (
+									<>
+										<InputAdornment
+											position="end"
+											sx={{
+												padding: 0.5
+											}}
+										>
+											<Icon icon={endIcon} fontSize="small" />
+										</InputAdornment>
+										{params.InputProps?.endAdornment}
+									</>
+								) : (
+									params.InputProps?.endAdornment
+								)
+							}}
+						/>
+						{!!outsideElement && outsideElement}
+					</Stack>
 					{error ? <FormHelperText error>{error}</FormHelperText> : null}
 					{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
 				</Stack>
@@ -144,7 +142,7 @@ export const SelectAutocomplete = ({
 	helperText,
 	fullWidth,
 	isOptionsLoading,
-	endElement,
+	outsideElement,
 	endIcon,
 	startIcon
 }: SelectAutocompleteSingleProps) => {
@@ -174,10 +172,6 @@ export const SelectAutocomplete = ({
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [options]);
-
-	if (isOptionsLoading) {
-		return <Skeleton variant="rounded" height={32} />;
-	}
 
 	return (
 		<Controller
@@ -225,53 +219,57 @@ export const SelectAutocomplete = ({
 								width: fullWidth ? '100%' : undefined
 							}}
 						>
-							<TextField
-								{...params}
-								placeholder={placeholder}
-								variant="outlined"
-								error={Boolean(fieldState.error)}
-								name={name}
-								label={label}
-								required={required}
-								inputProps={{
-									...params.inputProps,
-									autoComplete: 'new-password' // disable autocomplete and autofill
-								}}
-								InputProps={{
-									...params.InputProps,
-									startAdornment: startIcon ? (
-										<>
-											{params.InputProps?.startAdornment}
-											<InputAdornment
-												position="start"
-												sx={{
-													padding: 0.5
-												}}
-											>
-												<Icon icon={startIcon} fontSize="small" />
-											</InputAdornment>
-										</>
-									) : null,
-									endAdornment: endIcon ? (
-										<>
-											<InputAdornment
-												position="end"
-												sx={{
-													padding: 0.5
-												}}
-											>
-												<Icon icon={endIcon} fontSize="small" />
-											</InputAdornment>
-											{params.InputProps?.endAdornment}
-										</>
-									) : endElement ? (
-										<>
-											<InputAdornment position="end">{endElement}</InputAdornment>
-											{params.InputProps?.endAdornment}
-										</>
-									) : null
-								}}
-							/>
+							<Stack direction="row" alignItems="center" spacing={1}>
+								<TextField
+									{...params}
+									placeholder={placeholder}
+									variant="outlined"
+									error={Boolean(fieldState.error)}
+									name={name}
+									label={label}
+									required={required}
+									inputProps={{
+										...params.inputProps,
+										autoComplete: 'new-password' // disable autocomplete and autofill
+									}}
+									InputProps={{
+										...params.InputProps,
+										startAdornment: startIcon ? (
+											<>
+												{params.InputProps?.startAdornment}
+												<InputAdornment
+													position="start"
+													sx={{
+														padding: 0.5
+													}}
+												>
+													<Icon icon={startIcon} fontSize="small" />
+												</InputAdornment>
+											</>
+										) : (
+											params.InputProps?.startAdornment
+										),
+										endAdornment: isOptionsLoading ? (
+											<CircularProgress />
+										) : endIcon ? (
+											<>
+												<InputAdornment
+													position="end"
+													sx={{
+														padding: 0.5
+													}}
+												>
+													<Icon icon={endIcon} fontSize="small" />
+												</InputAdornment>
+												{params.InputProps?.endAdornment}
+											</>
+										) : (
+											params.InputProps?.endAdornment
+										)
+									}}
+								/>
+								{!!outsideElement && outsideElement}
+							</Stack>
 							{fieldState.error && fieldState.error.message ? (
 								<FormHelperText error>{fieldState.error.message}</FormHelperText>
 							) : null}
@@ -311,7 +309,10 @@ export const SelectAutocompleteMultiple = ({
 	disabled,
 	fullWidth,
 	isOptionsLoading,
-	max
+	max,
+	startIcon,
+	endIcon,
+	outsideElement
 }: SelectAutocompleteMultipleProps) => {
 	const { control, setValue: setFormValue, getValues } = useFormContext();
 	const [values, setValues] = useState<Option[]>([]);
@@ -338,10 +339,6 @@ export const SelectAutocompleteMultiple = ({
 		// Set values in the formContext
 		setFormValue(name, newValues);
 	};
-
-	if (isOptionsLoading) {
-		return <Skeleton variant="rounded" height={32} />;
-	}
 
 	return (
 		<Controller
@@ -379,22 +376,57 @@ export const SelectAutocompleteMultiple = ({
 								width: fullWidth ? '100%' : undefined
 							}}
 						>
-							<TextField
-								{...params}
-								variant="outlined"
-								error={Boolean(fieldState.error)}
-								name={name}
-								placeholder={placeholder}
-								label={label}
-								required={required}
-								InputProps={{
-									...params.InputProps
-								}}
-								inputProps={{
-									...params.inputProps,
-									autoComplete: 'new-password' // disable autocomplete and autofill
-								}}
-							/>
+							<Stack direction="row" alignItems="center" spacing={1}>
+								<TextField
+									{...params}
+									variant="outlined"
+									error={Boolean(fieldState.error)}
+									name={name}
+									placeholder={placeholder}
+									label={label}
+									required={required}
+									InputProps={{
+										...params.InputProps,
+										startAdornment: startIcon ? (
+											<>
+												{params.InputProps?.startAdornment}
+												<InputAdornment
+													position="start"
+													sx={{
+														padding: 0.5
+													}}
+												>
+													<Icon icon={startIcon} fontSize="small" />
+												</InputAdornment>
+											</>
+										) : (
+											params.InputProps?.startAdornment
+										),
+										endAdornment: isOptionsLoading ? (
+											<CircularProgress />
+										) : endIcon ? (
+											<>
+												<InputAdornment
+													position="end"
+													sx={{
+														padding: 0.5
+													}}
+												>
+													<Icon icon={endIcon} fontSize="small" />
+												</InputAdornment>
+												{params.InputProps?.endAdornment}
+											</>
+										) : (
+											params.InputProps?.endAdornment
+										)
+									}}
+									inputProps={{
+										...params.inputProps,
+										autoComplete: 'new-password' // disable autocomplete and autofill
+									}}
+								/>
+								{!!outsideElement && outsideElement}
+							</Stack>
 							{fieldState.error && fieldState.error.message ? (
 								<FormHelperText error>{fieldState.error.message}</FormHelperText>
 							) : null}

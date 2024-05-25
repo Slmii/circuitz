@@ -65,12 +65,31 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 											id: connector.id.toString(),
 											label: connector.name
 										}))}
-										endElement={
-											<IconButton
-												icon="add-linear"
-												tooltip="Create new connector"
-												onClick={() => openModal({ type: watch('application'), node })}
-											/>
+										outsideElement={
+											<Stack direction="row">
+												{watch('connector') && (
+													<IconButton
+														icon="edit-linear"
+														tooltip="Edit Connector"
+														onClick={() => {
+															const connector = connectors?.find(
+																connector => connector.id === Number(watch('connector'))
+															);
+
+															openModal({
+																type: watch('application'),
+																node,
+																connector
+															});
+														}}
+													/>
+												)}
+												<IconButton
+													icon="add-linear"
+													tooltip="New Connector"
+													onClick={() => openModal({ type: watch('application'), node })}
+												/>
+											</Stack>
 										}
 										helperText={CONNECTOR_HELP_TEXT}
 									/>

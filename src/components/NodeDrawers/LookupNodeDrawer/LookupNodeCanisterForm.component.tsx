@@ -32,7 +32,6 @@ import { useGetCircuitNodes, useLookupCanisterPreview, useLookupNodePreview } fr
 import { HandlebarsInfo } from 'components/Shared';
 import { api } from 'api/index';
 import { useQuery } from '@tanstack/react-query';
-import { CircularProgress } from 'components/Progress';
 import { SelectAutocomplete, Option } from 'components/Form/SelectAutocomplete';
 import { StandaloneCheckbox } from 'components/Form/Checkbox';
 import { useParams } from 'react-router-dom';
@@ -276,6 +275,7 @@ const CanisterMethod = () => {
 
 	const options: Option[] = (data ?? []).map(func => ({ id: func.name, label: func.name }));
 	const method = (data ?? [])?.find(func => func.name === methodName);
+	const isDisabled = isLoading || isRefetching;
 
 	return (
 		<Stack>
@@ -284,13 +284,16 @@ const CanisterMethod = () => {
 				name="methodName"
 				label="Method name"
 				placeholder="get_name"
-				disabled={isLoading || isRefetching}
-				endElement={
-					isLoading || isRefetching ? (
-						<CircularProgress />
-					) : (
-						<IconButton icon="refresh-linear" size="small" onClick={() => refetch()} tooltip="Refresh" />
-					)
+				disabled={isDisabled}
+				isOptionsLoading={isDisabled}
+				outsideElement={
+					<IconButton
+						disabled={isDisabled}
+						icon="refresh-linear"
+						size="small"
+						onClick={() => refetch()}
+						tooltip="Refresh"
+					/>
 				}
 			/>
 			<StandaloneCheckbox

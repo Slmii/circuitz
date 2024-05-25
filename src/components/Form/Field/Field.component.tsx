@@ -22,7 +22,7 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 			placeholder,
 			startIcon,
 			endIcon,
-			endElement,
+			outsideElement,
 			fullWidth,
 			readOnly = false,
 			onChange,
@@ -49,81 +49,82 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 					width: fullWidth ? '100%' : undefined
 				}}
 			>
-				<TextField
-					required={required}
-					id={labelId}
-					type={type === 'password' ? (isPasswordVisible ? 'text' : 'password') : type}
-					label={label}
-					placeholder={placeholder}
-					disabled={disabled}
-					error={Boolean(errorMessage)}
-					fullWidth={fullWidth}
-					multiline={multiline}
-					rows={multiline && multilineRows ? multilineRows : undefined}
-					variant="outlined"
-					inputProps={{
-						inputMode: type === 'number' ? 'numeric' : undefined,
-						pattern: type === 'number' ? '[0-9]*' : undefined,
-						maxLength
-					}}
-					size={size}
-					inputRef={ref}
-					InputProps={{
-						autoFocus,
-						sx: {
-							paddingRight: theme => (!multiline && maxLength ? `${theme.spacing(3)} !important;` : undefined),
-							'& input[type=number]': {
-								MozAppearance: 'textfield'
+				<Stack direction="row" alignItems="center" spacing={1}>
+					<TextField
+						required={required}
+						id={labelId}
+						type={type === 'password' ? (isPasswordVisible ? 'text' : 'password') : type}
+						label={label}
+						placeholder={placeholder}
+						disabled={disabled}
+						error={Boolean(errorMessage)}
+						fullWidth
+						multiline={multiline}
+						rows={multiline && multilineRows ? multilineRows : undefined}
+						variant="outlined"
+						inputProps={{
+							inputMode: type === 'number' ? 'numeric' : undefined,
+							pattern: type === 'number' ? '[0-9]*' : undefined,
+							maxLength
+						}}
+						size={size}
+						inputRef={ref}
+						InputProps={{
+							autoFocus,
+							sx: {
+								paddingRight: theme => (!multiline && maxLength ? `${theme.spacing(3)} !important;` : undefined),
+								'& input[type=number]': {
+									MozAppearance: 'textfield'
+								},
+								'& input[type=number]::-webkit-outer-spin-button': {
+									WebkitAppearance: 'none',
+									margin: 0
+								},
+								'& input[type=number]::-webkit-inner-spin-button': {
+									WebkitAppearance: 'none',
+									margin: 0
+								}
 							},
-							'& input[type=number]::-webkit-outer-spin-button': {
-								WebkitAppearance: 'none',
-								margin: 0
-							},
-							'& input[type=number]::-webkit-inner-spin-button': {
-								WebkitAppearance: 'none',
-								margin: 0
-							}
-						},
-						readOnly,
-						startAdornment: startIcon ? (
-							<InputAdornment
-								position="start"
-								sx={{
-									padding: 0.5
-								}}
-							>
-								<Icon icon={startIcon} fontSize="small" />
-							</InputAdornment>
-						) : null,
-						endAdornment: endIcon ? (
-							<InputAdornment
-								position="end"
-								sx={{
-									padding: 0.5
-								}}
-							>
-								<Icon icon={endIcon} fontSize="small" />
-							</InputAdornment>
-						) : endElement ? (
-							<InputAdornment position="end">
-								{React.cloneElement(endElement, {
-									size: 'small',
-									fontSize: 'small'
-								})}
-							</InputAdornment>
-						) : type === 'password' ? (
-							<InputAdornment position="end">
-								<IconButton
-									icon={isPasswordVisible ? 'visible-off' : 'visible'}
-									onClick={() => setIsPasswordVisible(prevState => !prevState)}
-									tooltip={isPasswordVisible ? 'Hide' : 'Show'}
-								/>
-							</InputAdornment>
-						) : null
-					}}
-					{...field}
-					onChange={onChange}
-				/>
+							readOnly,
+							startAdornment: startIcon ? (
+								<InputAdornment
+									position="start"
+									sx={{
+										padding: 0.5
+									}}
+								>
+									<Icon icon={startIcon} fontSize="small" />
+								</InputAdornment>
+							) : null,
+							endAdornment: (
+								<>
+									{endIcon ? (
+										<InputAdornment
+											position="end"
+											sx={{
+												padding: 0.5
+											}}
+										>
+											<Icon icon={endIcon} fontSize="small" />
+										</InputAdornment>
+									) : null}
+									{type === 'password' ? (
+										<InputAdornment position="end">
+											<IconButton
+												icon={isPasswordVisible ? 'visible-off' : 'visible'}
+												onClick={() => setIsPasswordVisible(prevState => !prevState)}
+												tooltip={isPasswordVisible ? 'Hide' : 'Show'}
+											/>
+										</InputAdornment>
+									) : null}
+								</>
+							)
+						}}
+						{...field}
+						onChange={onChange}
+					/>
+					{!!outsideElement && outsideElement}
+				</Stack>
 				{maxLength && (
 					<FormHelperText
 						sx={{

@@ -19,7 +19,7 @@ import { CanisterConnectorFormValues, HttpConnectorFormValues } from 'components
 import { useFormContext } from 'react-hook-form';
 import { Editor } from 'components/Editor';
 import { useEffect, useState } from 'react';
-import { stringifyJson, getHttpConnectorFormValues } from 'lib/utils';
+import { stringifyJson, getHttpConnectorFormValues, getCanisterConnectorFormValues } from 'lib/utils';
 import { getSampleData } from 'api/nodes.api';
 import { HandlebarsInfo } from './HandlebarsInfo.component';
 import { useParams } from 'react-router-dom';
@@ -30,14 +30,14 @@ import createMapper from 'map-factory';
 
 export const CanisterConnectorDialog = () => {
 	const { formRef, submitter } = useFormSubmit();
-	const { closeModal, state } = useModal<ConnectorModalProps>('CONNECTOR');
+	const { closeModal, state } = useModal<ConnectorModalProps | undefined>('CONNECTOR');
 
 	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
 
 	return (
 		<Drawer
 			title="New Connector"
-			isOpen={state.isOpen && state.props.type === 'Canister'}
+			isOpen={state.isOpen && state.props?.type === 'Canister'}
 			onClose={closeModal}
 			onSubmit={submitter}
 			isLoading={isAddConnectorPending}
@@ -57,10 +57,7 @@ export const CanisterConnectorDialog = () => {
 						closeModal();
 					}}
 					schema={canisterConnectorSchema}
-					defaultValues={{
-						name: '',
-						canisterId: ''
-					}}
+					defaultValues={getCanisterConnectorFormValues(state.props?.connector)}
 					myRef={formRef}
 				>
 					<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
@@ -101,7 +98,7 @@ export const HttpConnectorDialog = () => {
 						// closeModal();
 					}}
 					schema={canisterConnectorSchema}
-					defaultValues={getHttpConnectorFormValues()}
+					defaultValues={getHttpConnectorFormValues(state.props?.connector)}
 					myRef={formRef}
 				>
 					<OutputNodeFormValuesUpdater />
@@ -184,7 +181,7 @@ const Authentication = () => {
 											mode: 'json'
 										}}
 									/>
-									<Editor mode="json" name="authentication.jwt.inputSampleData" height={200} />
+									<Editor mode="json" isReadOnly name="authentication.jwt.inputSampleData" height={200} />
 								</Stack>
 							</Stack>
 							<Field name="authentication.jwt.secret" type="password" label="Secret" placeholder="Enter a secret" />

@@ -1,6 +1,5 @@
-import { Connector } from 'declarations/canister.declarations';
 import { Pin } from 'declarations/nodes.declarations';
-import { ConnectorType } from './Connector';
+import { Connector, ConnectorType } from './Connector';
 import { Node } from 'lib/types';
 
 export interface DeletePinModalProps {

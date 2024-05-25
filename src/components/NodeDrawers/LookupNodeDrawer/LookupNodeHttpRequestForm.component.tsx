@@ -118,9 +118,13 @@ export const LookupNodeHttpRequestForm = ({
 								<Field
 									name="url"
 									label="URL Endpoint"
-									endElement={<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />}
 									placeholder="https://api.example.com/v1/data"
-									helperText={isHandlebarsTemplate(watch('url')) ? getUrlValue(getValues()) : undefined}
+									helperText={
+										<Stack alignItems="flex-start" spacing={1}>
+											<HandlebarsInfo />
+											<span>{isHandlebarsTemplate(watch('url')) ? getUrlValue(getValues()) : undefined}</span>
+										</Stack>
+									}
 								/>
 								<Select
 									name="method"

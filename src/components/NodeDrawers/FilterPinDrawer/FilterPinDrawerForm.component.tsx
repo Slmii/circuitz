@@ -3,7 +3,7 @@ import { StandaloneEditor, Editor } from 'components/Editor';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { Select } from 'components/Form/Select';
-import { H5 } from 'components/Typography';
+import { Caption, H5 } from 'components/Typography';
 import { Node, PinSourceType } from 'lib/types';
 import { RefObject, useEffect, useState } from 'react';
 import { FilterPinFormValues } from '../NodeDrawers.types';
@@ -28,7 +28,6 @@ import { OVERFLOW, OVERFLOW_FIELDS, POPULATE_SAMPLE_DATA } from 'lib/constants';
 import { DATA_TYPES, OPERAND_TYPES, OPERATORS } from './FilterPin.constants';
 import { Alert, TipAlert } from 'components/Alert';
 import { HandlebarsInfo } from 'components/Shared';
-import { Icon } from 'components/Icon';
 import { useParams } from 'react-router-dom';
 import { getSampleData } from 'api/nodes.api';
 
@@ -255,6 +254,9 @@ const Rules = () => {
 						Add rule
 					</Button>
 				</Stack>
+				<Caption>
+					<HandlebarsInfo />
+				</Caption>
 				<Stack spacing={2}>
 					{fields.map((field, index) => (
 						<Stack
@@ -265,12 +267,7 @@ const Rules = () => {
 							onMouseEnter={() => setIsFieldHover({ ...isFieldHover, [index]: true })}
 							onMouseLeave={() => setIsFieldHover({ ...isFieldHover, [index]: false })}
 						>
-							<Field
-								fullWidth
-								name={`rules.${index}.field`}
-								label="Field"
-								endElement={<Icon fontSize="small" icon="info" tooltip={<HandlebarsInfo />} />}
-							/>
+							<Field fullWidth name={`rules.${index}.field`} label="Field" />
 							<Select fullWidth name={`rules.${index}.operator`} label="Operator" options={OPERATORS} />
 							<Field fullWidth name={`rules.${index}.value`} label="Value" />
 							<IconButton

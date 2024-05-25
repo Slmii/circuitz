@@ -144,7 +144,7 @@ export interface HttpConnectorFormValues {
 	};
 }
 
-interface AuthenticationLocation {
+export interface AuthenticationLocation {
 	selected: TokenLocationType;
 	header: {
 		name: string;

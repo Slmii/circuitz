@@ -14,7 +14,7 @@ interface SelectAutocompleteDefault {
 	isOptionsLoading?: boolean;
 	startIcon?: Icons;
 	endIcon?: Icons;
-	endElement?: JSX.Element;
+	outsideElement?: ReactNode;
 }
 
 export interface SelectAutocompleteMultipleProps extends SelectAutocompleteDefault {
