@@ -45,39 +45,39 @@ export const APPLICATION_AUTHENTICATION_LOCATION_OPTIONS: Option<TokenLocationTy
 
 export const JWT_SIGNATURE_OPTIONS: Option<SignatureMethodType>[] = [
 	{
-		id: 'HMACSHA256',
+		id: 'HS256',
 		label: 'HMACSHA256'
 	},
 	{
-		id: 'HMACSHA384',
+		id: 'HS384',
 		label: 'HMACSHA384'
 	},
 	{
-		id: 'HMACSHA512',
+		id: 'HS512',
 		label: 'HMACSHA512'
 	},
 	{
-		id: 'RSASHA256',
+		id: 'RS256',
 		label: 'RSASHA256'
 	},
 	{
-		id: 'RSASHA384',
+		id: 'RS384',
 		label: 'RSASHA384'
 	},
 	{
-		id: 'RSASHA512',
+		id: 'RS512',
 		label: 'RSASHA512'
 	},
 	{
-		id: 'ECDSASHA256',
+		id: 'ES256',
 		label: 'ECDSASHA256'
 	},
 	{
-		id: 'ECDSASHA384',
+		id: 'ES384',
 		label: 'ECDSASHA384'
 	},
 	{
-		id: 'ECDSASHA512',
+		id: 'ES512',
 		label: 'ECDSASHA512'
 	}
 ];

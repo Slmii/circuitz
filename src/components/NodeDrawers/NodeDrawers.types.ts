@@ -141,10 +141,6 @@ export interface HttpConnectorFormValues {
 			field: string;
 			value: string;
 		};
-		success: {
-			field: string;
-			value: string;
-		};
 	};
 }
 

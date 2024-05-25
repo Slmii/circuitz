@@ -61,19 +61,18 @@ export type Result_5 = { Ok: Array<Circuit> } | { Err: ApiError };
 export type Result_6 = { Ok: Array<Connector> } | { Err: ApiError };
 export type Result_7 = { Ok: Array<User> } | { Err: ApiError };
 export type SignatureMethod =
-	| { ECDSASHA256: null }
-	| { ECDSASHA384: null }
-	| { ECDSASHA512: null }
-	| { RSASHA256: null }
-	| { RSASHA384: null }
-	| { RSASHA512: null }
-	| { HMACSHA256: null }
-	| { HMACSHA384: null }
-	| { HMACSHA512: null };
+	| { RS256: null }
+	| { RS384: null }
+	| { RS512: null }
+	| { HS256: null }
+	| { HS384: null }
+	| { HS512: null }
+	| { ES256: null }
+	| { ES384: null }
+	| { ES512: null };
 export interface TestConnection {
 	method: HttpRequestMethod;
 	error: [] | [[string, string]];
-	success: [] | [[string, string]];
 	relative_url: string;
 }
 export interface TokenConfig {
@@ -155,15 +154,15 @@ export const idlFactory = ({ IDL }: any) => {
 	});
 	const Result = IDL.Variant({ Ok: Circuit, Err: ApiError });
 	const SignatureMethod = IDL.Variant({
-		ECDSASHA256: IDL.Null,
-		ECDSASHA384: IDL.Null,
-		ECDSASHA512: IDL.Null,
-		RSASHA256: IDL.Null,
-		RSASHA384: IDL.Null,
-		RSASHA512: IDL.Null,
-		HMACSHA256: IDL.Null,
-		HMACSHA384: IDL.Null,
-		HMACSHA512: IDL.Null
+		RS256: IDL.Null,
+		RS384: IDL.Null,
+		RS512: IDL.Null,
+		HS256: IDL.Null,
+		HS384: IDL.Null,
+		HS512: IDL.Null,
+		ES256: IDL.Null,
+		ES384: IDL.Null,
+		ES512: IDL.Null
 	});
 	const TokenLocation = IDL.Variant({
 		HTTPHeader: IDL.Tuple(IDL.Text, IDL.Text),
@@ -196,7 +195,6 @@ export const idlFactory = ({ IDL }: any) => {
 	const TestConnection = IDL.Record({
 		method: HttpRequestMethod,
 		error: IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
-		success: IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
 		relative_url: IDL.Text
 	});
 	const HttpConnector = IDL.Record({
