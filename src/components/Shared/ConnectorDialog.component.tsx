@@ -41,6 +41,7 @@ export const CanisterConnectorDialog = () => {
 	const { successSnackbar } = useSnackbar();
 
 	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
+	const { mutateAsync: editConnector, isPending: isEditConnectorPending } = useEditConnector();
 
 	const handleOnSubmit = async (connector: CanisterConnectorFormValues) => {
 		if (!state.props?.connector) {
@@ -53,6 +54,16 @@ export const CanisterConnectorDialog = () => {
 
 			successSnackbar(CONNECTOR_ADD_SUCCESS);
 		} else {
+			await editConnector({
+				connectorId: state.props.connector.id,
+				data: {
+					name: connector.name,
+					connector_type: {
+						Canister: connector.canisterId
+					}
+				}
+			});
+
 			successSnackbar(CONNECTOR_EDIT_SUCCESS);
 		}
 
@@ -65,7 +76,7 @@ export const CanisterConnectorDialog = () => {
 			isOpen={state.isOpen && state.props?.type === 'Canister'}
 			onClose={closeModal}
 			onSubmit={submitter}
-			isLoading={isAddConnectorPending}
+			isLoading={isAddConnectorPending || isEditConnectorPending}
 			disableHandlebarsHelpers
 		>
 			<Stack direction="column" spacing={2}>
