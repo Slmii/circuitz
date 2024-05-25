@@ -1,7 +1,7 @@
-import { Principal } from '@dfinity/principal';
 import { FORM_ERRORS } from 'lib/constants';
 import { VerificationType } from 'lib/types';
 import * as yup from 'yup';
+import { isPrincipalSchema } from './shared.schema';
 
 export const inputCanisterSchema = yup.object().shape({
 	name: yup.string().required(FORM_ERRORS.required),
@@ -20,18 +20,7 @@ export const inputCanisterSchema = yup.object().shape({
 		then: schema =>
 			schema.of(
 				yup.object().shape({
-					principal: yup.string().test('is-principal', FORM_ERRORS.principal, value => {
-						try {
-							if (!value) {
-								return false;
-							}
-
-							Principal.fromText(value);
-							return true;
-						} catch (error) {
-							return false;
-						}
-					})
+					principal: isPrincipalSchema
 				})
 			)
 	})

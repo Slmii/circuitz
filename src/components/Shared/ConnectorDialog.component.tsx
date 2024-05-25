@@ -37,7 +37,7 @@ import createMapper from 'map-factory';
 
 export const CanisterConnectorDialog = () => {
 	const { formRef, submitter } = useFormSubmit();
-	const { closeModal, state } = useModal<ConnectorModalProps | undefined>('CONNECTOR');
+	const { closeModal, state } = useModal<ConnectorModalProps | undefined, string>('CONNECTOR');
 	const { successSnackbar } = useSnackbar();
 
 	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
@@ -45,13 +45,14 @@ export const CanisterConnectorDialog = () => {
 
 	const handleOnSubmit = async (connector: CanisterConnectorFormValues) => {
 		if (!state.props?.connector) {
-			await addConnector({
+			const addedConnector = await addConnector({
 				name: connector.name,
 				connector_type: {
 					Canister: connector.canisterId
 				}
 			});
 
+			state.onSuccess?.(addedConnector.id.toString());
 			successSnackbar(CONNECTOR_ADD_SUCCESS);
 		} else {
 			await editConnector({

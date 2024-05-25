@@ -1,22 +1,11 @@
-import { Principal } from '@dfinity/principal';
 import { FORM_ERRORS } from 'lib/constants';
 import { AuthenticationType, TokenLocationType } from 'lib/types';
 import * as yup from 'yup';
+import { isPrincipalSchema } from './shared.schema';
 
 export const canisterConnectorSchema = yup.object().shape({
 	name: yup.string().required(FORM_ERRORS.required).max(30, FORM_ERRORS.maxChars(30)),
-	canisterId: yup.string().test('is-principal', FORM_ERRORS.canister, value => {
-		try {
-			if (!value) {
-				return false;
-			}
-
-			Principal.fromText(value);
-			return true;
-		} catch (error) {
-			return false;
-		}
-	})
+	canisterId: isPrincipalSchema
 });
 
 export const httpConnectorSchema = yup.object().shape({

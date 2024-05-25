@@ -1,22 +1,11 @@
-import { Principal } from '@dfinity/principal';
 import { FORM_ERRORS } from 'lib/constants';
 import { LookCanisterArgType } from 'lib/types';
 import * as yup from 'yup';
+import { isPrincipalSchema } from './shared.schema';
 
 export const lookupCanisterSchema = yup.object().shape({
 	name: yup.string().required(FORM_ERRORS.required),
-	canisterId: yup.string().test('is-principal', FORM_ERRORS.canister, value => {
-		try {
-			if (!value) {
-				return false;
-			}
-
-			Principal.fromText(value);
-			return true;
-		} catch (error) {
-			return false;
-		}
-	}),
+	canisterId: isPrincipalSchema,
 	inputSampleData: yup.string().required(FORM_ERRORS.required),
 	cycles: yup.string().matches(/^[0-9.,]+$/, FORM_ERRORS.numeric),
 	methodName: yup.string().required(FORM_ERRORS.selection),
@@ -25,19 +14,7 @@ export const lookupCanisterSchema = yup.object().shape({
 			dataType: yup.string().required(FORM_ERRORS.selection),
 			value: yup.string().when('dataType', {
 				is: (type: LookCanisterArgType) => type === 'Principal',
-				then: schema =>
-					schema.test('is-principal', FORM_ERRORS.principal, value => {
-						try {
-							if (!value) {
-								return false;
-							}
-
-							Principal.fromText(value);
-							return true;
-						} catch (error) {
-							return false;
-						}
-					}),
+				then: () => isPrincipalSchema,
 				otherwise: schema => schema.required(FORM_ERRORS.required)
 			})
 		})
