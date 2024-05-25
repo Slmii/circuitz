@@ -127,7 +127,7 @@ const Authentication = () => {
 
 	return (
 		<Paper sx={{ p: 2 }}>
-			<Stack direction="column" spacing={1}>
+			<Stack direction="column" spacing={2}>
 				<FormLabel>Authentication</FormLabel>
 				<Stack direction="column" spacing={2}>
 					<Select name="authentication.selected" label="Method" options={APPLICATION_AUTHENTICATION_OPTIONS} />
@@ -325,7 +325,7 @@ const TestConnection = () => {
 
 	return (
 		<Paper sx={{ p: 2 }}>
-			<Stack direction="column" spacing={1}>
+			<Stack direction="column" spacing={2}>
 				<FormLabel>Test Connection</FormLabel>
 				<Stack direction="column" spacing={2}>
 					<Field

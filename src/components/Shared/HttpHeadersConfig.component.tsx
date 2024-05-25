@@ -12,7 +12,7 @@ export const HttpRequestHeaders = () => {
 
 	return (
 		<Paper sx={{ p: 2 }}>
-			<Stack direction="column" spacing={1}>
+			<Stack direction="column" spacing={2}>
 				<FormLabel>HTTP Headers</FormLabel>
 				<Stack direction="column" spacing={2}>
 					{fields.map((config, index) => (
