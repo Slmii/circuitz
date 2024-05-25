@@ -26,3 +26,20 @@ export async function addConnector(data: PostConnector): Promise<Connector> {
 	const unwrapped = await unwrapResult(wrapped);
 	return mapToConnector(unwrapped);
 }
+
+/**
+ * Edit a connector for the current user.
+ */
+export async function editConnector({
+	connectorId,
+	data
+}: {
+	connectorId: number;
+	data: PostConnector;
+}): Promise<Connector> {
+	const actor = await createActor<_SERVICE>(canisterId[ENV], 'canister');
+
+	const wrapped = await actor.edit_connector(connectorId, data);
+	const unwrapped = await unwrapResult(wrapped);
+	return mapToConnector(unwrapped);
+}

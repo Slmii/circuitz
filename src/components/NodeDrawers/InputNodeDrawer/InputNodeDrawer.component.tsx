@@ -1,5 +1,5 @@
 import { useFormSubmit } from 'lib/hooks/useFormSubmit';
-import { useAddNode, useEditNode, useGetParam } from 'lib/hooks';
+import { useAddNode, useEditNode, useGetParam, useSnackbar } from 'lib/hooks';
 import { NodeType } from 'declarations/nodes.declarations';
 import { InputNodeCanisterForm } from './InputNodeCanisterForm.component';
 import { H5 } from 'components/Typography';
@@ -9,6 +9,7 @@ import { NodeSource, NodeSourceType } from 'lib/types';
 import { InputNodeDrawerProps } from '../NodeDrawers.types';
 import { Drawer } from 'components/Drawer';
 import { Back } from 'components/Navigation';
+import { NODE_ADD_SUCCESS, NODE_EDIT_SUCCESS } from 'lib/constants';
 
 const NODE_SOURCES: NodeSource[] = [
 	{
@@ -29,6 +30,7 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 	const [nodeSource, setNodeSource] = useState<NodeSourceType | null>(null);
 	const circuitId = useGetParam('circuitId');
 	const { formRef, submitter } = useFormSubmit();
+	const { successSnackbar } = useSnackbar();
 
 	const { mutateAsync: addNode, isPending: isAddNodePending } = useAddNode();
 	const { mutateAsync: editNode, isPending: isEditNodePending } = useEditNode();
@@ -46,11 +48,15 @@ export const InputNodeDrawer = ({ node, open, onClose }: InputNodeDrawerProps) =
 				circuitId: Number(circuitId),
 				data
 			});
+
+			successSnackbar(NODE_ADD_SUCCESS);
 		} else {
 			await editNode({
 				nodeId: node.id,
 				data
 			});
+
+			successSnackbar(NODE_EDIT_SUCCESS);
 		}
 	};
 

@@ -42,31 +42,41 @@ export const Dialog = ({
 	onCancelLoading,
 	onConfirmColor = 'primary',
 	onConfirm,
-	children
+	children,
+	...props
 }: PropsWithChildren<DialogProps>) => {
 	const { isMobile } = useDevice();
 
 	return (
 		<MuiDialog
 			open={open}
-			onClose={onClose}
+			onClose={(e, reason) => {
+				if (props.disableEscapeKeyDown && reason === 'backdropClick') {
+					return;
+				}
+
+				onClose();
+			}}
 			aria-labelledby={`dialog-${slugify(typeof title === 'string' ? title : 'open')}`}
 			aria-describedby={`dialog-description-${slugify(typeof title === 'string' ? title : 'open')}`}
 			TransitionComponent={Transition}
 			fullWidth
 			maxWidth={width}
+			{...props}
 		>
-			<IconButton
-				sx={{
-					position: 'absolute',
-					top: theme => theme.spacing(1),
-					right: theme => theme.spacing(2)
-				}}
-				color="inherit"
-				tooltip="Close"
-				icon="close-linear"
-				onClick={onClose}
-			/>
+			{!props.disableEscapeKeyDown && (
+				<IconButton
+					sx={{
+						position: 'absolute',
+						top: theme => theme.spacing(1),
+						right: theme => theme.spacing(2)
+					}}
+					color="inherit"
+					tooltip="Close"
+					icon="close-linear"
+					onClick={onClose}
+				/>
+			)}
 			{title ? <DialogTitle>{title}</DialogTitle> : null}
 			<DialogContent>{children}</DialogContent>
 			<DialogActions>

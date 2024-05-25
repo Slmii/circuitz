@@ -3,7 +3,11 @@ import type {
 	JWTConfig,
 	SignatureMethod,
 	TokenLocation,
-	TokenConfig
+	TokenConfig,
+	HttpConnector,
+	TestConnection,
+	HttpRequestMethod,
+	Authentication
 } from 'declarations/canister.declarations';
 import type { AuthenticationType, Connector, HeaderRequestMethodType, SignatureMethodType } from 'lib/types';
 import { dateFromNano } from './date.utils';
@@ -107,7 +111,7 @@ export const getHttpConnectorFormValues = (connector?: Connector): HttpConnector
 				password: basicAuth?.[1] ?? ''
 			},
 			token: {
-				token: tokenConfig?.token ?? '',
+				token: '',
 				location: getAuthenticationLocation(tokenConfig?.location)
 			},
 			jwt: {
@@ -212,5 +216,106 @@ const getAuthenticationLocation = (tokenLocation?: TokenLocation): Authenticatio
 			scheme: ''
 		},
 		queryParam: tokenLocation.Query
+	};
+};
+
+export const connectorFormValuesToHttpConnector = (data: HttpConnectorFormValues): HttpConnector => {
+	let testConnection: [TestConnection] | [] = [];
+	if (data.testConnection.relativeUrl.length) {
+		let error: [[string, string]] | [] = [];
+		if (data.testConnection.error.field.length && data.testConnection.error.value.length) {
+			error = [[data.testConnection.error.field, data.testConnection.error.value]];
+		}
+
+		let requestMethod: HttpRequestMethod = { GET: null };
+		if (data.testConnection.method === 'POST') {
+			requestMethod = { POST: null };
+		} else if (data.testConnection.method === 'PUT') {
+			requestMethod = { PUT: null };
+		} else if (data.testConnection.method === 'DELETE') {
+			requestMethod = { DELETE: null };
+		}
+
+		testConnection = [
+			{
+				error,
+				method: requestMethod,
+				relative_url: data.testConnection.relativeUrl
+			}
+		];
+	}
+
+	let authentication: Authentication = { None: null };
+	if (data.authentication.selected === 'Basic') {
+		authentication = {
+			Basic: [data.authentication.basic.username, data.authentication.basic.password]
+		};
+	} else if (data.authentication.selected === 'Token') {
+		let tokenLocation: TokenLocation = {
+			HTTPHeader: [data.authentication.token.location.header.name, data.authentication.token.location.header.scheme]
+		};
+
+		if (data.authentication.token.location.selected === 'Query') {
+			tokenLocation = {
+				Query: data.authentication.token.location.queryParam
+			};
+		}
+
+		authentication = {
+			Token: {
+				token: data.authentication.token.token,
+				location: tokenLocation
+			}
+		};
+	} else if (data.authentication.selected === 'JWT') {
+		let signatureMethod: SignatureMethod = { HS256: null };
+		if (data.authentication.jwt.signatureMethod === 'RS256') {
+			signatureMethod = { RS256: null };
+		} else if (data.authentication.jwt.signatureMethod === 'RS384') {
+			signatureMethod = { RS384: null };
+		} else if (data.authentication.jwt.signatureMethod === 'RS512') {
+			signatureMethod = { RS512: null };
+		} else if (data.authentication.jwt.signatureMethod === 'HS256') {
+			signatureMethod = { HS256: null };
+		} else if (data.authentication.jwt.signatureMethod === 'HS384') {
+			signatureMethod = { HS384: null };
+		} else if (data.authentication.jwt.signatureMethod === 'HS512') {
+			signatureMethod = { HS512: null };
+		} else if (data.authentication.jwt.signatureMethod === 'ES256') {
+			signatureMethod = { ES256: null };
+		} else if (data.authentication.jwt.signatureMethod === 'ES384') {
+			signatureMethod = { ES384: null };
+		} else if (data.authentication.jwt.signatureMethod === 'ES512') {
+			signatureMethod = { ES512: null };
+		}
+
+		let tokenLocation: TokenLocation = {
+			HTTPHeader: [data.authentication.jwt.location.header.name, data.authentication.jwt.location.header.scheme]
+		};
+
+		if (data.authentication.jwt.location.selected === 'Query') {
+			tokenLocation = {
+				Query: data.authentication.jwt.location.queryParam
+			};
+		}
+
+		authentication = {
+			JWT: {
+				signature_method: signatureMethod,
+				payload: data.authentication.jwt.payload,
+				secret: data.authentication.jwt.secret,
+				// Override in the BE with a secure secret key
+				secret_key: '',
+				location: tokenLocation,
+				sample_data: data.authentication.jwt.inputSampleData
+			}
+		};
+	}
+
+	return {
+		base_url: data.baseUrl,
+		headers: data.headers.map(header => [header.key, header.value]),
+		authentication,
+		test_connection: testConnection
 	};
 };

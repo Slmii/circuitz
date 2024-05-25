@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGroup from '@mui/material/FormGroup';
-import { DefaultValues, FieldValues, FormProvider, useForm } from 'react-hook-form';
+import { DefaultValues, FieldValues, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { FormProps } from './Form.types';
 import { useSetRecoilState } from 'recoil';
 import { isFormDirtyState } from 'lib/recoil';
@@ -30,6 +30,7 @@ export function Form<T extends FieldValues>({
 	return (
 		<FormProvider {...methods}>
 			<form onSubmit={methods.handleSubmit(action)} ref={myRef}>
+				<FormErrors />
 				<FormGroup
 					sx={{
 						'& > *:not(:last-child)': {
@@ -54,3 +55,20 @@ function getDefaultValues<T>(defaultValues: DefaultValues<T> | (() => DefaultVal
 
 	return values;
 }
+
+const FormErrors = () => {
+	const {
+		formState: { errors, isSubmitted }
+	} = useFormContext();
+
+	useEffect(() => {
+		// Scroll to the top of the page if form contains errors
+		if (Object.keys(errors).length && isSubmitted) {
+			console.error('Form has errors', errors);
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [errors, isSubmitted]);
+
+	return null;
+};

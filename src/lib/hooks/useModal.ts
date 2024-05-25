@@ -2,12 +2,12 @@ import { ModalClient, modalState } from 'lib/recoil';
 import { ModalType } from 'lib/types';
 import { useRecoilState } from 'recoil';
 
-type ModalClientDefinedProps<T> = Omit<ModalClient<T>, 'props'> & { props: T };
+type ModalClientDefinedProps<T, U> = Omit<ModalClient<T, U>, 'props'> & { props: T };
 
-export const useModal = <T = ModalClient>(type: ModalType) => {
-	const [state, setState] = useRecoilState(modalState<T>(type));
+export const useModal = <T = ModalClient, U = unknown>(type: ModalType) => {
+	const [state, setState] = useRecoilState(modalState<T, U>(type));
 
-	const openModal = (props?: T & { onSuccess?: () => void }) => {
+	const openModal = (props?: T & { onSuccess?: (data?: U) => void }) => {
 		setState({
 			isOpen: true,
 			props,
@@ -23,7 +23,7 @@ export const useModal = <T = ModalClient>(type: ModalType) => {
 	};
 
 	return {
-		state: state as ModalClientDefinedProps<T>,
+		state: state as ModalClientDefinedProps<T, U>,
 		openModal,
 		closeModal
 	};

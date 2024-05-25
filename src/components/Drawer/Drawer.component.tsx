@@ -26,18 +26,20 @@ export const Drawer = ({
 	const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 	const [isFormDirty, setIsFormDirty] = useRecoilState(isFormDirtyState);
 
+	const handleOnCloseDrawer = () => {
+		if (isFormDirty) {
+			setIsUnsavedChangesDialogOpen(true);
+		} else {
+			onClose();
+		}
+	};
+
 	return (
 		<>
 			<MuiDrawer
 				anchor={isMdDown ? 'bottom' : 'right'}
 				open={isOpen}
-				onClose={() => {
-					if (isFormDirty) {
-						setIsUnsavedChangesDialogOpen(true);
-					} else {
-						onClose();
-					}
-				}}
+				onClose={handleOnCloseDrawer}
 				PaperProps={{
 					sx: {
 						width: fullWidth ? '90%' : 700,
@@ -98,7 +100,7 @@ export const Drawer = ({
 								</Button>
 							</>
 						)}
-						<IconButton tooltip="Close" icon="close-linear" onClick={onClose} />
+						<IconButton tooltip="Close" icon="close-linear" onClick={handleOnCloseDrawer} />
 					</Stack>
 				</Stack>
 				<Box sx={{ p: 4, height: '100%', overflowY: 'auto' }}>{children}</Box>
@@ -126,7 +128,7 @@ export const Drawer = ({
 					>
 						Save
 					</Button>
-					<Button variant="outlined" disabled={isDisabled || isLoading} onClick={onClose}>
+					<Button variant="outlined" disabled={isDisabled || isLoading} onClick={handleOnCloseDrawer}>
 						Cancel
 					</Button>
 					{onDelete && (
@@ -147,6 +149,7 @@ export const Drawer = ({
 				onConfirm={() => setIsUnsavedChangesDialogOpen(false)}
 				onCancelText="Discard changes"
 				onConfirmText="Go back to editing"
+				disableEscapeKeyDown
 			>
 				<B1>You have unsaved changes. Are you sure you want to leave?</B1>
 			</Dialog>

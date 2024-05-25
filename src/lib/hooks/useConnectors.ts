@@ -33,3 +33,30 @@ export const useAddConnector = () => {
 		}
 	});
 };
+
+export const useEditConnector = () => {
+	const queryClient = useQueryClient();
+	const { errorSnackbar } = useSnackbar();
+
+	return useMutation({
+		mutationFn: api.Connectors.editConnector,
+		onSuccess: connector => {
+			queryClient.setQueryData<Connector[]>([QUERY_KEYS.CONNECTORS], connectors => {
+				if (!connectors) {
+					return [];
+				}
+
+				// Find the index of the node that was edited
+				const index = connectors.findIndex(c => c.id === connector.id);
+				// Replace the old node with the new one
+				connectors[index] = connector;
+
+				return connectors;
+			});
+		},
+		onError: error => {
+			console.error(error);
+			errorSnackbar(MUTATE_ERROR);
+		}
+	});
+};

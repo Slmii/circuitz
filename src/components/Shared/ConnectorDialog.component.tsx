@@ -3,8 +3,8 @@ import { Drawer } from 'components/Drawer';
 import { Form } from 'components/Form';
 import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
-import { useAddConnector, useFormSubmit, useGetCircuitNodes, useModal, useSnackbar } from 'lib/hooks';
-import { canisterConnectorSchema } from 'lib/schemas';
+import { useAddConnector, useEditConnector, useFormSubmit, useGetCircuitNodes, useModal, useSnackbar } from 'lib/hooks';
+import { canisterConnectorSchema, httpConnectorSchema } from 'lib/schemas';
 import { ConnectorModalProps, Node } from 'lib/types';
 import { HttpRequestHeaders } from './HttpHeadersConfig.component';
 import { Select } from 'components/Form/Select';
@@ -13,13 +13,20 @@ import {
 	APPLICATION_AUTHENTICATION_OPTIONS,
 	HTTP_METHODS,
 	NODE_URL,
-	JWT_SIGNATURE_OPTIONS
+	JWT_SIGNATURE_OPTIONS,
+	CONNECTOR_ADD_SUCCESS,
+	CONNECTOR_EDIT_SUCCESS
 } from 'lib/constants';
 import { CanisterConnectorFormValues, HttpConnectorFormValues } from 'components/NodeDrawers';
 import { useFormContext } from 'react-hook-form';
 import { Editor } from 'components/Editor';
 import { useEffect, useState } from 'react';
-import { stringifyJson, getHttpConnectorFormValues, getCanisterConnectorFormValues } from 'lib/utils';
+import {
+	stringifyJson,
+	getHttpConnectorFormValues,
+	getCanisterConnectorFormValues,
+	connectorFormValuesToHttpConnector
+} from 'lib/utils';
 import { getSampleData } from 'api/nodes.api';
 import { HandlebarsInfo } from './HandlebarsInfo.component';
 import { useParams } from 'react-router-dom';
@@ -31,12 +38,30 @@ import createMapper from 'map-factory';
 export const CanisterConnectorDialog = () => {
 	const { formRef, submitter } = useFormSubmit();
 	const { closeModal, state } = useModal<ConnectorModalProps | undefined>('CONNECTOR');
+	const { successSnackbar } = useSnackbar();
 
 	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
 
+	const handleOnSubmit = async (connector: CanisterConnectorFormValues) => {
+		if (!state.props?.connector) {
+			await addConnector({
+				name: connector.name,
+				connector_type: {
+					Canister: connector.canisterId
+				}
+			});
+
+			successSnackbar(CONNECTOR_ADD_SUCCESS);
+		} else {
+			successSnackbar(CONNECTOR_EDIT_SUCCESS);
+		}
+
+		closeModal();
+	};
+
 	return (
 		<Drawer
-			title="New Connector"
+			title={state.props?.connector ? 'Edit Connector' : 'New Connector'}
 			isOpen={state.isOpen && state.props?.type === 'Canister'}
 			onClose={closeModal}
 			onSubmit={submitter}
@@ -46,16 +71,7 @@ export const CanisterConnectorDialog = () => {
 			<Stack direction="column" spacing={2}>
 				<H5 fontWeight="bold">Application Details</H5>
 				<Form<CanisterConnectorFormValues>
-					action={async data => {
-						await addConnector({
-							name: data.name,
-							connector_type: {
-								Canister: data.canisterId
-							}
-						});
-
-						closeModal();
-					}}
+					action={handleOnSubmit}
 					schema={canisterConnectorSchema}
 					defaultValues={getCanisterConnectorFormValues(state.props?.connector)}
 					myRef={formRef}
@@ -70,34 +86,53 @@ export const CanisterConnectorDialog = () => {
 
 export const HttpConnectorDialog = () => {
 	const { formRef, submitter } = useFormSubmit();
-	const { closeModal, state } = useModal<ConnectorModalProps | undefined>('CONNECTOR');
+	const { closeModal, state } = useModal<ConnectorModalProps | undefined, string>('CONNECTOR');
+	const { successSnackbar } = useSnackbar();
 
 	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
+	const { mutateAsync: editConnector, isPending: isEditConnectorPending } = useEditConnector();
+
+	const handleOnSubmit = async (connector: HttpConnectorFormValues) => {
+		if (!state.props?.connector) {
+			const addedConnector = await addConnector({
+				name: connector.name,
+				connector_type: {
+					Http: connectorFormValuesToHttpConnector(connector)
+				}
+			});
+
+			state.onSuccess?.(addedConnector.id.toString());
+			successSnackbar(CONNECTOR_ADD_SUCCESS);
+		} else {
+			await editConnector({
+				connectorId: state.props.connector.id,
+				data: {
+					name: connector.name,
+					connector_type: {
+						Http: connectorFormValuesToHttpConnector(connector)
+					}
+				}
+			});
+
+			successSnackbar(CONNECTOR_EDIT_SUCCESS);
+		}
+
+		closeModal();
+	};
 
 	return (
 		<Drawer
-			title="New Connector"
+			title={state.props?.connector ? 'Edit Connector' : 'New Connector'}
 			isOpen={state.isOpen && state.props?.type === 'Http'}
 			onClose={closeModal}
 			onSubmit={submitter}
-			isLoading={isAddConnectorPending}
+			isLoading={isAddConnectorPending || isEditConnectorPending}
 		>
 			<Stack direction="column" spacing={2}>
 				<H5 fontWeight="bold">Application Details</H5>
 				<Form<HttpConnectorFormValues>
-					action={data => {
-						addConnector;
-						console.log(data);
-						// await addConnector({
-						// 	name: data.name,
-						// 	connector_type: {
-						// 		Canister: data.canisterId
-						// 	}
-						// });
-
-						// closeModal();
-					}}
-					schema={canisterConnectorSchema}
+					action={handleOnSubmit}
+					schema={httpConnectorSchema}
 					defaultValues={getHttpConnectorFormValues(state.props?.connector)}
 					myRef={formRef}
 				>
@@ -143,7 +178,13 @@ const Authentication = () => {
 					{watch('authentication.selected') === 'Token' && (
 						<>
 							<Divider />
-							<Field name="authentication.token.token" type="password" label="Token" placeholder="Enter a token" />
+							<Field
+								name="authentication.token.token"
+								type="password"
+								label="Token"
+								placeholder="Enter a token"
+								helperText="For security reasons, the Token must be re-entered each time you edit the connector."
+							/>
 							<TokenLocation name="token" />
 						</>
 					)}
@@ -184,7 +225,13 @@ const Authentication = () => {
 									<Editor mode="json" isReadOnly name="authentication.jwt.inputSampleData" height={200} />
 								</Stack>
 							</Stack>
-							<Field name="authentication.jwt.secret" type="password" label="Secret" placeholder="Enter a secret" />
+							<Field
+								name="authentication.jwt.secret"
+								type="password"
+								label="Secret"
+								placeholder="Enter a secret"
+								helperText="For security reasons, the Secret must be re-entered each time you edit the connector."
+							/>
 							<TokenLocation name="jwt" />
 						</>
 					)}

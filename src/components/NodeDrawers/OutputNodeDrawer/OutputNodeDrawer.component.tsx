@@ -14,7 +14,7 @@ import { SelectAutocomplete } from 'components/Form/SelectAutocomplete';
 
 export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps) => {
 	const { formRef, submitter } = useFormSubmit();
-	const { openModal } = useModal<ConnectorModalProps>('CONNECTOR');
+	const { openModal } = useModal<ConnectorModalProps, string>('CONNECTOR');
 
 	const { data: connectors, isLoading: isConnectorsLoading } = useGetConnectors();
 
@@ -38,7 +38,7 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 					}}
 					myRef={formRef}
 					// schema={inputCanisterSchema}
-					render={({ watch }) => (
+					render={({ watch, setValue }) => (
 						<>
 							<Stack direction="column" spacing={2}>
 								<Alert severity="info">An Ouput Node sends data to the outside world.</Alert>
@@ -76,8 +76,12 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 																connector => connector.id === Number(watch('connector'))
 															);
 
+															if (!connector) {
+																return;
+															}
+
 															openModal({
-																type: watch('application'),
+																type: 'Http' in connector.connectorType ? 'Http' : 'Canister',
 																node,
 																connector
 															});
@@ -87,7 +91,13 @@ export const OutputNodeDrawer = ({ node, open, onClose }: OutputNodeDrawerProps)
 												<IconButton
 													icon="add-linear"
 													tooltip="New Connector"
-													onClick={() => openModal({ type: watch('application'), node })}
+													onClick={() =>
+														openModal({
+															type: watch('application'),
+															node,
+															onSuccess: connectorId => connectorId && setValue('connector', connectorId)
+														})
+													}
 												/>
 											</Stack>
 										}

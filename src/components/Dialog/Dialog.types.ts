@@ -1,6 +1,7 @@
+import { DialogProps as MuiDialogProps } from '@mui/material';
 import React from 'react';
 
-export interface DialogProps {
+export interface DialogProps extends Omit<MuiDialogProps, 'title'> {
 	title: string | JSX.Element;
 	/**
 	 * A custom action to be rendered in the dialog. This can be used to render a form or any other custom content.
@@ -8,7 +9,6 @@ export interface DialogProps {
 	 */
 	customAction?: React.ReactNode;
 	width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-	open: boolean;
 	onConfirmText?: string;
 	onCancelText?: string;
 	onConfirmDisabled?: boolean;

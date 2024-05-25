@@ -11,6 +11,7 @@ import slugify from 'slugify';
 import React, { useState } from 'react';
 import { formatTokenAmount } from 'lib/utils';
 import { IconButton } from 'components/IconButton';
+import { Caption } from 'components/Typography';
 
 export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFieldProps>(
 	(
@@ -29,7 +30,7 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 			autoFocus = false,
 			helperText,
 			multiline = false,
-			multilineRows,
+			multilineRows = 5,
 			maxLength,
 			errorMessage,
 			size = 'medium',
@@ -60,7 +61,7 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 						error={Boolean(errorMessage)}
 						fullWidth
 						multiline={multiline}
-						rows={multiline && multilineRows ? multilineRows : undefined}
+						rows={multilineRows}
 						variant="outlined"
 						inputProps={{
 							inputMode: type === 'number' ? 'numeric' : undefined,
@@ -72,7 +73,6 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 						InputProps={{
 							autoFocus,
 							sx: {
-								paddingRight: theme => (!multiline && maxLength ? `${theme.spacing(3)} !important;` : undefined),
 								'& input[type=number]': {
 									MozAppearance: 'textfield'
 								},
@@ -108,6 +108,27 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 											<Icon icon={endIcon} fontSize="small" />
 										</InputAdornment>
 									) : null}
+									{maxLength && (
+										<InputAdornment
+											position="end"
+											sx={
+												multiline
+													? {
+															mb: 'auto',
+															pt: 1
+													  }
+													: undefined
+											}
+										>
+											<Caption
+												sx={{
+													color: 'text.secondary'
+												}}
+											>
+												{field.value.length} / {maxLength}
+											</Caption>
+										</InputAdornment>
+									)}
 									{type === 'password' ? (
 										<InputAdornment position="end">
 											<IconButton
@@ -125,18 +146,7 @@ export const StandaloneField = React.forwardRef<HTMLInputElement, StandaloneFiel
 					/>
 					{!!outsideElement && outsideElement}
 				</Stack>
-				{maxLength && (
-					<FormHelperText
-						sx={{
-							position: 'absolute',
-							color: 'text.secondary',
-							bottom: theme => theme.spacing(errorMessage ? 5.5 : multiline && multilineRows ? 1 : 2.5),
-							right: theme => theme.spacing(2)
-						}}
-					>
-						{field.value.length} / {maxLength}
-					</FormHelperText>
-				)}
+
 				{errorMessage ? <FormHelperText error>{errorMessage}</FormHelperText> : null}
 				{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
 			</Stack>

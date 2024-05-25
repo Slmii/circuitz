@@ -1,17 +1,23 @@
-import { FormLabel, Paper, Stack } from '@mui/material';
+import { FormHelperText, FormLabel, Paper, Stack } from '@mui/material';
 import { Button } from 'components/Button';
 import { Field } from 'components/Form/Field';
 import { IconButton } from 'components/IconButton';
 import { LookupHttpRequestFormValues } from 'components/NodeDrawers';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
 export const HttpRequestHeaders = () => {
+	const {
+		formState: { errors }
+	} = useFormContext<LookupHttpRequestFormValues>();
 	const { fields, append, remove } = useFieldArray<LookupHttpRequestFormValues>({
 		name: 'headers'
 	});
 
+	const hasErrors = Array.isArray(errors.headers) ? false : !!errors.headers;
+	const errorMsg = hasErrors && errors.headers ? errors.headers.message ?? '' : '';
+
 	return (
-		<Paper sx={{ p: 2 }}>
+		<Paper sx={{ p: 2, border: hasErrors ? theme => `1px solid ${theme.palette.error.main}` : undefined }}>
 			<Stack direction="column" spacing={2}>
 				<FormLabel>HTTP Headers</FormLabel>
 				<Stack direction="column" spacing={2}>
@@ -38,6 +44,7 @@ export const HttpRequestHeaders = () => {
 					</Button>
 				</Stack>
 			</Stack>
+			{errorMsg && <FormHelperText error>{errorMsg}</FormHelperText>}
 		</Paper>
 	);
 };
