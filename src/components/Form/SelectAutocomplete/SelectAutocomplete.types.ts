@@ -30,7 +30,6 @@ export interface Option {
 	id: string;
 	label: string;
 	groupBy?: string;
-	image?: string;
 }
 
 export interface StandaloneAutocompleteProps extends Omit<SelectAutocompleteDefault, 'onChange'> {

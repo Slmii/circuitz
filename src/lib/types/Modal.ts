@@ -1,5 +1,5 @@
 import { Pin } from 'declarations/nodes.declarations';
-import { Connector, ConnectorType } from './Connector';
+import { Connector } from './Connector';
 import { Node } from 'lib/types';
 
 export interface DeletePinModalProps {
@@ -12,7 +12,6 @@ export interface DeleteNodeModalProps {
 }
 
 export interface ConnectorModalProps {
-	type: ConnectorType;
 	node?: Node;
 	connector?: Connector;
 }

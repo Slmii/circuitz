@@ -5,11 +5,13 @@ import { HeaderRequestMethodType, LookCanisterArgType } from 'lib/types';
 export const APPLICATION_OPTIONS: Option<ConnectorType>[] = [
 	{
 		id: 'Canister',
-		label: 'Canister'
+		label: 'Canister',
+		icon: 'infinite'
 	},
 	{
 		id: 'Http',
-		label: 'HTTP'
+		label: 'HTTP',
+		icon: 'request'
 	}
 ];
 

@@ -53,17 +53,17 @@ export const FilterPinDrawer = ({ open, node, onClose }: { open: boolean; node?:
 				</Stack>
 			}
 			fullWidth
-			onDelete={() => {
-				if (!node || !filterPin) {
-					return;
-				}
-
-				openModal({
-					nodeId: node.id,
-					pin: filterPin,
-					onSuccess: () => onClose()
-				});
-			}}
+			onDelete={
+				node && filterPin
+					? () => {
+							openModal({
+								nodeId: node.id,
+								pin: filterPin,
+								onSuccess: () => onClose()
+							});
+					  }
+					: undefined
+			}
 		>
 			{!!node && open && (
 				<FilterPinDrawerForm filterType="FilterPin" formRef={formRef} node={node} onProcessFilter={handleOnSubmit} />

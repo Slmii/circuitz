@@ -63,17 +63,17 @@ export const MapperPinDrawer = ({
 				</Stack>
 			}
 			fullWidth
-			onDelete={() => {
-				if (!node || !mapperPin) {
-					return;
-				}
-
-				openModal({
-					nodeId: node.id,
-					pin: mapperPin,
-					onSuccess: () => onClose()
-				});
-			}}
+			onDelete={
+				node && mapperPin
+					? () => {
+							openModal({
+								nodeId: node.id,
+								pin: mapperPin,
+								onSuccess: () => onClose()
+							});
+					  }
+					: undefined
+			}
 		>
 			{!!node && open && (
 				<MapperPinDrawerForm

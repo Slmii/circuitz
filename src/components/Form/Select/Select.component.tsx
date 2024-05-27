@@ -6,7 +6,7 @@ import slugify from 'slugify';
 import { SelectProps, StandaloneSelectProps } from './Select.types';
 import Box from '@mui/material/Box';
 import React from 'react';
-import { FormControl, InputAdornment, InputLabel } from '@mui/material';
+import { FormControl, InputAdornment, InputLabel, ListItemIcon, ListItemText } from '@mui/material';
 import { Icon } from 'components/Icon';
 
 export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSelectProps>(
@@ -116,7 +116,12 @@ export const StandaloneSelect = React.forwardRef<HTMLInputElement, StandaloneSel
 				>
 					{options.map(option => (
 						<MenuItem key={option.id} value={option.id} disabled={option.disabled}>
-							{option.label}
+							{option.icon && (
+								<ListItemIcon>
+									<Icon icon={option.icon} sx={{ fontSize: 20 }} />
+								</ListItemIcon>
+							)}
+							<ListItemText primary={option.label} />
 						</MenuItem>
 					))}
 				</MuiSelect>

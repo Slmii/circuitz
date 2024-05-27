@@ -53,17 +53,17 @@ export const LookupFilterPinDrawer = ({ open, node, onClose }: { open: boolean; 
 				</Stack>
 			}
 			fullWidth
-			onDelete={() => {
-				if (!node || !lookupFilterPin) {
-					return;
-				}
-
-				openModal({
-					nodeId: node.id,
-					pin: lookupFilterPin,
-					onSuccess: () => onClose()
-				});
-			}}
+			onDelete={
+				node && lookupFilterPin
+					? () => {
+							openModal({
+								nodeId: node.id,
+								pin: lookupFilterPin,
+								onSuccess: () => onClose()
+							});
+					  }
+					: undefined
+			}
 		>
 			{node && (
 				<FilterPinDrawerForm

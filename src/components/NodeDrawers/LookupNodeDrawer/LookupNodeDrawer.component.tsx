@@ -65,16 +65,16 @@ export const LookupNodeDrawer = ({ node, open, nodeType, onClose }: LookupNodeDr
 					</Stack>
 				}
 				fullWidth
-				onDelete={() => {
-					if (!node) {
-						return;
-					}
-
-					openModal({
-						nodeId: node.id,
-						onSuccess: () => onClose()
-					});
-				}}
+				onDelete={
+					node
+						? () => {
+								openModal({
+									nodeId: node.id,
+									onSuccess: () => onClose()
+								});
+						  }
+						: undefined
+				}
 			>
 				{open && (
 					<>

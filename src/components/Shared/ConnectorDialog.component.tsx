@@ -5,9 +5,10 @@ import { Field } from 'components/Form/Field';
 import { B2, H5 } from 'components/Typography';
 import { useAddConnector, useEditConnector, useFormSubmit, useGetCircuitNodes, useModal, useSnackbar } from 'lib/hooks';
 import { canisterConnectorSchema, httpConnectorSchema } from 'lib/schemas';
-import { ConnectorModalProps, Node } from 'lib/types';
+import { ConnectorModalProps, ConnectorType, Node } from 'lib/types';
+import { PostConnector } from 'declarations/canister.declarations';
 import { HttpRequestHeaders } from './HttpHeadersConfig.component';
-import { Select } from 'components/Form/Select';
+import { Select, StandaloneSelect } from 'components/Form/Select';
 import {
 	APPLICATION_AUTHENTICATION_LOCATION_OPTIONS,
 	APPLICATION_AUTHENTICATION_OPTIONS,
@@ -15,12 +16,13 @@ import {
 	NODE_URL,
 	JWT_SIGNATURE_OPTIONS,
 	CONNECTOR_ADD_SUCCESS,
-	CONNECTOR_EDIT_SUCCESS
+	CONNECTOR_EDIT_SUCCESS,
+	APPLICATION_OPTIONS
 } from 'lib/constants';
 import { CanisterConnectorFormValues, HttpConnectorFormValues } from 'components/NodeDrawers';
 import { useFormContext } from 'react-hook-form';
 import { Editor } from 'components/Editor';
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import {
 	stringifyJson,
 	getHttpConnectorFormValues,
@@ -35,34 +37,32 @@ import { WithLiveEditor } from './WithLiveEditor.component';
 import { Button } from 'components/Button';
 import createMapper from 'map-factory';
 
-export const CanisterConnectorDialog = () => {
-	const { formRef, submitter } = useFormSubmit();
+export const ConnectorDialog = () => {
 	const { closeModal, state } = useModal<ConnectorModalProps | undefined, string>('CONNECTOR');
+	const [application, setApplication] = useState<ConnectorType>('Canister');
+
+	const { formRef, submitter } = useFormSubmit();
 	const { successSnackbar } = useSnackbar();
 
 	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
 	const { mutateAsync: editConnector, isPending: isEditConnectorPending } = useEditConnector();
 
-	const handleOnSubmit = async (connector: CanisterConnectorFormValues) => {
+	useEffect(() => {
+		if (state.props?.connector) {
+			setApplication(Object.keys(state.props.connector.connectorType)[0] as ConnectorType);
+		}
+	}, [state.props?.connector]);
+
+	const handleOnSubmit = async (data: PostConnector) => {
 		if (!state.props?.connector) {
-			const addedConnector = await addConnector({
-				name: connector.name,
-				connector_type: {
-					Canister: connector.canisterId
-				}
-			});
+			const addedConnector = await addConnector(data);
 
 			state.onSuccess?.(addedConnector.id.toString());
 			successSnackbar(CONNECTOR_ADD_SUCCESS);
 		} else {
 			await editConnector({
 				connectorId: state.props.connector.id,
-				data: {
-					name: connector.name,
-					connector_type: {
-						Canister: connector.canisterId
-					}
-				}
+				data
 			});
 
 			successSnackbar(CONNECTOR_EDIT_SUCCESS);
@@ -74,94 +74,93 @@ export const CanisterConnectorDialog = () => {
 	return (
 		<Drawer
 			title={state.props?.connector ? 'Edit Connector' : 'New Connector'}
-			isOpen={state.isOpen && state.props?.type === 'Canister'}
+			isOpen={state.isOpen}
 			onClose={closeModal}
 			onSubmit={submitter}
 			isLoading={isAddConnectorPending || isEditConnectorPending}
 			disableHandlebarsHelpers
 		>
 			<Stack direction="column" spacing={2}>
-				<H5 fontWeight="bold">Application Details</H5>
-				<Form<CanisterConnectorFormValues>
-					action={handleOnSubmit}
-					schema={canisterConnectorSchema}
-					defaultValues={getCanisterConnectorFormValues(state.props?.connector)}
-					myRef={formRef}
-				>
-					<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
-					<Field name="canisterId" label="Canister ID" placeholder="aaaaa-aa" />
-				</Form>
+				<H5 fontWeight="bold">Connector Details</H5>
+				<StandaloneSelect
+					fullWidth
+					name="application"
+					value={application}
+					onChange={e => setApplication(e.target.value as ConnectorType)}
+					label="Application"
+					options={APPLICATION_OPTIONS}
+				/>
+				{application === 'Canister' && <CanisterConnector formRef={formRef} onSubmit={handleOnSubmit} />}
+				{application === 'Http' && <HttpConnector formRef={formRef} onSubmit={handleOnSubmit} />}
 			</Stack>
 		</Drawer>
 	);
 };
 
-export const HttpConnectorDialog = () => {
-	const { formRef, submitter } = useFormSubmit();
-	const { closeModal, state } = useModal<ConnectorModalProps | undefined, string>('CONNECTOR');
-	const { successSnackbar } = useSnackbar();
-
-	const { mutateAsync: addConnector, isPending: isAddConnectorPending } = useAddConnector();
-	const { mutateAsync: editConnector, isPending: isEditConnectorPending } = useEditConnector();
-
-	const handleOnSubmit = async (connector: HttpConnectorFormValues) => {
-		if (!state.props?.connector) {
-			const addedConnector = await addConnector({
-				name: connector.name,
-				connector_type: {
-					Http: connectorFormValuesToHttpConnector(connector)
-				}
-			});
-
-			state.onSuccess?.(addedConnector.id.toString());
-			successSnackbar(CONNECTOR_ADD_SUCCESS);
-		} else {
-			await editConnector({
-				connectorId: state.props.connector.id,
-				data: {
-					name: connector.name,
-					connector_type: {
-						Http: connectorFormValuesToHttpConnector(connector)
-					}
-				}
-			});
-
-			successSnackbar(CONNECTOR_EDIT_SUCCESS);
-		}
-
-		closeModal();
-	};
+const CanisterConnector = ({
+	formRef,
+	onSubmit
+}: {
+	formRef: RefObject<HTMLFormElement>;
+	onSubmit: (data: PostConnector) => void;
+}) => {
+	const { state } = useModal<ConnectorModalProps | undefined, string>('CONNECTOR');
 
 	return (
-		<Drawer
-			title={state.props?.connector ? 'Edit Connector' : 'New Connector'}
-			isOpen={state.isOpen && state.props?.type === 'Http'}
-			onClose={closeModal}
-			onSubmit={submitter}
-			isLoading={isAddConnectorPending || isEditConnectorPending}
+		<Form<CanisterConnectorFormValues>
+			action={data =>
+				onSubmit({
+					name: data.name,
+					connector_type: {
+						Canister: data.canisterId
+					}
+				})
+			}
+			schema={canisterConnectorSchema}
+			defaultValues={getCanisterConnectorFormValues(state.props?.connector)}
+			myRef={formRef}
 		>
-			<Stack direction="column" spacing={2}>
-				<H5 fontWeight="bold">Application Details</H5>
-				<Form<HttpConnectorFormValues>
-					action={handleOnSubmit}
-					schema={httpConnectorSchema}
-					defaultValues={getHttpConnectorFormValues(state.props?.connector)}
-					myRef={formRef}
-				>
-					<OutputNodeFormValuesUpdater />
-					<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
-					<Field
-						name="baseUrl"
-						label="Base URL"
-						placeholder="https://api.example.com"
-						helperText="This part of an API’s URL is used across all of the HTTP endpoints you invoke. A Base URL makes it easier to configure Nodes."
-					/>
-					<HttpRequestHeaders />
-					<Authentication />
-					<TestConnection />
-				</Form>
-			</Stack>
-		</Drawer>
+			<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
+			<Field name="canisterId" label="Canister ID" placeholder="aaaaa-aa" />
+		</Form>
+	);
+};
+
+const HttpConnector = ({
+	formRef,
+	onSubmit
+}: {
+	formRef: RefObject<HTMLFormElement>;
+	onSubmit: (data: PostConnector) => void;
+}) => {
+	const { state } = useModal<ConnectorModalProps | undefined, string>('CONNECTOR');
+
+	return (
+		<Form<HttpConnectorFormValues>
+			action={data =>
+				onSubmit({
+					name: data.name,
+					connector_type: {
+						Http: connectorFormValuesToHttpConnector(data)
+					}
+				})
+			}
+			schema={httpConnectorSchema}
+			defaultValues={getHttpConnectorFormValues(state.props?.connector)}
+			myRef={formRef}
+		>
+			<OutputNodeFormValuesUpdater />
+			<Field maxLength={30} name="name" label="Name" placeholder="Enter a name" />
+			<Field
+				name="baseUrl"
+				label="Base URL"
+				placeholder="https://api.example.com"
+				helperText="This part of an API’s URL is used across all of the HTTP endpoints you invoke. A Base URL makes it easier to configure Nodes."
+			/>
+			<HttpRequestHeaders />
+			<Authentication />
+			<TestConnection />
+		</Form>
 	);
 };
 

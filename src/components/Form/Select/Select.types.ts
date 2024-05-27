@@ -22,6 +22,7 @@ export interface Option<T = string> {
 	id: T;
 	label: string;
 	disabled?: boolean;
+	icon?: Icons;
 }
 
 export interface StandaloneSelectProps extends Omit<SelectProps, 'onChange'> {

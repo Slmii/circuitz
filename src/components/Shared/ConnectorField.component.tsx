@@ -3,10 +3,10 @@ import { SelectAutocomplete } from 'components/Form/SelectAutocomplete';
 import { IconButton } from 'components/IconButton';
 import { CONNECTOR_HELP_TEXT } from 'lib/constants';
 import { useGetConnectors, useModal } from 'lib/hooks';
-import { ConnectorModalProps, ConnectorType, Node } from 'lib/types';
+import { ConnectorModalProps, Node } from 'lib/types';
 import { useFormContext } from 'react-hook-form';
 
-export const ConnectorField = ({ newConnectorType, node }: { newConnectorType: ConnectorType; node?: Node }) => {
+export const ConnectorField = ({ node }: { node?: Node }) => {
 	const { watch, setValue } = useFormContext<{ connector: string }>();
 	const { openModal } = useModal<ConnectorModalProps, string>('CONNECTOR');
 	const { data: connectors, isLoading: isConnectorsLoading } = useGetConnectors();
@@ -34,7 +34,6 @@ export const ConnectorField = ({ newConnectorType, node }: { newConnectorType: C
 								}
 
 								openModal({
-									type: 'Http' in connector.connectorType ? 'Http' : 'Canister',
 									node,
 									connector
 								});
@@ -46,7 +45,6 @@ export const ConnectorField = ({ newConnectorType, node }: { newConnectorType: C
 						tooltip="New Connector"
 						onClick={() =>
 							openModal({
-								type: newConnectorType,
 								node,
 								onSuccess: connectorId => connectorId && setValue('connector', connectorId)
 							})
